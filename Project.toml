@@ -1,0 +1,4 @@
+name = "OpenPolicyAgent"
+uuid = "8f257efb-743c-4ebc-8197-d291a1f743b4"
+authors = ["tan <tanmaykm@gmail.com>"]
+version = "0.1.0"

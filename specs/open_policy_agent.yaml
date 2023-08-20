@@ -674,32 +674,32 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/200Result'
+            $ref: '#/components/schemas/response200Result'
     successSingleResult:
       description: Success
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/200SingleResult'
+            $ref: '#/components/schemas/response200SingleResult'
     successResponse:
       description: Success
       content:
         application/json:
           schema:
             allOf:
-              - $ref: '#/components/schemas/200Result'
-              - $ref: '#/components/schemas/200Provenance'
-              - $ref: '#/components/schemas/200Metrics'
-              - $ref: '#/components/schemas/200Explanations'
+              - $ref: '#/components/schemas/response200Result'
+              - $ref: '#/components/schemas/response200Provenance'
+              - $ref: '#/components/schemas/response200Metrics'
+              - $ref: '#/components/schemas/response200Explanations'
     successQuery:
       description: Success
       content:
         application/json:
           schema:
             allOf:
-              - $ref: '#/components/schemas/200Result'
-              - $ref: '#/components/schemas/200Metrics'
-              - $ref: '#/components/schemas/200Explanations'
+              - $ref: '#/components/schemas/response200Result'
+              - $ref: '#/components/schemas/response200Metrics'
+              - $ref: '#/components/schemas/response200Explanations'
     successZipResponse:
       description: Success. You will find a gzip file is in the response's message body
       content:
@@ -712,21 +712,21 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/404'
+            $ref: '#/components/schemas/response404'
     badRequestResponse:
       description: Bad request
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/400'
+            $ref: '#/components/schemas/response400'
     serverErrorResponse:
       description: Server error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/400'
+            $ref: '#/components/schemas/response400'
   schemas:
-    '400':
+    response400:
       type: object
       properties:
         code:
@@ -774,7 +774,7 @@ components:
       required:
         - code
         - message
-    '404':
+    response404:
       type: object
       properties:
         code:
@@ -904,7 +904,7 @@ components:
         required:
           - op
           - path
-    200Result:
+    response200Result:
       type: object
       properties:
         result:
@@ -1002,7 +1002,7 @@ components:
                                             type: string
                                           value:
                                             type: string
-    200SingleResult:
+    response200SingleResult:
       type: object
       properties:
         result:
@@ -1082,7 +1082,7 @@ components:
             default_decision:
               type: string
               example: '/system/main'
-    200Metrics:
+    response200Metrics:
       type: object
       properties:
         metrics:
@@ -1172,7 +1172,7 @@ components:
               description: '(Only returned if `instrument` is true.) *Description is forthcoming*'
               type: number
               example: 23000
-    200Provenance:
+    response200Provenance:
       type: object
       properties:
         provenance:
@@ -1196,7 +1196,7 @@ components:
               type: object
               description: A set of key-value pairs describing each bundle activated on the server.
               additionalProperties: {}
-    200Explanations:
+    response200Explanations:
       type: object
       properties:
         explanation:

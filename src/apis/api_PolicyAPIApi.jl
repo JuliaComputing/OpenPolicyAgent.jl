@@ -13,9 +13,9 @@ basepath(::Type{ PolicyAPIApi }) = "http://localhost"
 
 const _returntypes_delete_policy_module_PolicyAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("200", "x"=>".") * "\$") => DeletePolicyModule200Response,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Model400,
-    Regex("^" * replace("404", "x"=>".") * "\$") => Model404,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
+    Regex("^" * replace("404", "x"=>".") * "\$") => Response404,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_delete_policy_module(_api::PolicyAPIApi, id::String; pretty=nothing, _mediaType=nothing)
@@ -48,8 +48,8 @@ function delete_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::
 end
 
 const _returntypes_get_policies_PolicyAPIApi = Dict{Regex,Type}(
-    Regex("^" * replace("200", "x"=>".") * "\$") => Model200Result,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("200", "x"=>".") * "\$") => Response200Result,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_get_policies(_api::PolicyAPIApi; pretty=nothing, _mediaType=nothing)
@@ -67,7 +67,7 @@ This API endpoint responds with a list of all policy modules on the server (resu
 Params:
 - pretty::Bool
 
-Return: Model200Result, OpenAPI.Clients.ApiResponse
+Return: Response200Result, OpenAPI.Clients.ApiResponse
 """
 function get_policies(_api::PolicyAPIApi; pretty=nothing, _mediaType=nothing)
     _ctx = _oacinternal_get_policies(_api; pretty=pretty, _mediaType=_mediaType)
@@ -80,9 +80,9 @@ function get_policies(_api::PolicyAPIApi, response_stream::Channel; pretty=nothi
 end
 
 const _returntypes_get_policy_module_PolicyAPIApi = Dict{Regex,Type}(
-    Regex("^" * replace("200", "x"=>".") * "\$") => Model200Result,
-    Regex("^" * replace("404", "x"=>".") * "\$") => Model404,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("200", "x"=>".") * "\$") => Response200Result,
+    Regex("^" * replace("404", "x"=>".") * "\$") => Response404,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_get_policy_module(_api::PolicyAPIApi, id::String; pretty=nothing, _mediaType=nothing)
@@ -102,7 +102,7 @@ Params:
 - id::String (required)
 - pretty::Bool
 
-Return: Model200Result, OpenAPI.Clients.ApiResponse
+Return: Response200Result, OpenAPI.Clients.ApiResponse
 """
 function get_policy_module(_api::PolicyAPIApi, id::String; pretty=nothing, _mediaType=nothing)
     _ctx = _oacinternal_get_policy_module(_api, id; pretty=pretty, _mediaType=_mediaType)
@@ -115,9 +115,9 @@ function get_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::Str
 end
 
 const _returntypes_put_policy_module_PolicyAPIApi = Dict{Regex,Type}(
-    Regex("^" * replace("200", "x"=>".") * "\$") => Model200Result,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Model400,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("200", "x"=>".") * "\$") => Response200Result,
+    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_put_policy_module(_api::PolicyAPIApi, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing)
@@ -140,7 +140,7 @@ Params:
 - pretty::Bool
 - metrics::Bool
 
-Return: Model200Result, OpenAPI.Clients.ApiResponse
+Return: Response200Result, OpenAPI.Clients.ApiResponse
 """
 function put_policy_module(_api::PolicyAPIApi, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing)
     _ctx = _oacinternal_put_policy_module(_api, id, body; pretty=pretty, metrics=metrics, _mediaType=_mediaType)

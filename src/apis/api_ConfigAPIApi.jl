@@ -12,8 +12,8 @@ This can be used to construct the `OpenAPI.Clients.Client` instance.
 basepath(::Type{ ConfigAPIApi }) = "http://localhost"
 
 const _returntypes_get_config_ConfigAPIApi = Dict{Regex,Type}(
-    Regex("^" * replace("200", "x"=>".") * "\$") => Model200SingleResult,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("200", "x"=>".") * "\$") => Response200SingleResult,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_get_config(_api::ConfigAPIApi; pretty=nothing, _mediaType=nothing)
@@ -31,7 +31,7 @@ This API endpoint responds with active configuration (result response)  --- **No
 Params:
 - pretty::Bool
 
-Return: Model200SingleResult, OpenAPI.Clients.ApiResponse
+Return: Response200SingleResult, OpenAPI.Clients.ApiResponse
 """
 function get_config(_api::ConfigAPIApi; pretty=nothing, _mediaType=nothing)
     _ctx = _oacinternal_get_config(_api; pretty=pretty, _mediaType=_mediaType)

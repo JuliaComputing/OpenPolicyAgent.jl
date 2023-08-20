@@ -13,8 +13,8 @@ basepath(::Type{ QueryAPIApi }) = "http://localhost"
 
 const _returntypes_get_query_QueryAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("200", "x"=>".") * "\$") => GetQuery200Response,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Model400,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_get_query(_api::QueryAPIApi, q::String; pretty=nothing, explain=nothing, metrics=nothing, _mediaType=nothing)
@@ -52,8 +52,8 @@ end
 
 const _returntypes_post_query_QueryAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("200", "x"=>".") * "\$") => GetQuery200Response,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Model400,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
     Regex("^" * replace("501", "x"=>".") * "\$") => Nothing,
 )
 
@@ -91,9 +91,9 @@ end
 
 const _returntypes_post_simple_query_QueryAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("200", "x"=>".") * "\$") => Nothing,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Model400,
-    Regex("^" * replace("404", "x"=>".") * "\$") => Model404,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
+    Regex("^" * replace("404", "x"=>".") * "\$") => Response404,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_post_simple_query(_api::QueryAPIApi, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing)

@@ -47,8 +47,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **get_policies**
-> get_policies(_api::PolicyAPIApi; pretty=nothing, _mediaType=nothing) -> Model200Result, OpenAPI.Clients.ApiResponse <br/>
-> get_policies(_api::PolicyAPIApi, response_stream::Channel; pretty=nothing, _mediaType=nothing) -> Channel{ Model200Result }, OpenAPI.Clients.ApiResponse
+> get_policies(_api::PolicyAPIApi; pretty=nothing, _mediaType=nothing) -> Response200Result, OpenAPI.Clients.ApiResponse <br/>
+> get_policies(_api::PolicyAPIApi, response_stream::Channel; pretty=nothing, _mediaType=nothing) -> Channel{ Response200Result }, OpenAPI.Clients.ApiResponse
 
 List policies
 
@@ -68,7 +68,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Model200Result**](Model200Result.md)
+[**Response200Result**](Response200Result.md)
 
 ### Authorization
 
@@ -82,8 +82,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **get_policy_module**
-> get_policy_module(_api::PolicyAPIApi, id::String; pretty=nothing, _mediaType=nothing) -> Model200Result, OpenAPI.Clients.ApiResponse <br/>
-> get_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::String; pretty=nothing, _mediaType=nothing) -> Channel{ Model200Result }, OpenAPI.Clients.ApiResponse
+> get_policy_module(_api::PolicyAPIApi, id::String; pretty=nothing, _mediaType=nothing) -> Response200Result, OpenAPI.Clients.ApiResponse <br/>
+> get_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::String; pretty=nothing, _mediaType=nothing) -> Channel{ Response200Result }, OpenAPI.Clients.ApiResponse
 
 Get a policy module
 
@@ -104,7 +104,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Model200Result**](Model200Result.md)
+[**Response200Result**](Response200Result.md)
 
 ### Authorization
 
@@ -118,8 +118,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **put_policy_module**
-> put_policy_module(_api::PolicyAPIApi, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Model200Result, OpenAPI.Clients.ApiResponse <br/>
-> put_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Channel{ Model200Result }, OpenAPI.Clients.ApiResponse
+> put_policy_module(_api::PolicyAPIApi, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Response200Result, OpenAPI.Clients.ApiResponse <br/>
+> put_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Channel{ Response200Result }, OpenAPI.Clients.ApiResponse
 
 Create or update a policy module
 
@@ -142,7 +142,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Model200Result**](Model200Result.md)
+[**Response200Result**](Response200Result.md)
 
 ### Authorization
 

@@ -11,16 +11,16 @@
         explanation=nothing,
     )
 
-    - result::Vector{200ResultResultInner}
-    - provenance::200ProvenanceProvenance
-    - metrics::200MetricsMetrics
-    - explanation::Vector{200ExplanationsExplanationInner}
+    - result::Vector{Response200ResultResultInner}
+    - provenance::Response200ProvenanceProvenance
+    - metrics::Response200MetricsMetrics
+    - explanation::Vector{Response200ExplanationsExplanationInner}
 """
 Base.@kwdef mutable struct DeletePolicyModule200Response <: OpenAPI.APIModel
-    result::Union{Nothing, Vector} = nothing # spec type: Union{ Nothing, Vector{200ResultResultInner} }
-    provenance = nothing # spec type: Union{ Nothing, 200ProvenanceProvenance }
-    metrics = nothing # spec type: Union{ Nothing, 200MetricsMetrics }
-    explanation::Union{Nothing, Vector} = nothing # spec type: Union{ Nothing, Vector{200ExplanationsExplanationInner} }
+    result::Union{Nothing, Vector} = nothing # spec type: Union{ Nothing, Vector{Response200ResultResultInner} }
+    provenance = nothing # spec type: Union{ Nothing, Response200ProvenanceProvenance }
+    metrics = nothing # spec type: Union{ Nothing, Response200MetricsMetrics }
+    explanation::Union{Nothing, Vector} = nothing # spec type: Union{ Nothing, Vector{Response200ExplanationsExplanationInner} }
 
     function DeletePolicyModule200Response(result, provenance, metrics, explanation, )
         OpenAPI.validate_property(DeletePolicyModule200Response, Symbol("result"), result)
@@ -31,7 +31,7 @@ Base.@kwdef mutable struct DeletePolicyModule200Response <: OpenAPI.APIModel
     end
 end # type DeletePolicyModule200Response
 
-const _property_types_DeletePolicyModule200Response = Dict{Symbol,String}(Symbol("result")=>"Vector{200ResultResultInner}", Symbol("provenance")=>"200ProvenanceProvenance", Symbol("metrics")=>"200MetricsMetrics", Symbol("explanation")=>"Vector{200ExplanationsExplanationInner}", )
+const _property_types_DeletePolicyModule200Response = Dict{Symbol,String}(Symbol("result")=>"Vector{Response200ResultResultInner}", Symbol("provenance")=>"Response200ProvenanceProvenance", Symbol("metrics")=>"Response200MetricsMetrics", Symbol("explanation")=>"Vector{Response200ExplanationsExplanationInner}", )
 OpenAPI.property_type(::Type{ DeletePolicyModule200Response }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_DeletePolicyModule200Response[name]))}
 
 function check_required(o::DeletePolicyModule200Response)

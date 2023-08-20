@@ -13,8 +13,8 @@ basepath(::Type{ CompileAPIApi }) = "http://localhost"
 
 const _returntypes_post_compile_CompileAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("200", "x"=>".") * "\$") => GetQuery200Response,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Model400,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_post_compile(_api::CompileAPIApi; pretty=nothing, explain=nothing, metrics=nothing, instrument=nothing, request_body=nothing, _mediaType=nothing)

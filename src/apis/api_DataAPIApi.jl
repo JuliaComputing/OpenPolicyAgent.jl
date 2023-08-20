@@ -13,8 +13,8 @@ basepath(::Type{ DataAPIApi }) = "http://localhost"
 
 const _returntypes_delete_document_DataAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("204", "x"=>".") * "\$") => Nothing,
-    Regex("^" * replace("404", "x"=>".") * "\$") => Model404,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("404", "x"=>".") * "\$") => Response404,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_delete_document(_api::DataAPIApi, path::String; _mediaType=nothing)
@@ -46,8 +46,8 @@ end
 
 const _returntypes_get_document_DataAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("200", "x"=>".") * "\$") => DeletePolicyModule200Response,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Model400,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_get_document(_api::DataAPIApi, path::String; input=nothing, pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, _mediaType=nothing)
@@ -91,8 +91,8 @@ end
 
 const _returntypes_get_document_with_path_DataAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("200", "x"=>".") * "\$") => DeletePolicyModule200Response,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Model400,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_get_document_with_path(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, _mediaType=nothing)
@@ -135,9 +135,9 @@ end
 
 const _returntypes_get_document_with_web_hook_DataAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("200", "x"=>".") * "\$") => DeletePolicyModule200Response,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Model400,
-    Regex("^" * replace("404", "x"=>".") * "\$") => Model404,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
+    Regex("^" * replace("404", "x"=>".") * "\$") => Response404,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_get_document_with_web_hook(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing)
@@ -172,9 +172,9 @@ end
 
 const _returntypes_patch_document_DataAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("204", "x"=>".") * "\$") => Nothing,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Model400,
-    Regex("^" * replace("404", "x"=>".") * "\$") => Model404,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
+    Regex("^" * replace("404", "x"=>".") * "\$") => Response404,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_patch_document(_api::DataAPIApi, path::String, patches_schema_inner::Vector{PatchesSchemaInner}; _mediaType=nothing)
@@ -210,9 +210,9 @@ end
 const _returntypes_put_document_DataAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("204", "x"=>".") * "\$") => Nothing,
     Regex("^" * replace("304", "x"=>".") * "\$") => Nothing,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Model400,
-    Regex("^" * replace("404", "x"=>".") * "\$") => Model404,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Model400,
+    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
+    Regex("^" * replace("404", "x"=>".") * "\$") => Response404,
+    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
 )
 
 function _oacinternal_put_document(_api::DataAPIApi, path::String, body::Any; if_none_match=nothing, _mediaType=nothing)

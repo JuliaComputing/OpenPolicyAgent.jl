@@ -8,8 +8,8 @@ Method | HTTP request | Description
 
 
 # **get_config**
-> get_config(_api::ConfigAPIApi; pretty=nothing, _mediaType=nothing) -> Model200SingleResult, OpenAPI.Clients.ApiResponse <br/>
-> get_config(_api::ConfigAPIApi, response_stream::Channel; pretty=nothing, _mediaType=nothing) -> Channel{ Model200SingleResult }, OpenAPI.Clients.ApiResponse
+> get_config(_api::ConfigAPIApi; pretty=nothing, _mediaType=nothing) -> Response200SingleResult, OpenAPI.Clients.ApiResponse <br/>
+> get_config(_api::ConfigAPIApi, response_stream::Channel; pretty=nothing, _mediaType=nothing) -> Channel{ Response200SingleResult }, OpenAPI.Clients.ApiResponse
 
 Get configurations
 
@@ -29,7 +29,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Model200SingleResult**](Model200SingleResult.md)
+[**Response200SingleResult**](Response200SingleResult.md)
 
 ### Authorization
 

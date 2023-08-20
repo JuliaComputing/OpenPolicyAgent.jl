@@ -10,14 +10,14 @@
         explanation=nothing,
     )
 
-    - result::Vector{200ResultResultInner}
-    - metrics::200MetricsMetrics
-    - explanation::Vector{200ExplanationsExplanationInner}
+    - result::Vector{Response200ResultResultInner}
+    - metrics::Response200MetricsMetrics
+    - explanation::Vector{Response200ExplanationsExplanationInner}
 """
 Base.@kwdef mutable struct GetQuery200Response <: OpenAPI.APIModel
-    result::Union{Nothing, Vector} = nothing # spec type: Union{ Nothing, Vector{200ResultResultInner} }
-    metrics = nothing # spec type: Union{ Nothing, 200MetricsMetrics }
-    explanation::Union{Nothing, Vector} = nothing # spec type: Union{ Nothing, Vector{200ExplanationsExplanationInner} }
+    result::Union{Nothing, Vector} = nothing # spec type: Union{ Nothing, Vector{Response200ResultResultInner} }
+    metrics = nothing # spec type: Union{ Nothing, Response200MetricsMetrics }
+    explanation::Union{Nothing, Vector} = nothing # spec type: Union{ Nothing, Vector{Response200ExplanationsExplanationInner} }
 
     function GetQuery200Response(result, metrics, explanation, )
         OpenAPI.validate_property(GetQuery200Response, Symbol("result"), result)
@@ -27,7 +27,7 @@ Base.@kwdef mutable struct GetQuery200Response <: OpenAPI.APIModel
     end
 end # type GetQuery200Response
 
-const _property_types_GetQuery200Response = Dict{Symbol,String}(Symbol("result")=>"Vector{200ResultResultInner}", Symbol("metrics")=>"200MetricsMetrics", Symbol("explanation")=>"Vector{200ExplanationsExplanationInner}", )
+const _property_types_GetQuery200Response = Dict{Symbol,String}(Symbol("result")=>"Vector{Response200ResultResultInner}", Symbol("metrics")=>"Response200MetricsMetrics", Symbol("explanation")=>"Vector{Response200ExplanationsExplanationInner}", )
 OpenAPI.property_type(::Type{ GetQuery200Response }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_GetQuery200Response[name]))}
 
 function check_required(o::GetQuery200Response)

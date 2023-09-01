@@ -1,4 +1,4 @@
-# Julia API client for OpenPolicyAgent
+# Julia API client for Client
 
 OPA provides policy-based control for cloud native environments. The following *endpoints* (such as `PUT /v1/policies`) provide reference documentation for the OPA REST API.
 
@@ -16,8 +16,8 @@ For more information, please visit [https://github.com/open-policy-agent/opa](ht
 
 
 ## Installation
-Place the Julia files generated under the `src` folder in your Julia project. Include OpenPolicyAgent.jl in the project code.
-It would include the module named OpenPolicyAgent.
+Place the Julia files generated under the `src` folder in your Julia project. Include Client.jl in the project code.
+It would include the module named Client.
 
 Documentation is generated as markdown files under the `docs` folder. You can include them in your project documentation.
 Documentation is also embedded in Julia which can be used with a Julia specific documentation generator.
@@ -26,29 +26,14 @@ Documentation is also embedded in Julia which can be used with a Julia specific 
 
 Class | Method
 ------------ | -------------
-*CompileAPIApi* | [**post_compile**](docs/CompileAPIApi.md#post_compile)<br/>**POST** /v1/compile<br/>Compile
-*ConfigAPIApi* | [**get_config**](docs/ConfigAPIApi.md#get_config)<br/>**GET** /v1/config<br/>Get configurations
-*DataAPIApi* | [**delete_document**](docs/DataAPIApi.md#delete_document)<br/>**DELETE** /v1/data/{path}<br/>Delete a document
 *DataAPIApi* | [**get_document**](docs/DataAPIApi.md#get_document)<br/>**GET** /v1/data/{path}<br/>Get a document
 *DataAPIApi* | [**get_document_with_path**](docs/DataAPIApi.md#get_document_with_path)<br/>**POST** /v1/data/{path}<br/>Get a document (with input)
-*DataAPIApi* | [**get_document_with_web_hook**](docs/DataAPIApi.md#get_document_with_web_hook)<br/>**POST** /v0/data/{path}<br/>Get a document (with webhook)
-*DataAPIApi* | [**patch_document**](docs/DataAPIApi.md#patch_document)<br/>**PATCH** /v1/data/{path}<br/>Update a document
-*DataAPIApi* | [**put_document**](docs/DataAPIApi.md#put_document)<br/>**PUT** /v1/data/{path}<br/>Create or overwrite a document
 *HealthAPIApi* | [**get_health**](docs/HealthAPIApi.md#get_health)<br/>**GET** /health<br/>Health
-*PolicyAPIApi* | [**delete_policy_module**](docs/PolicyAPIApi.md#delete_policy_module)<br/>**DELETE** /v1/policies/{id}<br/>Delete a policy module
-*PolicyAPIApi* | [**get_policies**](docs/PolicyAPIApi.md#get_policies)<br/>**GET** /v1/policies<br/>List policies
-*PolicyAPIApi* | [**get_policy_module**](docs/PolicyAPIApi.md#get_policy_module)<br/>**GET** /v1/policies/{id}<br/>Get a policy module
-*PolicyAPIApi* | [**put_policy_module**](docs/PolicyAPIApi.md#put_policy_module)<br/>**PUT** /v1/policies/{id}<br/>Create or update a policy module
-*QueryAPIApi* | [**get_query**](docs/QueryAPIApi.md#get_query)<br/>**GET** /v1/query<br/>Execute an ad-hoc query (simple)
-*QueryAPIApi* | [**post_query**](docs/QueryAPIApi.md#post_query)<br/>**POST** /v1/query<br/>Execute an ad-hoc query (complex)
-*QueryAPIApi* | [**post_simple_query**](docs/QueryAPIApi.md#post_simple_query)<br/>**POST** /<br/>Execute a simple query
 
 
 ## Models
 
- - [DeletePolicyModule200Response](docs/DeletePolicyModule200Response.md)
- - [GetQuery200Response](docs/GetQuery200Response.md)
- - [PatchesSchemaInner](docs/PatchesSchemaInner.md)
+ - [Response200Bool](docs/Response200Bool.md)
  - [Response200Explanations](docs/Response200Explanations.md)
  - [Response200ExplanationsExplanationInner](docs/Response200ExplanationsExplanationInner.md)
  - [Response200ExplanationsExplanationInnerLocalsInner](docs/Response200ExplanationsExplanationInnerLocalsInner.md)
@@ -70,21 +55,12 @@ Class | Method
  - [Response200ResultResultInnerAstRulesInnerBodyInnerTermsInnerValueInner](docs/Response200ResultResultInnerAstRulesInnerBodyInnerTermsInnerValueInner.md)
  - [Response200ResultResultInnerAstRulesInnerHead](docs/Response200ResultResultInnerAstRulesInnerHead.md)
  - [Response200ResultResultInnerAstRulesInnerHeadKey](docs/Response200ResultResultInnerAstRulesInnerHeadKey.md)
- - [Response200SingleResult](docs/Response200SingleResult.md)
- - [Response200SingleResultResult](docs/Response200SingleResultResult.md)
- - [Response200SingleResultResultBundles](docs/Response200SingleResultResultBundles.md)
- - [Response200SingleResultResultBundlesAuthz](docs/Response200SingleResultResultBundlesAuthz.md)
- - [Response200SingleResultResultDecisionLogs](docs/Response200SingleResultResultDecisionLogs.md)
- - [Response200SingleResultResultKeys](docs/Response200SingleResultResultKeys.md)
- - [Response200SingleResultResultKeysGlobalKey](docs/Response200SingleResultResultKeysGlobalKey.md)
- - [Response200SingleResultResultLabels](docs/Response200SingleResultResultLabels.md)
- - [Response200SingleResultResultServices](docs/Response200SingleResultResultServices.md)
- - [Response200SingleResultResultServicesAcmecorp](docs/Response200SingleResultResultServicesAcmecorp.md)
- - [Response200SingleResultResultStatus](docs/Response200SingleResultResultStatus.md)
  - [Response400](docs/Response400.md)
  - [Response400ErrorsInner](docs/Response400ErrorsInner.md)
  - [Response400ErrorsInnerLocation](docs/Response400ErrorsInnerLocation.md)
  - [Response404](docs/Response404.md)
+ - [SuccessResponse](docs/SuccessResponse.md)
+ - [SuccessResult](docs/SuccessResult.md)
 
 
 <a id="authorization"></a>

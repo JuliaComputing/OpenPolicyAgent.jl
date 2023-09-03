@@ -9,11 +9,26 @@ module CLI
 
 
 """
-The base CLI command.
-Open Policy Agent (OPA)
+CommandLine execution context.
+
+`exec`: a no argument function that provides the base command to execute in a julia `do` block.
+`cmdopts`: keyword arguments that should be used to further customize the `Cmd` creation
+`pipelineopts`: keyword arguments that should be used to further customize the `pipeline` creation
 """
-function opa()
-    return `opa`
+struct CommandLine
+    exec::Base.Function
+    cmdopts::Base.Dict{Base.Symbol,Base.Any}
+    pipelineopts::Base.Dict{Base.Symbol,Base.Any}
+end
+
+"""
+The default CommandLine constructor for Open Policy Agent (OPA)
+"""
+function CommandLine()
+    fn = f -> f("opa")
+    cmdopts = Base.Dict{Base.Symbol,Base.Any}()    
+    pipelineopts = Base.Dict{Base.Symbol,Base.Any}()    
+    return CommandLine(fn, cmdopts, pipelineopts)
 end
 
 """ opa
@@ -23,14 +38,13 @@ Open Policy Agent (OPA)
 Options:
 - help::Bool - Help for opa
  """
-function opa(parent::Cmd; help::Union{Nothing,Bool} = false, )
-    cmd = opa()
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
+function opa(ctx::CommandLine, _args...; help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr]
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    return cmd
 end
 
 """ bench
@@ -57,83 +71,30 @@ Options:
 - unknowns::AbstractString - Set paths to treat as unknown during partial evaluation
 - help::Bool - Help for bench
  """
-function bench(parent::Cmd; benchmem::Union{Nothing,Bool} = false, bundle::Union{Nothing,AbstractString} = nothing, count::Union{Nothing,AbstractString} = "1", data::Union{Nothing,AbstractString} = nothing, fail::Union{Nothing,Bool} = false, format::Union{Nothing,AbstractString} = "pretty", ignore::Union{Nothing,AbstractString} = nothing, _import::Union{Nothing,AbstractString} = nothing, input::Union{Nothing,AbstractString} = nothing, metrics::Union{Nothing,Bool} = false, package::Union{Nothing,AbstractString} = nothing, partial::Union{Nothing,Bool} = false, schema::Union{Nothing,AbstractString} = nothing, stdin::Union{Nothing,Bool} = false, stdin_input::Union{Nothing,Bool} = false, target::Union{Nothing,AbstractString} = "rego", unknowns::Union{Nothing,AbstractString} = "[input]", help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) bench`
-
-    if !isnothing(benchmem) && benchmem
-        cmd = `$(cmd) --benchmem`
+function bench(ctx::CommandLine, _args...; benchmem::Union{Nothing,Bool} = false, bundle::Union{Nothing,AbstractString} = nothing, count::Union{Nothing,AbstractString} = "1", data::Union{Nothing,AbstractString} = nothing, fail::Union{Nothing,Bool} = false, format::Union{Nothing,AbstractString} = "pretty", ignore::Union{Nothing,AbstractString} = nothing, _import::Union{Nothing,AbstractString} = nothing, input::Union{Nothing,AbstractString} = nothing, metrics::Union{Nothing,Bool} = false, package::Union{Nothing,AbstractString} = nothing, partial::Union{Nothing,Bool} = false, schema::Union{Nothing,AbstractString} = nothing, stdin::Union{Nothing,Bool} = false, stdin_input::Union{Nothing,Bool} = false, target::Union{Nothing,AbstractString} = "rego", unknowns::Union{Nothing,AbstractString} = "[input]", help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "bench"]
+        !Base.isnothing(benchmem) && benchmem && Base.push!(cmd, "--benchmem")
+        Base.isnothing(bundle) || Base.push!(cmd, "--bundle=$(bundle)")
+        Base.isnothing(count) || Base.push!(cmd, "--count=$(count)")
+        Base.isnothing(data) || Base.push!(cmd, "--data=$(data)")
+        !Base.isnothing(fail) && fail && Base.push!(cmd, "--fail")
+        Base.isnothing(format) || Base.push!(cmd, "--format=$(format)")
+        Base.isnothing(ignore) || Base.push!(cmd, "--ignore=$(ignore)")
+        Base.isnothing(_import) || Base.push!(cmd, "--import=$(_import)")
+        Base.isnothing(input) || Base.push!(cmd, "--input=$(input)")
+        !Base.isnothing(metrics) && metrics && Base.push!(cmd, "--metrics")
+        Base.isnothing(package) || Base.push!(cmd, "--package=$(package)")
+        !Base.isnothing(partial) && partial && Base.push!(cmd, "--partial")
+        Base.isnothing(schema) || Base.push!(cmd, "--schema=$(schema)")
+        !Base.isnothing(stdin) && stdin && Base.push!(cmd, "--stdin")
+        !Base.isnothing(stdin_input) && stdin_input && Base.push!(cmd, "--stdin-input")
+        Base.isnothing(target) || Base.push!(cmd, "--target=$(target)")
+        Base.isnothing(unknowns) || Base.push!(cmd, "--unknowns=$(unknowns)")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(bundle)
-        cmd = `$(cmd) --bundle=$(bundle)`
-    end
-
-    if !isnothing(count)
-        cmd = `$(cmd) --count=$(count)`
-    end
-
-    if !isnothing(data)
-        cmd = `$(cmd) --data=$(data)`
-    end
-
-    if !isnothing(fail) && fail
-        cmd = `$(cmd) --fail`
-    end
-
-    if !isnothing(format)
-        cmd = `$(cmd) --format=$(format)`
-    end
-
-    if !isnothing(ignore)
-        cmd = `$(cmd) --ignore=$(ignore)`
-    end
-
-    if !isnothing(_import)
-        cmd = `$(cmd) --import=$(_import)`
-    end
-
-    if !isnothing(input)
-        cmd = `$(cmd) --input=$(input)`
-    end
-
-    if !isnothing(metrics) && metrics
-        cmd = `$(cmd) --metrics`
-    end
-
-    if !isnothing(package)
-        cmd = `$(cmd) --package=$(package)`
-    end
-
-    if !isnothing(partial) && partial
-        cmd = `$(cmd) --partial`
-    end
-
-    if !isnothing(schema)
-        cmd = `$(cmd) --schema=$(schema)`
-    end
-
-    if !isnothing(stdin) && stdin
-        cmd = `$(cmd) --stdin`
-    end
-
-    if !isnothing(stdin_input) && stdin_input
-        cmd = `$(cmd) --stdin-input`
-    end
-
-    if !isnothing(target)
-        cmd = `$(cmd) --target=$(target)`
-    end
-
-    if !isnothing(unknowns)
-        cmd = `$(cmd) --unknowns=$(unknowns)`
-    end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ build
@@ -160,83 +121,30 @@ Options:
 - verification_key_id::AbstractString - Name assigned to the verification key used for bundle verification
 - help::Bool - Help for build
  """
-function build(parent::Cmd; bundle::Union{Nothing,Bool} = false, capabilities::Union{Nothing,AbstractString} = nothing, claims_file::Union{Nothing,AbstractString} = nothing, debug::Union{Nothing,Bool} = false, entrypoint::Union{Nothing,AbstractString} = nothing, exclude_files_verify::Union{Nothing,AbstractString} = nothing, ignore::Union{Nothing,AbstractString} = nothing, optimize::Union{Nothing,AbstractString} = "0", output::Union{Nothing,AbstractString} = "bundle.tar.gz", revision::Union{Nothing,AbstractString} = nothing, scope::Union{Nothing,AbstractString} = nothing, signing_alg::Union{Nothing,AbstractString} = "RS256", signing_key::Union{Nothing,AbstractString} = nothing, signing_plugin::Union{Nothing,AbstractString} = nothing, target::Union{Nothing,AbstractString} = "rego", verification_key::Union{Nothing,AbstractString} = nothing, verification_key_id::Union{Nothing,AbstractString} = "default", help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) build`
-
-    if !isnothing(bundle) && bundle
-        cmd = `$(cmd) --bundle`
+function build(ctx::CommandLine, _args...; bundle::Union{Nothing,Bool} = false, capabilities::Union{Nothing,AbstractString} = nothing, claims_file::Union{Nothing,AbstractString} = nothing, debug::Union{Nothing,Bool} = false, entrypoint::Union{Nothing,AbstractString} = nothing, exclude_files_verify::Union{Nothing,AbstractString} = nothing, ignore::Union{Nothing,AbstractString} = nothing, optimize::Union{Nothing,AbstractString} = "0", output::Union{Nothing,AbstractString} = "bundle.tar.gz", revision::Union{Nothing,AbstractString} = nothing, scope::Union{Nothing,AbstractString} = nothing, signing_alg::Union{Nothing,AbstractString} = "RS256", signing_key::Union{Nothing,AbstractString} = nothing, signing_plugin::Union{Nothing,AbstractString} = nothing, target::Union{Nothing,AbstractString} = "rego", verification_key::Union{Nothing,AbstractString} = nothing, verification_key_id::Union{Nothing,AbstractString} = "default", help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "build"]
+        !Base.isnothing(bundle) && bundle && Base.push!(cmd, "--bundle")
+        Base.isnothing(capabilities) || Base.push!(cmd, "--capabilities=$(capabilities)")
+        Base.isnothing(claims_file) || Base.push!(cmd, "--claims-file=$(claims_file)")
+        !Base.isnothing(debug) && debug && Base.push!(cmd, "--debug")
+        Base.isnothing(entrypoint) || Base.push!(cmd, "--entrypoint=$(entrypoint)")
+        Base.isnothing(exclude_files_verify) || Base.push!(cmd, "--exclude-files-verify=$(exclude_files_verify)")
+        Base.isnothing(ignore) || Base.push!(cmd, "--ignore=$(ignore)")
+        Base.isnothing(optimize) || Base.push!(cmd, "--optimize=$(optimize)")
+        Base.isnothing(output) || Base.push!(cmd, "--output=$(output)")
+        Base.isnothing(revision) || Base.push!(cmd, "--revision=$(revision)")
+        Base.isnothing(scope) || Base.push!(cmd, "--scope=$(scope)")
+        Base.isnothing(signing_alg) || Base.push!(cmd, "--signing-alg=$(signing_alg)")
+        Base.isnothing(signing_key) || Base.push!(cmd, "--signing-key=$(signing_key)")
+        Base.isnothing(signing_plugin) || Base.push!(cmd, "--signing-plugin=$(signing_plugin)")
+        Base.isnothing(target) || Base.push!(cmd, "--target=$(target)")
+        Base.isnothing(verification_key) || Base.push!(cmd, "--verification-key=$(verification_key)")
+        Base.isnothing(verification_key_id) || Base.push!(cmd, "--verification-key-id=$(verification_key_id)")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(capabilities)
-        cmd = `$(cmd) --capabilities=$(capabilities)`
-    end
-
-    if !isnothing(claims_file)
-        cmd = `$(cmd) --claims-file=$(claims_file)`
-    end
-
-    if !isnothing(debug) && debug
-        cmd = `$(cmd) --debug`
-    end
-
-    if !isnothing(entrypoint)
-        cmd = `$(cmd) --entrypoint=$(entrypoint)`
-    end
-
-    if !isnothing(exclude_files_verify)
-        cmd = `$(cmd) --exclude-files-verify=$(exclude_files_verify)`
-    end
-
-    if !isnothing(ignore)
-        cmd = `$(cmd) --ignore=$(ignore)`
-    end
-
-    if !isnothing(optimize)
-        cmd = `$(cmd) --optimize=$(optimize)`
-    end
-
-    if !isnothing(output)
-        cmd = `$(cmd) --output=$(output)`
-    end
-
-    if !isnothing(revision)
-        cmd = `$(cmd) --revision=$(revision)`
-    end
-
-    if !isnothing(scope)
-        cmd = `$(cmd) --scope=$(scope)`
-    end
-
-    if !isnothing(signing_alg)
-        cmd = `$(cmd) --signing-alg=$(signing_alg)`
-    end
-
-    if !isnothing(signing_key)
-        cmd = `$(cmd) --signing-key=$(signing_key)`
-    end
-
-    if !isnothing(signing_plugin)
-        cmd = `$(cmd) --signing-plugin=$(signing_plugin)`
-    end
-
-    if !isnothing(target)
-        cmd = `$(cmd) --target=$(target)`
-    end
-
-    if !isnothing(verification_key)
-        cmd = `$(cmd) --verification-key=$(verification_key)`
-    end
-
-    if !isnothing(verification_key_id)
-        cmd = `$(cmd) --verification-key-id=$(verification_key_id)`
-    end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ check
@@ -253,43 +161,20 @@ Options:
 - strict::Bool - Enable compiler strict mode
 - help::Bool - Help for check
  """
-function check(parent::Cmd; bundle::Union{Nothing,Bool} = false, capabilities::Union{Nothing,AbstractString} = nothing, format::Union{Nothing,AbstractString} = "pretty", ignore::Union{Nothing,AbstractString} = nothing, max_errors::Union{Nothing,AbstractString} = "10", schema::Union{Nothing,AbstractString} = nothing, strict::Union{Nothing,Bool} = false, help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) check`
-
-    if !isnothing(bundle) && bundle
-        cmd = `$(cmd) --bundle`
+function check(ctx::CommandLine, _args...; bundle::Union{Nothing,Bool} = false, capabilities::Union{Nothing,AbstractString} = nothing, format::Union{Nothing,AbstractString} = "pretty", ignore::Union{Nothing,AbstractString} = nothing, max_errors::Union{Nothing,AbstractString} = "10", schema::Union{Nothing,AbstractString} = nothing, strict::Union{Nothing,Bool} = false, help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "check"]
+        !Base.isnothing(bundle) && bundle && Base.push!(cmd, "--bundle")
+        Base.isnothing(capabilities) || Base.push!(cmd, "--capabilities=$(capabilities)")
+        Base.isnothing(format) || Base.push!(cmd, "--format=$(format)")
+        Base.isnothing(ignore) || Base.push!(cmd, "--ignore=$(ignore)")
+        Base.isnothing(max_errors) || Base.push!(cmd, "--max-errors=$(max_errors)")
+        Base.isnothing(schema) || Base.push!(cmd, "--schema=$(schema)")
+        !Base.isnothing(strict) && strict && Base.push!(cmd, "--strict")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(capabilities)
-        cmd = `$(cmd) --capabilities=$(capabilities)`
-    end
-
-    if !isnothing(format)
-        cmd = `$(cmd) --format=$(format)`
-    end
-
-    if !isnothing(ignore)
-        cmd = `$(cmd) --ignore=$(ignore)`
-    end
-
-    if !isnothing(max_errors)
-        cmd = `$(cmd) --max-errors=$(max_errors)`
-    end
-
-    if !isnothing(schema)
-        cmd = `$(cmd) --schema=$(schema)`
-    end
-
-    if !isnothing(strict) && strict
-        cmd = `$(cmd) --strict`
-    end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ completion
@@ -299,15 +184,13 @@ Generate the autocompletion script for the specified shell
 Options:
 - help::Bool - Help for completion
  """
-function completion(parent::Cmd; help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) completion`
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
+function completion(ctx::CommandLine, _args...; help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "completion"]
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    return cmd
 end
 
 """ deps
@@ -321,31 +204,17 @@ Options:
 - ignore::AbstractString - Set file and directory names to ignore during loading (e.g., '.*' excludes hidden files)
 - help::Bool - Help for deps
  """
-function deps(parent::Cmd; bundle::Union{Nothing,AbstractString} = nothing, data::Union{Nothing,AbstractString} = nothing, format::Union{Nothing,AbstractString} = "pretty", ignore::Union{Nothing,AbstractString} = nothing, help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) deps`
-
-    if !isnothing(bundle)
-        cmd = `$(cmd) --bundle=$(bundle)`
+function deps(ctx::CommandLine, _args...; bundle::Union{Nothing,AbstractString} = nothing, data::Union{Nothing,AbstractString} = nothing, format::Union{Nothing,AbstractString} = "pretty", ignore::Union{Nothing,AbstractString} = nothing, help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "deps"]
+        Base.isnothing(bundle) || Base.push!(cmd, "--bundle=$(bundle)")
+        Base.isnothing(data) || Base.push!(cmd, "--data=$(data)")
+        Base.isnothing(format) || Base.push!(cmd, "--format=$(format)")
+        Base.isnothing(ignore) || Base.push!(cmd, "--ignore=$(ignore)")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(data)
-        cmd = `$(cmd) --data=$(data)`
-    end
-
-    if !isnothing(format)
-        cmd = `$(cmd) --format=$(format)`
-    end
-
-    if !isnothing(ignore)
-        cmd = `$(cmd) --ignore=$(ignore)`
-    end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ eval
@@ -386,139 +255,44 @@ Options:
 - unknowns::AbstractString - Set paths to treat as unknown during partial evaluation
 - help::Bool - Help for eval
  """
-function eval(parent::Cmd; bundle::Union{Nothing,AbstractString} = nothing, capabilities::Union{Nothing,AbstractString} = nothing, count::Union{Nothing,AbstractString} = "1", coverage::Union{Nothing,Bool} = false, data::Union{Nothing,AbstractString} = nothing, disable_early_exit::Union{Nothing,Bool} = false, disable_indexing::Union{Nothing,Bool} = false, disable_inlining::Union{Nothing,AbstractString} = nothing, explain::Union{Nothing,AbstractString} = "off", fail::Union{Nothing,Bool} = false, fail_defined::Union{Nothing,Bool} = false, format::Union{Nothing,AbstractString} = "json", ignore::Union{Nothing,AbstractString} = nothing, _import::Union{Nothing,AbstractString} = nothing, input::Union{Nothing,AbstractString} = nothing, instrument::Union{Nothing,Bool} = false, metrics::Union{Nothing,Bool} = false, package::Union{Nothing,AbstractString} = nothing, partial::Union{Nothing,Bool} = false, pretty_limit::Union{Nothing,AbstractString} = "80", profile::Union{Nothing,Bool} = false, profile_limit::Union{Nothing,AbstractString} = "10", profile_sort::Union{Nothing,AbstractString} = nothing, schema::Union{Nothing,AbstractString} = nothing, shallow_inlining::Union{Nothing,Bool} = false, stdin::Union{Nothing,Bool} = false, stdin_input::Union{Nothing,Bool} = false, strict_builtin_errors::Union{Nothing,Bool} = false, target::Union{Nothing,AbstractString} = "rego", timeout::Union{Nothing,AbstractString} = "0s", unknowns::Union{Nothing,AbstractString} = "[input]", help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) eval`
-
-    if !isnothing(bundle)
-        cmd = `$(cmd) --bundle=$(bundle)`
+function eval(ctx::CommandLine, _args...; bundle::Union{Nothing,AbstractString} = nothing, capabilities::Union{Nothing,AbstractString} = nothing, count::Union{Nothing,AbstractString} = "1", coverage::Union{Nothing,Bool} = false, data::Union{Nothing,AbstractString} = nothing, disable_early_exit::Union{Nothing,Bool} = false, disable_indexing::Union{Nothing,Bool} = false, disable_inlining::Union{Nothing,AbstractString} = nothing, explain::Union{Nothing,AbstractString} = "off", fail::Union{Nothing,Bool} = false, fail_defined::Union{Nothing,Bool} = false, format::Union{Nothing,AbstractString} = "json", ignore::Union{Nothing,AbstractString} = nothing, _import::Union{Nothing,AbstractString} = nothing, input::Union{Nothing,AbstractString} = nothing, instrument::Union{Nothing,Bool} = false, metrics::Union{Nothing,Bool} = false, package::Union{Nothing,AbstractString} = nothing, partial::Union{Nothing,Bool} = false, pretty_limit::Union{Nothing,AbstractString} = "80", profile::Union{Nothing,Bool} = false, profile_limit::Union{Nothing,AbstractString} = "10", profile_sort::Union{Nothing,AbstractString} = nothing, schema::Union{Nothing,AbstractString} = nothing, shallow_inlining::Union{Nothing,Bool} = false, stdin::Union{Nothing,Bool} = false, stdin_input::Union{Nothing,Bool} = false, strict_builtin_errors::Union{Nothing,Bool} = false, target::Union{Nothing,AbstractString} = "rego", timeout::Union{Nothing,AbstractString} = "0s", unknowns::Union{Nothing,AbstractString} = "[input]", help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "eval"]
+        Base.isnothing(bundle) || Base.push!(cmd, "--bundle=$(bundle)")
+        Base.isnothing(capabilities) || Base.push!(cmd, "--capabilities=$(capabilities)")
+        Base.isnothing(count) || Base.push!(cmd, "--count=$(count)")
+        !Base.isnothing(coverage) && coverage && Base.push!(cmd, "--coverage")
+        Base.isnothing(data) || Base.push!(cmd, "--data=$(data)")
+        !Base.isnothing(disable_early_exit) && disable_early_exit && Base.push!(cmd, "--disable-early-exit")
+        !Base.isnothing(disable_indexing) && disable_indexing && Base.push!(cmd, "--disable-indexing")
+        Base.isnothing(disable_inlining) || Base.push!(cmd, "--disable-inlining=$(disable_inlining)")
+        Base.isnothing(explain) || Base.push!(cmd, "--explain=$(explain)")
+        !Base.isnothing(fail) && fail && Base.push!(cmd, "--fail")
+        !Base.isnothing(fail_defined) && fail_defined && Base.push!(cmd, "--fail-defined")
+        Base.isnothing(format) || Base.push!(cmd, "--format=$(format)")
+        Base.isnothing(ignore) || Base.push!(cmd, "--ignore=$(ignore)")
+        Base.isnothing(_import) || Base.push!(cmd, "--import=$(_import)")
+        Base.isnothing(input) || Base.push!(cmd, "--input=$(input)")
+        !Base.isnothing(instrument) && instrument && Base.push!(cmd, "--instrument")
+        !Base.isnothing(metrics) && metrics && Base.push!(cmd, "--metrics")
+        Base.isnothing(package) || Base.push!(cmd, "--package=$(package)")
+        !Base.isnothing(partial) && partial && Base.push!(cmd, "--partial")
+        Base.isnothing(pretty_limit) || Base.push!(cmd, "--pretty-limit=$(pretty_limit)")
+        !Base.isnothing(profile) && profile && Base.push!(cmd, "--profile")
+        Base.isnothing(profile_limit) || Base.push!(cmd, "--profile-limit=$(profile_limit)")
+        Base.isnothing(profile_sort) || Base.push!(cmd, "--profile-sort=$(profile_sort)")
+        Base.isnothing(schema) || Base.push!(cmd, "--schema=$(schema)")
+        !Base.isnothing(shallow_inlining) && shallow_inlining && Base.push!(cmd, "--shallow-inlining")
+        !Base.isnothing(stdin) && stdin && Base.push!(cmd, "--stdin")
+        !Base.isnothing(stdin_input) && stdin_input && Base.push!(cmd, "--stdin-input")
+        !Base.isnothing(strict_builtin_errors) && strict_builtin_errors && Base.push!(cmd, "--strict-builtin-errors")
+        Base.isnothing(target) || Base.push!(cmd, "--target=$(target)")
+        Base.isnothing(timeout) || Base.push!(cmd, "--timeout=$(timeout)")
+        Base.isnothing(unknowns) || Base.push!(cmd, "--unknowns=$(unknowns)")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(capabilities)
-        cmd = `$(cmd) --capabilities=$(capabilities)`
-    end
-
-    if !isnothing(count)
-        cmd = `$(cmd) --count=$(count)`
-    end
-
-    if !isnothing(coverage) && coverage
-        cmd = `$(cmd) --coverage`
-    end
-
-    if !isnothing(data)
-        cmd = `$(cmd) --data=$(data)`
-    end
-
-    if !isnothing(disable_early_exit) && disable_early_exit
-        cmd = `$(cmd) --disable-early-exit`
-    end
-
-    if !isnothing(disable_indexing) && disable_indexing
-        cmd = `$(cmd) --disable-indexing`
-    end
-
-    if !isnothing(disable_inlining)
-        cmd = `$(cmd) --disable-inlining=$(disable_inlining)`
-    end
-
-    if !isnothing(explain)
-        cmd = `$(cmd) --explain=$(explain)`
-    end
-
-    if !isnothing(fail) && fail
-        cmd = `$(cmd) --fail`
-    end
-
-    if !isnothing(fail_defined) && fail_defined
-        cmd = `$(cmd) --fail-defined`
-    end
-
-    if !isnothing(format)
-        cmd = `$(cmd) --format=$(format)`
-    end
-
-    if !isnothing(ignore)
-        cmd = `$(cmd) --ignore=$(ignore)`
-    end
-
-    if !isnothing(_import)
-        cmd = `$(cmd) --import=$(_import)`
-    end
-
-    if !isnothing(input)
-        cmd = `$(cmd) --input=$(input)`
-    end
-
-    if !isnothing(instrument) && instrument
-        cmd = `$(cmd) --instrument`
-    end
-
-    if !isnothing(metrics) && metrics
-        cmd = `$(cmd) --metrics`
-    end
-
-    if !isnothing(package)
-        cmd = `$(cmd) --package=$(package)`
-    end
-
-    if !isnothing(partial) && partial
-        cmd = `$(cmd) --partial`
-    end
-
-    if !isnothing(pretty_limit)
-        cmd = `$(cmd) --pretty-limit=$(pretty_limit)`
-    end
-
-    if !isnothing(profile) && profile
-        cmd = `$(cmd) --profile`
-    end
-
-    if !isnothing(profile_limit)
-        cmd = `$(cmd) --profile-limit=$(profile_limit)`
-    end
-
-    if !isnothing(profile_sort)
-        cmd = `$(cmd) --profile-sort=$(profile_sort)`
-    end
-
-    if !isnothing(schema)
-        cmd = `$(cmd) --schema=$(schema)`
-    end
-
-    if !isnothing(shallow_inlining) && shallow_inlining
-        cmd = `$(cmd) --shallow-inlining`
-    end
-
-    if !isnothing(stdin) && stdin
-        cmd = `$(cmd) --stdin`
-    end
-
-    if !isnothing(stdin_input) && stdin_input
-        cmd = `$(cmd) --stdin-input`
-    end
-
-    if !isnothing(strict_builtin_errors) && strict_builtin_errors
-        cmd = `$(cmd) --strict-builtin-errors`
-    end
-
-    if !isnothing(target)
-        cmd = `$(cmd) --target=$(target)`
-    end
-
-    if !isnothing(timeout)
-        cmd = `$(cmd) --timeout=$(timeout)`
-    end
-
-    if !isnothing(unknowns)
-        cmd = `$(cmd) --unknowns=$(unknowns)`
-    end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ exec
@@ -536,47 +310,21 @@ Options:
 - set_file::AbstractString - Override config values with files on the command line (use commas to specify multiple values)
 - help::Bool - Help for exec
  """
-function exec(parent::Cmd; bundle::Union{Nothing,AbstractString} = nothing, config_file::Union{Nothing,AbstractString} = nothing, decision::Union{Nothing,AbstractString} = nothing, format::Union{Nothing,AbstractString} = "pretty", log_format::Union{Nothing,AbstractString} = "json", log_level::Union{Nothing,AbstractString} = "error", set::Union{Nothing,AbstractString} = nothing, set_file::Union{Nothing,AbstractString} = nothing, help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) exec`
-
-    if !isnothing(bundle)
-        cmd = `$(cmd) --bundle=$(bundle)`
+function exec(ctx::CommandLine, _args...; bundle::Union{Nothing,AbstractString} = nothing, config_file::Union{Nothing,AbstractString} = nothing, decision::Union{Nothing,AbstractString} = nothing, format::Union{Nothing,AbstractString} = "pretty", log_format::Union{Nothing,AbstractString} = "json", log_level::Union{Nothing,AbstractString} = "error", set::Union{Nothing,AbstractString} = nothing, set_file::Union{Nothing,AbstractString} = nothing, help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "exec"]
+        Base.isnothing(bundle) || Base.push!(cmd, "--bundle=$(bundle)")
+        Base.isnothing(config_file) || Base.push!(cmd, "--config-file=$(config_file)")
+        Base.isnothing(decision) || Base.push!(cmd, "--decision=$(decision)")
+        Base.isnothing(format) || Base.push!(cmd, "--format=$(format)")
+        Base.isnothing(log_format) || Base.push!(cmd, "--log-format=$(log_format)")
+        Base.isnothing(log_level) || Base.push!(cmd, "--log-level=$(log_level)")
+        Base.isnothing(set) || Base.push!(cmd, "--set=$(set)")
+        Base.isnothing(set_file) || Base.push!(cmd, "--set-file=$(set_file)")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(config_file)
-        cmd = `$(cmd) --config-file=$(config_file)`
-    end
-
-    if !isnothing(decision)
-        cmd = `$(cmd) --decision=$(decision)`
-    end
-
-    if !isnothing(format)
-        cmd = `$(cmd) --format=$(format)`
-    end
-
-    if !isnothing(log_format)
-        cmd = `$(cmd) --log-format=$(log_format)`
-    end
-
-    if !isnothing(log_level)
-        cmd = `$(cmd) --log-level=$(log_level)`
-    end
-
-    if !isnothing(set)
-        cmd = `$(cmd) --set=$(set)`
-    end
-
-    if !isnothing(set_file)
-        cmd = `$(cmd) --set-file=$(set_file)`
-    end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ fmt
@@ -590,31 +338,17 @@ Options:
 - write::Bool - Overwrite the original source file
 - help::Bool - Help for fmt
  """
-function fmt(parent::Cmd; diff::Union{Nothing,Bool} = false, fail::Union{Nothing,Bool} = false, list::Union{Nothing,Bool} = false, write::Union{Nothing,Bool} = false, help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) fmt`
-
-    if !isnothing(diff) && diff
-        cmd = `$(cmd) --diff`
+function fmt(ctx::CommandLine, _args...; diff::Union{Nothing,Bool} = false, fail::Union{Nothing,Bool} = false, list::Union{Nothing,Bool} = false, write::Union{Nothing,Bool} = false, help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "fmt"]
+        !Base.isnothing(diff) && diff && Base.push!(cmd, "--diff")
+        !Base.isnothing(fail) && fail && Base.push!(cmd, "--fail")
+        !Base.isnothing(list) && list && Base.push!(cmd, "--list")
+        !Base.isnothing(write) && write && Base.push!(cmd, "--write")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(fail) && fail
-        cmd = `$(cmd) --fail`
-    end
-
-    if !isnothing(list) && list
-        cmd = `$(cmd) --list`
-    end
-
-    if !isnothing(write) && write
-        cmd = `$(cmd) --write`
-    end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ inspect
@@ -625,19 +359,14 @@ Options:
 - format::AbstractString - Set output format
 - help::Bool - Help for inspect
  """
-function inspect(parent::Cmd; format::Union{Nothing,AbstractString} = "pretty", help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) inspect`
-
-    if !isnothing(format)
-        cmd = `$(cmd) --format=$(format)`
+function inspect(ctx::CommandLine, _args...; format::Union{Nothing,AbstractString} = "pretty", help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "inspect"]
+        Base.isnothing(format) || Base.push!(cmd, "--format=$(format)")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ parse
@@ -648,19 +377,14 @@ Options:
 - format::AbstractString - Set output format
 - help::Bool - Help for parse
  """
-function parse(parent::Cmd; format::Union{Nothing,AbstractString} = "pretty", help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) parse`
-
-    if !isnothing(format)
-        cmd = `$(cmd) --format=$(format)`
+function parse(ctx::CommandLine, _args...; format::Union{Nothing,AbstractString} = "pretty", help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "parse"]
+        Base.isnothing(format) || Base.push!(cmd, "--format=$(format)")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ run
@@ -703,147 +427,46 @@ Options:
 - watch::Bool - Watch command line files for changes
 - help::Bool - Help for run
  """
-function run(parent::Cmd; addr::Union{Nothing,AbstractString} = "[:8181]", authentication::Union{Nothing,AbstractString} = "off", authorization::Union{Nothing,AbstractString} = "off", bundle::Union{Nothing,Bool} = false, config_file::Union{Nothing,AbstractString} = nothing, diagnostic_addr::Union{Nothing,AbstractString} = nothing, exclude_files_verify::Union{Nothing,AbstractString} = nothing, format::Union{Nothing,AbstractString} = "pretty", h2c::Union{Nothing,Bool} = false, history::Union{Nothing,AbstractString} = nothing, ignore::Union{Nothing,AbstractString} = nothing, log_format::Union{Nothing,AbstractString} = "json", log_level::Union{Nothing,AbstractString} = "info", max_errors::Union{Nothing,AbstractString} = "10", min_tls_version::Union{Nothing,AbstractString} = "1.2", pprof::Union{Nothing,Bool} = false, ready_timeout::Union{Nothing,AbstractString} = "0", scope::Union{Nothing,AbstractString} = nothing, server::Union{Nothing,Bool} = false, set::Union{Nothing,AbstractString} = nothing, set_file::Union{Nothing,AbstractString} = nothing, shutdown_grace_period::Union{Nothing,AbstractString} = "10", shutdown_wait_period::Union{Nothing,AbstractString} = "0", signing_alg::Union{Nothing,AbstractString} = "RS256", skip_verify::Union{Nothing,Bool} = false, skip_version_check::Union{Nothing,Bool} = false, tls_ca_cert_file::Union{Nothing,AbstractString} = nothing, tls_cert_file::Union{Nothing,AbstractString} = nothing, tls_cert_refresh_period::Union{Nothing,AbstractString} = "0s", tls_private_key_file::Union{Nothing,AbstractString} = nothing, verification_key::Union{Nothing,AbstractString} = nothing, verification_key_id::Union{Nothing,AbstractString} = "default", watch::Union{Nothing,Bool} = false, help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) run`
-
-    if !isnothing(addr)
-        cmd = `$(cmd) --addr=$(addr)`
+function run(ctx::CommandLine, _args...; addr::Union{Nothing,AbstractString} = "[:8181]", authentication::Union{Nothing,AbstractString} = "off", authorization::Union{Nothing,AbstractString} = "off", bundle::Union{Nothing,Bool} = false, config_file::Union{Nothing,AbstractString} = nothing, diagnostic_addr::Union{Nothing,AbstractString} = nothing, exclude_files_verify::Union{Nothing,AbstractString} = nothing, format::Union{Nothing,AbstractString} = "pretty", h2c::Union{Nothing,Bool} = false, history::Union{Nothing,AbstractString} = nothing, ignore::Union{Nothing,AbstractString} = nothing, log_format::Union{Nothing,AbstractString} = "json", log_level::Union{Nothing,AbstractString} = "info", max_errors::Union{Nothing,AbstractString} = "10", min_tls_version::Union{Nothing,AbstractString} = "1.2", pprof::Union{Nothing,Bool} = false, ready_timeout::Union{Nothing,AbstractString} = "0", scope::Union{Nothing,AbstractString} = nothing, server::Union{Nothing,Bool} = false, set::Union{Nothing,AbstractString} = nothing, set_file::Union{Nothing,AbstractString} = nothing, shutdown_grace_period::Union{Nothing,AbstractString} = "10", shutdown_wait_period::Union{Nothing,AbstractString} = "0", signing_alg::Union{Nothing,AbstractString} = "RS256", skip_verify::Union{Nothing,Bool} = false, skip_version_check::Union{Nothing,Bool} = false, tls_ca_cert_file::Union{Nothing,AbstractString} = nothing, tls_cert_file::Union{Nothing,AbstractString} = nothing, tls_cert_refresh_period::Union{Nothing,AbstractString} = "0s", tls_private_key_file::Union{Nothing,AbstractString} = nothing, verification_key::Union{Nothing,AbstractString} = nothing, verification_key_id::Union{Nothing,AbstractString} = "default", watch::Union{Nothing,Bool} = false, help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "run"]
+        Base.isnothing(addr) || Base.push!(cmd, "--addr=$(addr)")
+        Base.isnothing(authentication) || Base.push!(cmd, "--authentication=$(authentication)")
+        Base.isnothing(authorization) || Base.push!(cmd, "--authorization=$(authorization)")
+        !Base.isnothing(bundle) && bundle && Base.push!(cmd, "--bundle")
+        Base.isnothing(config_file) || Base.push!(cmd, "--config-file=$(config_file)")
+        Base.isnothing(diagnostic_addr) || Base.push!(cmd, "--diagnostic-addr=$(diagnostic_addr)")
+        Base.isnothing(exclude_files_verify) || Base.push!(cmd, "--exclude-files-verify=$(exclude_files_verify)")
+        Base.isnothing(format) || Base.push!(cmd, "--format=$(format)")
+        !Base.isnothing(h2c) && h2c && Base.push!(cmd, "--h2c")
+        Base.isnothing(history) || Base.push!(cmd, "--history=$(history)")
+        Base.isnothing(ignore) || Base.push!(cmd, "--ignore=$(ignore)")
+        Base.isnothing(log_format) || Base.push!(cmd, "--log-format=$(log_format)")
+        Base.isnothing(log_level) || Base.push!(cmd, "--log-level=$(log_level)")
+        Base.isnothing(max_errors) || Base.push!(cmd, "--max-errors=$(max_errors)")
+        Base.isnothing(min_tls_version) || Base.push!(cmd, "--min-tls-version=$(min_tls_version)")
+        !Base.isnothing(pprof) && pprof && Base.push!(cmd, "--pprof")
+        Base.isnothing(ready_timeout) || Base.push!(cmd, "--ready-timeout=$(ready_timeout)")
+        Base.isnothing(scope) || Base.push!(cmd, "--scope=$(scope)")
+        !Base.isnothing(server) && server && Base.push!(cmd, "--server")
+        Base.isnothing(set) || Base.push!(cmd, "--set=$(set)")
+        Base.isnothing(set_file) || Base.push!(cmd, "--set-file=$(set_file)")
+        Base.isnothing(shutdown_grace_period) || Base.push!(cmd, "--shutdown-grace-period=$(shutdown_grace_period)")
+        Base.isnothing(shutdown_wait_period) || Base.push!(cmd, "--shutdown-wait-period=$(shutdown_wait_period)")
+        Base.isnothing(signing_alg) || Base.push!(cmd, "--signing-alg=$(signing_alg)")
+        !Base.isnothing(skip_verify) && skip_verify && Base.push!(cmd, "--skip-verify")
+        !Base.isnothing(skip_version_check) && skip_version_check && Base.push!(cmd, "--skip-version-check")
+        Base.isnothing(tls_ca_cert_file) || Base.push!(cmd, "--tls-ca-cert-file=$(tls_ca_cert_file)")
+        Base.isnothing(tls_cert_file) || Base.push!(cmd, "--tls-cert-file=$(tls_cert_file)")
+        Base.isnothing(tls_cert_refresh_period) || Base.push!(cmd, "--tls-cert-refresh-period=$(tls_cert_refresh_period)")
+        Base.isnothing(tls_private_key_file) || Base.push!(cmd, "--tls-private-key-file=$(tls_private_key_file)")
+        Base.isnothing(verification_key) || Base.push!(cmd, "--verification-key=$(verification_key)")
+        Base.isnothing(verification_key_id) || Base.push!(cmd, "--verification-key-id=$(verification_key_id)")
+        !Base.isnothing(watch) && watch && Base.push!(cmd, "--watch")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(authentication)
-        cmd = `$(cmd) --authentication=$(authentication)`
-    end
-
-    if !isnothing(authorization)
-        cmd = `$(cmd) --authorization=$(authorization)`
-    end
-
-    if !isnothing(bundle) && bundle
-        cmd = `$(cmd) --bundle`
-    end
-
-    if !isnothing(config_file)
-        cmd = `$(cmd) --config-file=$(config_file)`
-    end
-
-    if !isnothing(diagnostic_addr)
-        cmd = `$(cmd) --diagnostic-addr=$(diagnostic_addr)`
-    end
-
-    if !isnothing(exclude_files_verify)
-        cmd = `$(cmd) --exclude-files-verify=$(exclude_files_verify)`
-    end
-
-    if !isnothing(format)
-        cmd = `$(cmd) --format=$(format)`
-    end
-
-    if !isnothing(h2c) && h2c
-        cmd = `$(cmd) --h2c`
-    end
-
-    if !isnothing(history)
-        cmd = `$(cmd) --history=$(history)`
-    end
-
-    if !isnothing(ignore)
-        cmd = `$(cmd) --ignore=$(ignore)`
-    end
-
-    if !isnothing(log_format)
-        cmd = `$(cmd) --log-format=$(log_format)`
-    end
-
-    if !isnothing(log_level)
-        cmd = `$(cmd) --log-level=$(log_level)`
-    end
-
-    if !isnothing(max_errors)
-        cmd = `$(cmd) --max-errors=$(max_errors)`
-    end
-
-    if !isnothing(min_tls_version)
-        cmd = `$(cmd) --min-tls-version=$(min_tls_version)`
-    end
-
-    if !isnothing(pprof) && pprof
-        cmd = `$(cmd) --pprof`
-    end
-
-    if !isnothing(ready_timeout)
-        cmd = `$(cmd) --ready-timeout=$(ready_timeout)`
-    end
-
-    if !isnothing(scope)
-        cmd = `$(cmd) --scope=$(scope)`
-    end
-
-    if !isnothing(server) && server
-        cmd = `$(cmd) --server`
-    end
-
-    if !isnothing(set)
-        cmd = `$(cmd) --set=$(set)`
-    end
-
-    if !isnothing(set_file)
-        cmd = `$(cmd) --set-file=$(set_file)`
-    end
-
-    if !isnothing(shutdown_grace_period)
-        cmd = `$(cmd) --shutdown-grace-period=$(shutdown_grace_period)`
-    end
-
-    if !isnothing(shutdown_wait_period)
-        cmd = `$(cmd) --shutdown-wait-period=$(shutdown_wait_period)`
-    end
-
-    if !isnothing(signing_alg)
-        cmd = `$(cmd) --signing-alg=$(signing_alg)`
-    end
-
-    if !isnothing(skip_verify) && skip_verify
-        cmd = `$(cmd) --skip-verify`
-    end
-
-    if !isnothing(skip_version_check) && skip_version_check
-        cmd = `$(cmd) --skip-version-check`
-    end
-
-    if !isnothing(tls_ca_cert_file)
-        cmd = `$(cmd) --tls-ca-cert-file=$(tls_ca_cert_file)`
-    end
-
-    if !isnothing(tls_cert_file)
-        cmd = `$(cmd) --tls-cert-file=$(tls_cert_file)`
-    end
-
-    if !isnothing(tls_cert_refresh_period)
-        cmd = `$(cmd) --tls-cert-refresh-period=$(tls_cert_refresh_period)`
-    end
-
-    if !isnothing(tls_private_key_file)
-        cmd = `$(cmd) --tls-private-key-file=$(tls_private_key_file)`
-    end
-
-    if !isnothing(verification_key)
-        cmd = `$(cmd) --verification-key=$(verification_key)`
-    end
-
-    if !isnothing(verification_key_id)
-        cmd = `$(cmd) --verification-key-id=$(verification_key_id)`
-    end
-
-    if !isnothing(watch) && watch
-        cmd = `$(cmd) --watch`
-    end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ sign
@@ -859,39 +482,19 @@ Options:
 - signing_plugin::AbstractString - Name of the plugin to use for signing/verification (see https://openpolicyagent.org/docs/latest/management/#signature-plugin
 - help::Bool - Help for sign
  """
-function sign(parent::Cmd; bundle::Union{Nothing,Bool} = false, claims_file::Union{Nothing,AbstractString} = nothing, output_file_path::Union{Nothing,AbstractString} = ".", signing_alg::Union{Nothing,AbstractString} = "RS256", signing_key::Union{Nothing,AbstractString} = nothing, signing_plugin::Union{Nothing,AbstractString} = nothing, help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) sign`
-
-    if !isnothing(bundle) && bundle
-        cmd = `$(cmd) --bundle`
+function sign(ctx::CommandLine, _args...; bundle::Union{Nothing,Bool} = false, claims_file::Union{Nothing,AbstractString} = nothing, output_file_path::Union{Nothing,AbstractString} = ".", signing_alg::Union{Nothing,AbstractString} = "RS256", signing_key::Union{Nothing,AbstractString} = nothing, signing_plugin::Union{Nothing,AbstractString} = nothing, help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "sign"]
+        !Base.isnothing(bundle) && bundle && Base.push!(cmd, "--bundle")
+        Base.isnothing(claims_file) || Base.push!(cmd, "--claims-file=$(claims_file)")
+        Base.isnothing(output_file_path) || Base.push!(cmd, "--output-file-path=$(output_file_path)")
+        Base.isnothing(signing_alg) || Base.push!(cmd, "--signing-alg=$(signing_alg)")
+        Base.isnothing(signing_key) || Base.push!(cmd, "--signing-key=$(signing_key)")
+        Base.isnothing(signing_plugin) || Base.push!(cmd, "--signing-plugin=$(signing_plugin)")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(claims_file)
-        cmd = `$(cmd) --claims-file=$(claims_file)`
-    end
-
-    if !isnothing(output_file_path)
-        cmd = `$(cmd) --output-file-path=$(output_file_path)`
-    end
-
-    if !isnothing(signing_alg)
-        cmd = `$(cmd) --signing-alg=$(signing_alg)`
-    end
-
-    if !isnothing(signing_key)
-        cmd = `$(cmd) --signing-key=$(signing_key)`
-    end
-
-    if !isnothing(signing_plugin)
-        cmd = `$(cmd) --signing-plugin=$(signing_plugin)`
-    end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ test
@@ -917,79 +520,29 @@ Options:
 - verbose::Bool - Set verbose reporting mode
 - help::Bool - Help for test
  """
-function test(parent::Cmd; bench::Union{Nothing,Bool} = false, benchmem::Union{Nothing,Bool} = false, bundle::Union{Nothing,Bool} = false, count::Union{Nothing,AbstractString} = "1", coverage::Union{Nothing,Bool} = false, exit_zero_on_skipped::Union{Nothing,Bool} = false, explain::Union{Nothing,AbstractString} = "fails", format::Union{Nothing,AbstractString} = "pretty", ignore::Union{Nothing,AbstractString} = nothing, max_errors::Union{Nothing,AbstractString} = "10", run::Union{Nothing,AbstractString} = nothing, show_failure_line::Union{Nothing,Bool} = false, target::Union{Nothing,AbstractString} = "rego", threshold::Union{Nothing,AbstractString} = "0", timeout::Union{Nothing,AbstractString} = "0s", verbose::Union{Nothing,Bool} = false, help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) test`
-
-    if !isnothing(bench) && bench
-        cmd = `$(cmd) --bench`
+function test(ctx::CommandLine, _args...; bench::Union{Nothing,Bool} = false, benchmem::Union{Nothing,Bool} = false, bundle::Union{Nothing,Bool} = false, count::Union{Nothing,AbstractString} = "1", coverage::Union{Nothing,Bool} = false, exit_zero_on_skipped::Union{Nothing,Bool} = false, explain::Union{Nothing,AbstractString} = "fails", format::Union{Nothing,AbstractString} = "pretty", ignore::Union{Nothing,AbstractString} = nothing, max_errors::Union{Nothing,AbstractString} = "10", run::Union{Nothing,AbstractString} = nothing, show_failure_line::Union{Nothing,Bool} = false, target::Union{Nothing,AbstractString} = "rego", threshold::Union{Nothing,AbstractString} = "0", timeout::Union{Nothing,AbstractString} = "0s", verbose::Union{Nothing,Bool} = false, help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "test"]
+        !Base.isnothing(bench) && bench && Base.push!(cmd, "--bench")
+        !Base.isnothing(benchmem) && benchmem && Base.push!(cmd, "--benchmem")
+        !Base.isnothing(bundle) && bundle && Base.push!(cmd, "--bundle")
+        Base.isnothing(count) || Base.push!(cmd, "--count=$(count)")
+        !Base.isnothing(coverage) && coverage && Base.push!(cmd, "--coverage")
+        !Base.isnothing(exit_zero_on_skipped) && exit_zero_on_skipped && Base.push!(cmd, "--exit-zero-on-skipped")
+        Base.isnothing(explain) || Base.push!(cmd, "--explain=$(explain)")
+        Base.isnothing(format) || Base.push!(cmd, "--format=$(format)")
+        Base.isnothing(ignore) || Base.push!(cmd, "--ignore=$(ignore)")
+        Base.isnothing(max_errors) || Base.push!(cmd, "--max-errors=$(max_errors)")
+        Base.isnothing(run) || Base.push!(cmd, "--run=$(run)")
+        !Base.isnothing(show_failure_line) && show_failure_line && Base.push!(cmd, "--show-failure-line")
+        Base.isnothing(target) || Base.push!(cmd, "--target=$(target)")
+        Base.isnothing(threshold) || Base.push!(cmd, "--threshold=$(threshold)")
+        Base.isnothing(timeout) || Base.push!(cmd, "--timeout=$(timeout)")
+        !Base.isnothing(verbose) && verbose && Base.push!(cmd, "--verbose")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(benchmem) && benchmem
-        cmd = `$(cmd) --benchmem`
-    end
-
-    if !isnothing(bundle) && bundle
-        cmd = `$(cmd) --bundle`
-    end
-
-    if !isnothing(count)
-        cmd = `$(cmd) --count=$(count)`
-    end
-
-    if !isnothing(coverage) && coverage
-        cmd = `$(cmd) --coverage`
-    end
-
-    if !isnothing(exit_zero_on_skipped) && exit_zero_on_skipped
-        cmd = `$(cmd) --exit-zero-on-skipped`
-    end
-
-    if !isnothing(explain)
-        cmd = `$(cmd) --explain=$(explain)`
-    end
-
-    if !isnothing(format)
-        cmd = `$(cmd) --format=$(format)`
-    end
-
-    if !isnothing(ignore)
-        cmd = `$(cmd) --ignore=$(ignore)`
-    end
-
-    if !isnothing(max_errors)
-        cmd = `$(cmd) --max-errors=$(max_errors)`
-    end
-
-    if !isnothing(run)
-        cmd = `$(cmd) --run=$(run)`
-    end
-
-    if !isnothing(show_failure_line) && show_failure_line
-        cmd = `$(cmd) --show-failure-line`
-    end
-
-    if !isnothing(target)
-        cmd = `$(cmd) --target=$(target)`
-    end
-
-    if !isnothing(threshold)
-        cmd = `$(cmd) --threshold=$(threshold)`
-    end
-
-    if !isnothing(timeout)
-        cmd = `$(cmd) --timeout=$(timeout)`
-    end
-
-    if !isnothing(verbose) && verbose
-        cmd = `$(cmd) --verbose`
-    end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ version
@@ -1000,19 +553,14 @@ Options:
 - check::Bool - Check for latest OPA release
 - help::Bool - Help for version
  """
-function version(parent::Cmd; check::Union{Nothing,Bool} = false, help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) version`
-
-    if !isnothing(check) && check
-        cmd = `$(cmd) --check`
+function version(ctx::CommandLine, _args...; check::Union{Nothing,Bool} = false, help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "version"]
+        !Base.isnothing(check) && check && Base.push!(cmd, "--check")
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
-    end
-
-    return cmd
 end
 
 """ help
@@ -1022,15 +570,13 @@ Help about any command
 Options:
 - help::Bool - Help for help
  """
-function help(parent::Cmd; help::Union{Nothing,Bool} = false, )
-    parentcmd = opa()
-    cmd = `$(parentcmd) help`
-
-    if !isnothing(help) && help
-        cmd = `$(cmd) --help`
+function help(ctx::CommandLine, _args...; help::Union{Nothing,Bool} = false, )
+    ctx.exec() do cmdstr
+        cmd = [cmdstr, "help"]
+        !Base.isnothing(help) && help && Base.push!(cmd, "--help")
+        Base.append!(cmd, Base.string.(_args))
+        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
     end
-
-    return cmd
 end
 
 end # module CLI

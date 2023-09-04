@@ -6,36 +6,32 @@
 
     SuccessResponse(;
         decision_id=nothing,
+        result=nothing,
         provenance=nothing,
         metrics=nothing,
-        explanation=nothing,
-        result=nothing,
     )
 
     - decision_id::String
-    - provenance::Response200ProvenanceProvenance
-    - metrics::Response200MetricsMetrics
-    - explanation::Vector{Response200ExplanationsExplanationInner}
-    - result::Vector{Response200ResultResultInner}
+    - result::Bool
+    - provenance::Provenance
+    - metrics::Dict{String, Any}
 """
 Base.@kwdef mutable struct SuccessResponse <: OpenAPI.APIModel
     decision_id::Union{Nothing, String} = nothing
-    provenance = nothing # spec type: Union{ Nothing, Response200ProvenanceProvenance }
-    metrics = nothing # spec type: Union{ Nothing, Response200MetricsMetrics }
-    explanation::Union{Nothing, Vector} = nothing # spec type: Union{ Nothing, Vector{Response200ExplanationsExplanationInner} }
-    result::Union{Nothing, Vector} = nothing # spec type: Union{ Nothing, Vector{Response200ResultResultInner} }
+    result::Union{Nothing, Bool} = nothing
+    provenance = nothing # spec type: Union{ Nothing, Provenance }
+    metrics::Union{Nothing, Dict{String, Any}} = nothing
 
-    function SuccessResponse(decision_id, provenance, metrics, explanation, result, )
+    function SuccessResponse(decision_id, result, provenance, metrics, )
         OpenAPI.validate_property(SuccessResponse, Symbol("decision_id"), decision_id)
+        OpenAPI.validate_property(SuccessResponse, Symbol("result"), result)
         OpenAPI.validate_property(SuccessResponse, Symbol("provenance"), provenance)
         OpenAPI.validate_property(SuccessResponse, Symbol("metrics"), metrics)
-        OpenAPI.validate_property(SuccessResponse, Symbol("explanation"), explanation)
-        OpenAPI.validate_property(SuccessResponse, Symbol("result"), result)
-        return new(decision_id, provenance, metrics, explanation, result, )
+        return new(decision_id, result, provenance, metrics, )
     end
 end # type SuccessResponse
 
-const _property_types_SuccessResponse = Dict{Symbol,String}(Symbol("decision_id")=>"String", Symbol("provenance")=>"Response200ProvenanceProvenance", Symbol("metrics")=>"Response200MetricsMetrics", Symbol("explanation")=>"Vector{Response200ExplanationsExplanationInner}", Symbol("result")=>"Vector{Response200ResultResultInner}", )
+const _property_types_SuccessResponse = Dict{Symbol,String}(Symbol("decision_id")=>"String", Symbol("result")=>"Bool", Symbol("provenance")=>"Provenance", Symbol("metrics")=>"Dict{String, Any}", )
 OpenAPI.property_type(::Type{ SuccessResponse }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_SuccessResponse[name]))}
 
 function check_required(o::SuccessResponse)

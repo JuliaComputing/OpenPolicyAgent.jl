@@ -1,4 +1,4 @@
-# Response200ProvenanceProvenance
+# Provenance
 
 
 ## Properties

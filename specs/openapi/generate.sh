@@ -12,7 +12,7 @@ java -jar openapi-generator-cli.jar generate \
     --additional-properties=exportModels=false \
     --additional-properties=exportOperations=false
 
-git rm -rf ${DESTDIR}
+git rm -rf ${DESTDIR}/client
 mkdir ${DESTDIR}
 mv ${SDIR}/client ${DESTDIR}/
-git add ${DESTDIR}
+git add ${DESTDIR}/client

@@ -7,6 +7,9 @@ Edit the specification file and run the generator instead.
 """
 module CLI
 
+const OptsType = Base.Dict{Base.Symbol,Base.Any}
+
+using OpenPolicyAgent_jll
 
 """
 CommandLine execution context.
@@ -15,20 +18,11 @@ CommandLine execution context.
 `cmdopts`: keyword arguments that should be used to further customize the `Cmd` creation
 `pipelineopts`: keyword arguments that should be used to further customize the `pipeline` creation
 """
-struct CommandLine
-    exec::Base.Function
-    cmdopts::Base.Dict{Base.Symbol,Base.Any}
-    pipelineopts::Base.Dict{Base.Symbol,Base.Any}
-end
-
-"""
-The default CommandLine constructor for Open Policy Agent (OPA)
-"""
-function CommandLine()
-    fn = f -> f("opa")
-    cmdopts = Base.Dict{Base.Symbol,Base.Any}()    
-    pipelineopts = Base.Dict{Base.Symbol,Base.Any}()    
-    return CommandLine(fn, cmdopts, pipelineopts)
+Base.@kwdef struct CommandLine
+    exec::Base.Function = OpenPolicyAgent_jll.opa
+    cmdopts::OptsType = OptsType()
+    pipelineopts::OptsType = OptsType()
+    runopts::OptsType = OptsType()
 end
 
 """ opa
@@ -43,7 +37,7 @@ function opa(ctx::CommandLine, _args...; help::Union{Nothing,Bool} = false, )
         cmd = [cmdstr]
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -93,7 +87,7 @@ function bench(ctx::CommandLine, _args...; benchmem::Union{Nothing,Bool} = false
         Base.isnothing(unknowns) || Base.push!(cmd, "--unknowns=$(unknowns)")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -143,7 +137,7 @@ function build(ctx::CommandLine, _args...; bundle::Union{Nothing,Bool} = false, 
         Base.isnothing(verification_key_id) || Base.push!(cmd, "--verification-key-id=$(verification_key_id)")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -173,7 +167,7 @@ function check(ctx::CommandLine, _args...; bundle::Union{Nothing,Bool} = false, 
         !Base.isnothing(strict) && strict && Base.push!(cmd, "--strict")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -189,7 +183,7 @@ function completion(ctx::CommandLine, _args...; help::Union{Nothing,Bool} = fals
         cmd = [cmdstr, "completion"]
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -213,7 +207,7 @@ function deps(ctx::CommandLine, _args...; bundle::Union{Nothing,AbstractString} 
         Base.isnothing(ignore) || Base.push!(cmd, "--ignore=$(ignore)")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -291,7 +285,7 @@ function eval(ctx::CommandLine, _args...; bundle::Union{Nothing,AbstractString} 
         Base.isnothing(unknowns) || Base.push!(cmd, "--unknowns=$(unknowns)")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -323,7 +317,7 @@ function exec(ctx::CommandLine, _args...; bundle::Union{Nothing,AbstractString} 
         Base.isnothing(set_file) || Base.push!(cmd, "--set-file=$(set_file)")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -347,7 +341,7 @@ function fmt(ctx::CommandLine, _args...; diff::Union{Nothing,Bool} = false, fail
         !Base.isnothing(write) && write && Base.push!(cmd, "--write")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -365,7 +359,7 @@ function inspect(ctx::CommandLine, _args...; format::Union{Nothing,AbstractStrin
         Base.isnothing(format) || Base.push!(cmd, "--format=$(format)")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -383,7 +377,7 @@ function parse(ctx::CommandLine, _args...; format::Union{Nothing,AbstractString}
         Base.isnothing(format) || Base.push!(cmd, "--format=$(format)")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -465,7 +459,7 @@ function run(ctx::CommandLine, _args...; addr::Union{Nothing,AbstractString} = "
         !Base.isnothing(watch) && watch && Base.push!(cmd, "--watch")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -493,7 +487,7 @@ function sign(ctx::CommandLine, _args...; bundle::Union{Nothing,Bool} = false, c
         Base.isnothing(signing_plugin) || Base.push!(cmd, "--signing-plugin=$(signing_plugin)")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -541,7 +535,7 @@ function test(ctx::CommandLine, _args...; bench::Union{Nothing,Bool} = false, be
         !Base.isnothing(verbose) && verbose && Base.push!(cmd, "--verbose")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -559,7 +553,7 @@ function version(ctx::CommandLine, _args...; check::Union{Nothing,Bool} = false,
         !Base.isnothing(check) && check && Base.push!(cmd, "--check")
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 
@@ -575,7 +569,7 @@ function help(ctx::CommandLine, _args...; help::Union{Nothing,Bool} = false, )
         cmd = [cmdstr, "help"]
         !Base.isnothing(help) && help && Base.push!(cmd, "--help")
         Base.append!(cmd, Base.string.(_args))
-        Base.run(Base.pipeline(Base.Cmd(cmd; ctx.cmdopts...); ctx.pipelineopts...))
+        Base.run(Base.pipeline(Base.Cmd(Cmd(cmd); ctx.cmdopts...); ctx.pipelineopts...); ctx.runopts...)
     end
 end
 

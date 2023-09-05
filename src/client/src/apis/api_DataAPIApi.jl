@@ -71,7 +71,7 @@ function _oacinternal_get_document_with_path(_api::DataAPIApi, path::String, req
     OpenAPI.Clients.set_param(_ctx.query, "metrics", metrics)  # type Bool
     OpenAPI.Clients.set_param(_ctx.query, "instrument", instrument)  # type Bool
     OpenAPI.Clients.set_header_accept(_ctx, ["application/json", ])
-    OpenAPI.Clients.set_header_content_type(_ctx, (_mediaType === nothing) ? ["application/x-yaml", ] : [_mediaType])
+    OpenAPI.Clients.set_header_content_type(_ctx, (_mediaType === nothing) ? ["application/json", ] : [_mediaType])
     return _ctx
 end
 

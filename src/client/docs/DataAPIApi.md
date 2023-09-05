@@ -85,7 +85,7 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: application/x-yaml
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)

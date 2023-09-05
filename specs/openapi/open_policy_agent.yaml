@@ -86,7 +86,7 @@ paths:
         description: The input document (in JSON format)
         required: true
         content:
-          application/x-yaml:
+          application/json:
             schema:
               $ref: '#/components/schemas/inputSchema'
       tags:

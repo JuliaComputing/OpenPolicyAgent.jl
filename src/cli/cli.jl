@@ -2,7 +2,7 @@
 CLI for opa.
 Open Policy Agent (OPA)
 
-Generated via @__MODULE__. Do not edit directly.
+Generated via FigCLIGen. Do not edit directly.
 Edit the specification file and run the generator instead.
 """
 module CLI

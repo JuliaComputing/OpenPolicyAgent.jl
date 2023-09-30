@@ -1,9 +1,9 @@
-# Needs review by SMEs
-# 'pretty' parameter setting does not appear to affect anything. Omitting, setting to true or false all has the same result - always human-readable
+# Adapted from https://github.com/open-policy-agent/contrib/blob/b7c624b77f60eaa30613d45b704532e0de6b414f/open_api/openapi.yaml
+# with significant modifications
 openapi: 3.0.3
-# servers:
-#  - url: 'http://localhost:8181'
-#    description: Docker
+servers:
+ - url: 'http://localhost:8181'
+   description: Local server on default port
 tags:
   - name: Policy API
     description: 'Allows you to add, remove and modify policy modules. *Policy module identifiers are only used for management purposes. They are not used outside the Policy API.*'
@@ -15,6 +15,10 @@ tags:
     description: Posting partial queries to OPA
   - name: Health API
     description: Executes a simple built-in policy query to verify that the server is operational
+  - name: Config API
+    description: 'Returns OPA’s active configuration. When the discovery feature is enabled, this API can be used to fetch the discovered configuration in the last evaluated discovery bundle.'
+  - name: Status API
+    description: 'Returns the status of the OPA server. This includes the status of the bundles and plugins.'
 info:
   title: Open Policy Agent (OPA) REST API
   description: |-
@@ -24,7 +28,7 @@ info:
 
     - **[View the specification in *Redoc* (default)](index.html)**
     - **[View the specification in *Swagger UI*](swagger-ui.html)**
-  version: 0.28.0
+  version: 0.55.0
   x-logo:
     url: 'https://github.com/open-policy-agent/opa/blob/master/docs/website/static/img/logos/opa-horizontal-color.png?raw=true'
     backgroundColor: '#FFFFFF'
@@ -39,6 +43,123 @@ externalDocs:
   description: OPA documentation
   url: 'https://www.openpolicyagent.org/docs/latest/'
 paths:
+  '/':
+    post:
+      summary: Execute a simple query.
+      operationId: simpleQuery
+      description: |-
+        OPA serves POST requests without a URL path by querying for the document at path /data/system/main.
+        The content of that document defines the response entirely.
+      tags:
+        - Query API
+      parameters:
+        - $ref: '#/components/parameters/prettyParameter'
+      requestBody:
+        description: The input document (in JSON format)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/inputSchema'
+      responses:
+        '200':
+          $ref: '#/components/responses/simpleQuerySuccessResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
+  '/v1/query':
+    get:
+      summary: Execute an ad-hoc query and return bindings for variables found in the query.
+      operationId: queryGet
+      description: |-
+        For queries that have large JSON values it is recommended to use the POST method with the query included as the POST body
+      tags:
+        - Query API
+      parameters:
+        - $ref: '#/components/parameters/prettyParameter'
+        - $ref: '#/components/parameters/explainParameter'
+        - $ref: '#/components/parameters/metricsParameter'
+        - $ref: '#/components/parameters/queryParameterGet'
+      responses:
+        '200':
+          $ref: '#/components/responses/getDocumentSuccessResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
+        '501':
+          $ref: '#/components/responses/streamingNotImplementedErrorResponse'
+    post:
+      summary: Execute an ad-hoc query and return bindings for variables found in the query.
+      operationId: queryPost
+      description: |-
+        Query included as the POST body. E.g.:
+        ```
+        {
+          "query": "input.servers[i].ports[_] = \"p2\"; input.servers[i].name = name",
+          "input": {
+            "servers": [ ... ],
+          }
+        }
+        ```
+      tags:
+        - Query API
+      parameters:
+        - $ref: '#/components/parameters/prettyParameter'
+        - $ref: '#/components/parameters/explainParameter'
+        - $ref: '#/components/parameters/metricsParameter'
+      requestBody:
+        description: The query and input document (in JSON format)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/queryParameterPost'
+      responses:
+        '200':
+          $ref: '#/components/responses/getDocumentSuccessResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
+        '501':
+          $ref: '#/components/responses/streamingNotImplementedErrorResponse'
+  '/v0/data/{path}':
+    parameters:
+      - $ref: '#/components/parameters/pathParameter'
+    post:
+      summary: Get a document from a webhook.
+      description: |-
+        Use this API if you are enforcing policy decisions via webhooks that have pre-defined request/response formats.
+        Note, the API path prefix is /v0 instead of /v1.
+        The request message body defines the content of the The input Document. The request message body may be empty.
+        The path separator is used to access values inside object and array documents.
+      tags:
+        - Data API
+      operationId: getDocumentFromWebhook
+      parameters:
+        - $ref: '#/components/parameters/prettyParameter'
+      requestBody:
+        description: The input document (in JSON format)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/inputSchema'
+      responses:
+        '200':
+          $ref: '#/components/responses/getDocumentSuccessResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
   '/v1/data/{path}':
     parameters:
       - $ref: '#/components/parameters/pathParameter'
@@ -47,9 +168,15 @@ paths:
       description: |-
         This API endpoint returns the document specified by `path`.
 
+        The path separator is used to access values inside object and array documents.
+        If the path indexes into an array, the server will attempt to convert the array index to an integer.
+        If the path element cannot be converted to an integer, the server will respond with 404.
+
         The server will return a *bad request* (400) response if either:
         - The query requires an input document and you do not provide it
         - You provide the input document but the query has already defined it.
+      tags:
+        - Data API
       operationId: getDocument
       parameters:
         - $ref: '#/components/parameters/inputParameter'
@@ -58,23 +185,28 @@ paths:
         - $ref: '#/components/parameters/explainParameter'
         - $ref: '#/components/parameters/metricsParameter'
         - $ref: '#/components/parameters/instrumentParameter'
-      tags:
-        - Data API
+        - $ref: '#/components/parameters/strictBuiltInErrorParameter'
       responses:
         '200':
-          $ref: '#/components/responses/successResponse'
+          $ref: '#/components/responses/getDocumentSuccessResponse'
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '500':
           $ref: '#/components/responses/serverErrorResponse'
     post:
-      summary: Get a document (with input)
+      summary: Get a document that required an input
       description: |-
+        The request body contains an object that specifies a value for the input document.
+
+        The path separator is used to access values inside object and array documents.
+        If the path indexes into an array, the server will attempt to convert the array index to an integer.
+        If the path element cannot be converted to an integer, the server will respond with 404.
+
         The server will return a *bad request* (400) response if either:
         - The query requires an input document and you do not provide it
         - You provided an input document but the query has already defined it.
-
-        If `path` indexes into an array, the server will attempt to convert the array index to an integer. If the path element cannot be converted to an integer, a *not found* response (404) will be returned.
+      tags:
+        - Data API
       operationId: getDocumentWithPath
       parameters:
         - $ref: '#/components/parameters/prettyParameter'
@@ -82,6 +214,7 @@ paths:
         - $ref: '#/components/parameters/explainParameter'
         - $ref: '#/components/parameters/metricsParameter'
         - $ref: '#/components/parameters/instrumentParameter'
+        - $ref: '#/components/parameters/strictBuiltInErrorParameter'
       requestBody:
         description: The input document (in JSON format)
         required: true
@@ -89,13 +222,356 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/inputSchema'
-      tags:
-        - Data API
       responses:
         '200':
-          $ref: '#/components/responses/successResponse'
+          $ref: '#/components/responses/getDocumentSuccessResponse'
         '400':
           $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
+    put:
+      summary: Create or overwrite a document.
+      operationId: createDocument
+      description: |-
+        If the path does not refer to an existing document, the server will attempt to create all of the necessary containing documents.
+        This behavior is similar in principle to the Unix command mkdir -p.
+        The server will respect the If-None-Match header if it is set to *.
+        In this case, the server will not overwrite an existing document located at the path.
+      tags:
+        - Data API
+      parameters:
+        - $ref: '#/components/parameters/metricsParameter'
+      requestBody:
+        description: The document to create or overwrite (in JSON format)
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+              example: {"example": {"flag": true}}
+      responses:
+        '204':
+          $ref: '#/components/responses/noContentResponse'
+        '304':
+          $ref: '#/components/responses/noContentResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          $ref: '#/components/responses/writeConflictResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
+    patch:
+      summary: Patch a document
+      operationId: patchDocument
+      description: |-
+        Update a document. The patch operation is specified in the request body.
+      tags:
+        - Data API
+      requestBody:
+        description: The patch operation in application/json-patch+json format
+        required: true
+        content:
+          application/json-patch+json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  op:
+                    type: string
+                    enum:
+                      - add
+                      - remove
+                      - replace
+                      - move
+                      - copy
+                      - test
+                  path:
+                    type: string
+                  from:
+                    type: string
+                  value:
+                    type: object
+                    additionalProperties: {}
+      responses:
+        '204':
+          $ref: '#/components/responses/noContentResponse'
+        '304':
+          $ref: '#/components/responses/noContentResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          $ref: '#/components/responses/writeConflictResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
+    delete:
+      summary: Delete a document
+      operationId: deleteDocument
+      description: |-
+        The server processes the DELETE method as if the client had sent a PATCH request containing a single remove operation.
+      tags:
+        - Data API
+      parameters:
+        - $ref: '#/components/parameters/metricsParameter'
+      responses:
+        '204':
+          $ref: '#/components/responses/noContentResponse'
+        '304':
+          $ref: '#/components/responses/noContentResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          $ref: '#/components/responses/writeConflictResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
+  /v1/policies:
+    get:
+      summary: List policies
+      description: This API endpoint responds with a list of all policy modules on the server (result response)
+      tags:
+        - Policy API
+      operationId: getPolicies
+      parameters:
+        - $ref: '#/components/parameters/prettyParameter'
+      responses:
+        '200':
+          $ref: '#/components/responses/listPoliciesSuccessResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
+      x-code-samples:
+        - lang: JavaScript
+          source: |
+            fetch("http://localhost:8181/v1/policies", {
+              "method": "GET",
+              "headers": {}
+              })
+              .then(response => {
+                 console.log(response);
+                })
+              .catch(err => {
+                console.error(err);
+                });
+        - lang: Python
+          source: |
+            import http.client
+            conn = http.client.HTTPConnection("localhost:8181")
+            conn.request("GET", "/v1/policies")
+            res = conn.getresponse()
+            data = res.read()
+            print(data.decode("utf-8"))
+        - lang: Java
+          source: |
+            AsyncHttpClient client = new DefaultAsyncHttpClient();
+            client.prepare("GET", "http://localhost:8181/v1/policies")
+              .execute()
+              .toCompletableFuture()
+              .thenAccept(System.out::println)
+              .join();
+            client.close();
+        - lang: Go
+          source: |
+            package main
+            import (
+              "fmt"
+              "net/http"
+              "io/ioutil"
+              )
+            func main() {
+              url := "http://localhost:8181/v1/policies"
+              req, _ := http.NewRequest("GET", url, nil)
+              res, _ := http.DefaultClient.Do(req)
+              defer res.Body.Close()
+              body, _ := ioutil.ReadAll(res.Body)
+              fmt.Println(res)
+              fmt.Println(string(body))
+            }
+  '/v1/policies/{id}':
+    parameters:
+      - $ref: '#/components/parameters/idParameter'
+    get:
+      summary: Get a policy module
+      description: This API endpoint returns the details of the specified policy module (`{id}`)
+      tags:
+        - Policy API
+      operationId: getPolicyModule
+      parameters:
+        - $ref: '#/components/parameters/prettyParameter'
+      responses:
+        '200':
+          $ref: '#/components/responses/getPolicyModuleSuccessResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
+    put:
+      summary: Create or update a policy module
+      description: |-
+        - If the policy module does not exist, it is created.
+        - If the policy module already exists, it is replaced.
+
+        If the policy module isn't correctly defined, a *bad request* (400) response is returned.
+
+        ### Example policy module
+        ```yaml
+        package opa.examples
+
+        import data.servers
+        import data.networks
+        import data.ports
+
+        public_servers[server] {
+          some k, m
+          	server := servers[_]
+          	server.ports[_] == ports[k].id
+          	ports[k].networks[_] == networks[m].id
+          	networks[m].public == true
+        }
+        ```
+      operationId: putPolicyModule
+      parameters:
+        - $ref: '#/components/parameters/prettyParameter'
+        - $ref: '#/components/parameters/metricsParameter'
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: |-
+                package opa.examples
+
+                import data.servers
+                import data.networks
+                import data.ports
+
+                public_servers[server] {
+                  some k, m
+                  	server := servers[_]
+                  	server.ports[_] == ports[k].id
+                  	ports[k].networks[_] == networks[m].id
+                  	networks[m].public == true
+                }
+      tags:
+        - Policy API
+      responses:
+        '200':
+          $ref: '#/components/responses/noContentResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
+    delete:
+      summary: Delete a policy module
+      description: This API endpoint removes an existing policy module from the server
+      tags:
+        - Policy API
+      operationId: deletePolicyModule
+      parameters:
+        - $ref: '#/components/parameters/prettyParameter'
+        - $ref: '#/components/parameters/metricsParameter'
+      responses:
+        '200':
+          $ref: '#/components/responses/noContentResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'          
+  '/v1/compile':
+    post:
+      summary: Compile
+      description: |-
+        This API endpoint allows you to partially evaluate Rego queries and obtain a simplified version of the policy. The example below assumes that OPA has been given the following policy (use `PUT /v1/policies/{path}`):
+
+        ```yaml
+        package example
+        allow {
+          input.subject.clearance_level >= data.reports[_].clearance_level
+        }
+        ```
+        Compile API **request body** so that it contain the following fields:
+
+        | Field | Type | Required | Description |
+        | --- | --- | --- | --- |
+        | `query` | `string` | Yes | The query to partially evaluate and compile. |
+        | `input` | `any` | No | The input document to use during partial evaluation (default: undefined). |
+        | `unknowns` | `array[string]` | No | The terms to treat as unknown during partial evaluation (default: `["input"]`]). |
+
+        For example:
+
+        ```json
+        {
+          "query": "data.example.allow == true",
+          "input": {
+            "subject": {
+              "clearance_level": 4
+            }
+          },
+          "unknowns": [
+            "data.reports"
+            ]
+        }
+        ```
+        ### Partial evaluation
+        In some cases, the result of partial valuation is a conclusive, unconditional answer. See [the guidance](https://www.openpolicyagent.org/docs/latest/rest-api/#unconditional-results-from-partial-evaluation) for details.
+      tags:
+        - Compile API
+      externalDocs:
+        description: Partial evaluation article
+        url: 'https://blog.openpolicyagent.org/partial-evaluation-162750eaf422'
+      operationId: postCompile
+      parameters:
+        - $ref: '#/components/parameters/prettyParameter'
+        - $ref: '#/components/parameters/explainParameter'
+        - $ref: '#/components/parameters/metricsParameter'
+        - $ref: '#/components/parameters/instrumentParameter'
+      requestBody:
+        description: The query (in JSON format)
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/partialQuerySchema'
+      responses:
+        '200':
+          $ref: '#/components/responses/compileSuccessResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
+  '/v1/config':
+    get:
+      summary: Get configurations
+      description: |-
+        The /config API endpoint returns OPA’s active configuration.
+        When the discovery feature is enabled, this API can be used to fetch the discovered configuration in the last evaluated discovery bundle.
+        The credentials field in the Services configuration and the private_key and key fields in the Keys configuration will be omitted from the API response.
+      operationId: getConfig
+      parameters:
+        - $ref: '#/components/parameters/prettyParameter'
+      tags:
+        - Config API
+      responses:
+        '200':
+          $ref: '#/components/responses/getConfigSuccessResponse'
+        '500':
+          $ref: '#/components/responses/serverErrorResponse'
+  /v1/status:
+    get:
+      summary: Get status
+      description: |-
+        The /status API endpoint returns the status of the OPA server.
+        This includes the status of the bundles and plugins.
+      operationId: getStatus
+      parameters:
+        - $ref: '#/components/parameters/prettyParameter'
+      tags:
+        - Status API
+      responses:
+        '200':
+          $ref: '#/components/responses/getStatusResponse'
         '500':
           $ref: '#/components/responses/serverErrorResponse'
   /health:
@@ -115,15 +591,15 @@ paths:
         Use the **status** endpoint (in the (management API)[management.html]) for more fine-grained bundle status monitoring.
 
         ---
+      tags:
+        - Health API
       externalDocs:
-        description: Bundles
-        url: 'https://www.openpolicyagent.org/docs/latest/management/#bundles'
+        description: Health API
+        url: 'https://www.openpolicyagent.org/docs/latest/rest-api/#health-api'
       operationId: getHealth
       parameters:
         - $ref: '#/components/parameters/bundlesParameter'
         - $ref: '#/components/parameters/pluginsParameter'
-      tags:
-        - Health API
       responses:
         '200':
           description: OPA service is healthy
@@ -131,6 +607,21 @@ paths:
           description: OPA service is not healthy
 components:
   parameters:
+    idParameter:
+      name: id
+      description: The name of a policy module
+      example: example1
+      in: path
+      required: true
+      schema:
+        type: string
+    queryParameterGet:
+      name: q
+      description: The ad-hoc query to execute. OPA will parse, compile, and execute the query represented by the parameter value. The value MUST be URL encoded. Only used in GET method. For POST method the query is sent as part of the request body and this parameter is not used.
+      in: query
+      required: true
+      schema:
+        type: string
     prettyParameter:
       name: pretty
       description: 'If true, response will be in a human-readable format.'
@@ -172,12 +663,25 @@ components:
       required: false
       schema:
         type: string
+        enum:
+          - full
+          - notes
+          - fails
+          - debug
     instrumentParameter:
       name: instrument
       description: |-
         If true, response will return additional performance metrics in addition to the result and the standard metrics.
 
         **Caution:** This can add significant overhead to query evaluation. The recommendation is to only use this parameter if you are debugging a performance problem.
+      example: false
+      in: query
+      required: false
+      schema:
+        type: boolean
+    strictBuiltInErrorParameter:
+      name: strict-builtin-errors
+      description: Treat built-in function call errors as fatal and return an error immediately.
       example: false
       in: query
       required: false
@@ -212,25 +716,153 @@ components:
       schema:
         type: boolean
   responses:
-    successResponse:
+    listPoliciesSuccessResponse:
       description: Success
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/successResponse'
+            $ref: '#/components/schemas/policyList'
+    getPolicyModuleSuccessResponse:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/policy'
+    getDocumentSuccessResponse:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/getDocumentSuccessResponse'
+    simpleQuerySuccessResponse:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/simpleQuerySuccessResponse'
+    compileSuccessResponse:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/compileSuccessResponse'
+    noContentResponse:
+      description: No content
     badRequestResponse:
       description: Bad request
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/response400'
+            $ref: '#/components/schemas/serverErrorResponse'
+    notFoundResponse:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/serverErrorResponse'
+    writeConflictResponse:
+      description: Write conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/serverErrorResponse'
     serverErrorResponse:
       description: Server error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/response400'
+            $ref: '#/components/schemas/serverErrorResponse'
+    streamingNotImplementedErrorResponse:
+      description: Streaming not implemented
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/serverErrorResponse'
+    getConfigSuccessResponse:
+      description: Represents the active configuration
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/activeConfiguration'
+    getStatusResponse:
+      description: Represents the status of the OPA server
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/status'
   schemas:
+    status:
+      type: object
+      additionalProperties: {}
+    activeConfiguration:
+      type: object
+      additionalProperties: {}
+    queryParameterPost:
+      type: object
+      properties:
+        query:
+          description: The ad-hoc query to execute. OPA will parse, compile, and execute the query represented by the parameter value. The value MUST be URL encoded. Only used in GET method. For POST method the query is sent as part of the request body and this parameter is not used.
+          type: string
+        input:
+          description: The input document (in JSON format)
+          type: object
+          additionalProperties: {}
+    errorLocation:
+      type: object
+      properties:
+        file:
+          description: The policy module name that generated the error
+          type: string
+          example: example1
+        row:
+          description: The line number in the policy module where the error occurred
+          type: number
+          example: 3
+        col:
+          description: The column in the policy module where the error occurred
+          type: number
+          example: 1
+    errorDetail:
+      type: object
+      properties:
+        code:
+          description: The error code name
+          type: string
+          minLength: 1
+          example: rego_unsafe_var_error
+        message:
+          description: A general description of the error
+          type: string
+          minLength: 1
+          example: var x is unsafe
+        location:
+          description: Where the error occurred
+          $ref: '#/components/schemas/errorLocation'
+      required:
+        - code
+        - message
+    serverErrorResponse:
+      type: object
+      properties:
+        code:
+          description: The error code name
+          example: internal_error
+          type: string
+          minLength: 1
+        message:
+          description: A general description of the error
+          type: string
+          minLength: 1
+          example: error(s) occurred while compiling module(s)
+        errors:
+          description: 'Errors that may have been generated during the parse, compile, or installation of a policy module'
+          type: array
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/errorDetail'
+      required:
+        - code
+        - message
     provenance:
       type: object
       properties:
@@ -252,54 +884,6 @@ components:
           type: object
           description: A set of key-value pairs describing each bundle activated on the server.
           additionalProperties: {}
-    response400:
-      type: object
-      properties:
-        code:
-          description: The error code name
-          example: invalid_parameter
-          type: string
-          minLength: 1
-        message:
-          description: The description of the error
-          type: string
-          minLength: 1
-          example: error(s) occurred while compiling module(s)
-        errors:
-          description: 'Errors that may have been generated during the parse, compile, or installation of a policy module'
-          type: array
-          uniqueItems: true
-          items:
-            properties:
-              code:
-                description: The error code name
-                type: string
-                minLength: 1
-                example: rego_unsafe_var_error
-              message:
-                description: A general description of the error
-                type: string
-                minLength: 1
-                example: var x is unsafe
-              location:
-                description: Where the error occurred
-                type: object
-                properties:
-                  file:
-                    description: The policy module name that generated the error
-                    type: string
-                    example: example1
-                  row:
-                    description: The line number in the policy module where the error occurred
-                    type: number
-                    example: 3
-                  col:
-                    description: The column in the policy module where the error occurred
-                    type: number
-                    example: 1
-      required:
-        - code
-        - message
     inputSchema:
       type: object
       example: |-
@@ -320,17 +904,157 @@ components:
                }
              }
            }
-    successResponse:
+    getDocumentSuccessResponse:
       type: object
       properties:
+        result:
+          description: The result of the query. Can be whatever type the query returns - bool, number, string, array, json.
+          type: object
         decision_id:
           type: string
+        metrics:
+          type: object
+          additionalProperties: {}
+    simpleQuerySuccessResponse:
+      type: object
+      additionalProperties: {}
+    compileSuccessResponse:
+      type: object
+      properties:
         result:
-          type: boolean
+          type: object
         provenance:
           $ref: '#/components/schemas/provenance'
         metrics:
           type: object
           additionalProperties: {}
+    policyList:
+      type: array
+      items:
+        $ref: '#/components/schemas/policy'
+    policy:
+      type: object
+      description: A policy module
+      properties:
+        id:
+          description: The name of a policy module
+          example: example2
+          type: string
+          minLength: 1
+        raw:
+          description: 'A string representation of the full Rego policy'
+          type: string
+          example: 'package opa.examples\n\nimport data.servers\n\nviolations[server] {\n\tserver = servers[_]\n\tserver.protocols[_] = \"http\"\n\tpublic_servers[server]\n}\n'
+          minLength: 1
+        ast:
+          description: The types for declarations and runtime objects passed to your implementation. This consists of an abstract syntax tree (AST) of policy modules, package and import declarations, rules, expressions, and terms.
+          externalDocs:
+            description: AST
+            url: 'https://godoc.org/github.com/open-policy-agent/opa/ast'
+          type: object
+          properties:
+            package:
+              type: object
+              properties:
+                path:
+                  description: 'The path to the package'
+                  type: array
+                  items:
+                    properties:
+                      type:
+                        description: The type of the path operation
+                        example: import
+                        type: string
+                        enum:
+                          - import
+                          - package
+                      value:
+                        description: The path variable
+                        example: data.opa.example
+                        type: string
+            rules:
+              description: 'When OPA evaluates a rule, it generates the content of a [virtual documents](https://www.openpolicyagent.org/docs/latest/philosophy/#the-opa-document-model)'
+              externalDocs:
+                description: Rules
+                url: 'https://www.openpolicyagent.org/docs/latest/policy-language/#rules'
+              type: array
+              uniqueItems: true
+              items:
+                properties:
+                  head:
+                    type: object
+                    properties:
+                      name:
+                        description: The head of the rule
+                        example: violations
+                        type: string
+                      key:
+                        description: The type/value pairing for this rule's head
+                        type: object
+                        properties:
+                          type:
+                            description: The type of the head
+                            example: var
+                            type: string
+                          value:
+                            description: The value of the head
+                            example: $0
+                            type: string
+                  body:
+                    description: A list of the terms in this rule
+                    type: array
+                    items:
+                      properties:
+                        index:
+                          description: The location of this term in the list (starts at 0)
+                          example: 1
+                          type: number
+                        terms:
+                          description: The type/value pairing for this term
+                          type: array
+                          items:
+                            properties:
+                              type:
+                                description: The type of the term variable
+                                example: var
+                                type: string
+                              value:
+                                description: The list of types and values for the term variable
+                                type: array
+                                items:
+                                  properties:
+                                    type:
+                                      type: string
+                                    value:
+                                      type: string
+    partialQuerySchema:
+      type: object
+      example: |-
+        {
+          "query": "data.example.allow == true",
+          "input": {
+            "subject": {
+              "clearance_level": 4
+            }
+          },
+          "unknowns": [
+            "data.reports"
+            ]
+        }
+      properties:
+        query:
+          description: The query to partially evaluate and compile.
+          type: string
+        input:
+          description: The input document to use during partial evaluation
+          type: object
+        options:
+          description: Additional options to use during partial evaluation. Only disableInlining option is supported.
+          type: object
+        unknowns:
+          description: The terms to treat as unknown during partial evaluation.
+          type: array
+          items:
+            type: string
   securitySchemes: {}
 security: []

@@ -1,11 +1,10 @@
-# SuccessResponse
+# CompileSuccessResponse
 
 
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**decision_id** | **String** |  | [optional] [default to nothing]
-**result** | **Bool** |  | [optional] [default to nothing]
+**result** | **Any** |  | [optional] [default to nothing]
 **provenance** | [***Provenance**](Provenance.md) |  | [optional] [default to nothing]
 **metrics** | **Dict{String, Any}** |  | [optional] [default to nothing]
 

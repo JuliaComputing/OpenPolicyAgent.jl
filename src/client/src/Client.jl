@@ -7,11 +7,16 @@ using Dates, TimeZones
 using OpenAPI
 using OpenAPI.Clients
 
-const API_VERSION = "0.28.0"
+const API_VERSION = "0.55.0"
 
 include("modelincludes.jl")
 
+include("apis/api_CompileAPIApi.jl")
+include("apis/api_ConfigAPIApi.jl")
 include("apis/api_DataAPIApi.jl")
 include("apis/api_HealthAPIApi.jl")
+include("apis/api_PolicyAPIApi.jl")
+include("apis/api_QueryAPIApi.jl")
+include("apis/api_StatusAPIApi.jl")
 
 end # module Client

@@ -9,15 +9,90 @@ end
 The default API base path for APIs in `DataAPIApi`.
 This can be used to construct the `OpenAPI.Clients.Client` instance.
 """
-basepath(::Type{ DataAPIApi }) = "http://localhost"
+basepath(::Type{ DataAPIApi }) = "http://localhost:8181"
 
-const _returntypes_get_document_DataAPIApi = Dict{Regex,Type}(
-    Regex("^" * replace("200", "x"=>".") * "\$") => SuccessResponse,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
+const _returntypes_create_document_DataAPIApi = Dict{Regex,Type}(
+    Regex("^" * replace("204", "x"=>".") * "\$") => Nothing,
+    Regex("^" * replace("304", "x"=>".") * "\$") => Nothing,
+    Regex("^" * replace("400", "x"=>".") * "\$") => ServerErrorResponse,
+    Regex("^" * replace("404", "x"=>".") * "\$") => ServerErrorResponse,
+    Regex("^" * replace("500", "x"=>".") * "\$") => ServerErrorResponse,
 )
 
-function _oacinternal_get_document(_api::DataAPIApi, path::String; input=nothing, pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, _mediaType=nothing)
+function _oacinternal_create_document(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; metrics=nothing, _mediaType=nothing)
+    _ctx = OpenAPI.Clients.Ctx(_api.client, "PUT", _returntypes_create_document_DataAPIApi, "/v1/data/{path}", [], request_body)
+    OpenAPI.Clients.set_param(_ctx.path, "path", path)  # type String
+    OpenAPI.Clients.set_param(_ctx.query, "metrics", metrics)  # type Bool
+    OpenAPI.Clients.set_header_accept(_ctx, ["application/json", ])
+    OpenAPI.Clients.set_header_content_type(_ctx, (_mediaType === nothing) ? ["application/json", ] : [_mediaType])
+    return _ctx
+end
+
+@doc raw"""Create or overwrite a document.
+
+If the path does not refer to an existing document, the server will attempt to create all of the necessary containing documents. This behavior is similar in principle to the Unix command mkdir -p. The server will respect the If-None-Match header if it is set to *. In this case, the server will not overwrite an existing document located at the path.
+
+Params:
+- path::String (required)
+- request_body::Dict{String, Any} (required)
+- metrics::Bool
+
+Return: Nothing, OpenAPI.Clients.ApiResponse
+"""
+function create_document(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; metrics=nothing, _mediaType=nothing)
+    _ctx = _oacinternal_create_document(_api, path, request_body; metrics=metrics, _mediaType=_mediaType)
+    return OpenAPI.Clients.exec(_ctx)
+end
+
+function create_document(_api::DataAPIApi, response_stream::Channel, path::String, request_body::Dict{String, Any}; metrics=nothing, _mediaType=nothing)
+    _ctx = _oacinternal_create_document(_api, path, request_body; metrics=metrics, _mediaType=_mediaType)
+    return OpenAPI.Clients.exec(_ctx, response_stream)
+end
+
+const _returntypes_delete_document_DataAPIApi = Dict{Regex,Type}(
+    Regex("^" * replace("204", "x"=>".") * "\$") => Nothing,
+    Regex("^" * replace("304", "x"=>".") * "\$") => Nothing,
+    Regex("^" * replace("400", "x"=>".") * "\$") => ServerErrorResponse,
+    Regex("^" * replace("404", "x"=>".") * "\$") => ServerErrorResponse,
+    Regex("^" * replace("500", "x"=>".") * "\$") => ServerErrorResponse,
+)
+
+function _oacinternal_delete_document(_api::DataAPIApi, path::String; metrics=nothing, _mediaType=nothing)
+    _ctx = OpenAPI.Clients.Ctx(_api.client, "DELETE", _returntypes_delete_document_DataAPIApi, "/v1/data/{path}", [])
+    OpenAPI.Clients.set_param(_ctx.path, "path", path)  # type String
+    OpenAPI.Clients.set_param(_ctx.query, "metrics", metrics)  # type Bool
+    OpenAPI.Clients.set_header_accept(_ctx, ["application/json", ])
+    OpenAPI.Clients.set_header_content_type(_ctx, (_mediaType === nothing) ? [] : [_mediaType])
+    return _ctx
+end
+
+@doc raw"""Delete a document
+
+The server processes the DELETE method as if the client had sent a PATCH request containing a single remove operation.
+
+Params:
+- path::String (required)
+- metrics::Bool
+
+Return: Nothing, OpenAPI.Clients.ApiResponse
+"""
+function delete_document(_api::DataAPIApi, path::String; metrics=nothing, _mediaType=nothing)
+    _ctx = _oacinternal_delete_document(_api, path; metrics=metrics, _mediaType=_mediaType)
+    return OpenAPI.Clients.exec(_ctx)
+end
+
+function delete_document(_api::DataAPIApi, response_stream::Channel, path::String; metrics=nothing, _mediaType=nothing)
+    _ctx = _oacinternal_delete_document(_api, path; metrics=metrics, _mediaType=_mediaType)
+    return OpenAPI.Clients.exec(_ctx, response_stream)
+end
+
+const _returntypes_get_document_DataAPIApi = Dict{Regex,Type}(
+    Regex("^" * replace("200", "x"=>".") * "\$") => GetDocumentSuccessResponse,
+    Regex("^" * replace("400", "x"=>".") * "\$") => ServerErrorResponse,
+    Regex("^" * replace("500", "x"=>".") * "\$") => ServerErrorResponse,
+)
+
+function _oacinternal_get_document(_api::DataAPIApi, path::String; input=nothing, pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing)
     _ctx = OpenAPI.Clients.Ctx(_api.client, "GET", _returntypes_get_document_DataAPIApi, "/v1/data/{path}", [])
     OpenAPI.Clients.set_param(_ctx.path, "path", path)  # type String
     OpenAPI.Clients.set_param(_ctx.query, "input", input)  # type Dict{String, Any}
@@ -26,6 +101,7 @@ function _oacinternal_get_document(_api::DataAPIApi, path::String; input=nothing
     OpenAPI.Clients.set_param(_ctx.query, "explain", explain)  # type String
     OpenAPI.Clients.set_param(_ctx.query, "metrics", metrics)  # type Bool
     OpenAPI.Clients.set_param(_ctx.query, "instrument", instrument)  # type Bool
+    OpenAPI.Clients.set_param(_ctx.query, "strict-builtin-errors", strict_builtin_errors)  # type Bool
     OpenAPI.Clients.set_header_accept(_ctx, ["application/json", ])
     OpenAPI.Clients.set_header_content_type(_ctx, (_mediaType === nothing) ? [] : [_mediaType])
     return _ctx
@@ -33,7 +109,7 @@ end
 
 @doc raw"""Get a document
 
-This API endpoint returns the document specified by `path`.  The server will return a *bad request* (400) response if either: - The query requires an input document and you do not provide it - You provide the input document but the query has already defined it.
+This API endpoint returns the document specified by `path`.  The path separator is used to access values inside object and array documents. If the path indexes into an array, the server will attempt to convert the array index to an integer. If the path element cannot be converted to an integer, the server will respond with 404.  The server will return a *bad request* (400) response if either: - The query requires an input document and you do not provide it - You provide the input document but the query has already defined it.
 
 Params:
 - path::String (required)
@@ -43,26 +119,63 @@ Params:
 - explain::String
 - metrics::Bool
 - instrument::Bool
+- strict_builtin_errors::Bool
 
-Return: SuccessResponse, OpenAPI.Clients.ApiResponse
+Return: GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse
 """
-function get_document(_api::DataAPIApi, path::String; input=nothing, pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, _mediaType=nothing)
-    _ctx = _oacinternal_get_document(_api, path; input=input, pretty=pretty, provenance=provenance, explain=explain, metrics=metrics, instrument=instrument, _mediaType=_mediaType)
+function get_document(_api::DataAPIApi, path::String; input=nothing, pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing)
+    _ctx = _oacinternal_get_document(_api, path; input=input, pretty=pretty, provenance=provenance, explain=explain, metrics=metrics, instrument=instrument, strict_builtin_errors=strict_builtin_errors, _mediaType=_mediaType)
     return OpenAPI.Clients.exec(_ctx)
 end
 
-function get_document(_api::DataAPIApi, response_stream::Channel, path::String; input=nothing, pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, _mediaType=nothing)
-    _ctx = _oacinternal_get_document(_api, path; input=input, pretty=pretty, provenance=provenance, explain=explain, metrics=metrics, instrument=instrument, _mediaType=_mediaType)
+function get_document(_api::DataAPIApi, response_stream::Channel, path::String; input=nothing, pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing)
+    _ctx = _oacinternal_get_document(_api, path; input=input, pretty=pretty, provenance=provenance, explain=explain, metrics=metrics, instrument=instrument, strict_builtin_errors=strict_builtin_errors, _mediaType=_mediaType)
+    return OpenAPI.Clients.exec(_ctx, response_stream)
+end
+
+const _returntypes_get_document_from_webhook_DataAPIApi = Dict{Regex,Type}(
+    Regex("^" * replace("200", "x"=>".") * "\$") => GetDocumentSuccessResponse,
+    Regex("^" * replace("400", "x"=>".") * "\$") => ServerErrorResponse,
+    Regex("^" * replace("500", "x"=>".") * "\$") => ServerErrorResponse,
+)
+
+function _oacinternal_get_document_from_webhook(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing)
+    _ctx = OpenAPI.Clients.Ctx(_api.client, "POST", _returntypes_get_document_from_webhook_DataAPIApi, "/v0/data/{path}", [], request_body)
+    OpenAPI.Clients.set_param(_ctx.path, "path", path)  # type String
+    OpenAPI.Clients.set_param(_ctx.query, "pretty", pretty)  # type Bool
+    OpenAPI.Clients.set_header_accept(_ctx, ["application/json", ])
+    OpenAPI.Clients.set_header_content_type(_ctx, (_mediaType === nothing) ? ["application/json", ] : [_mediaType])
+    return _ctx
+end
+
+@doc raw"""Get a document from a webhook.
+
+Use this API if you are enforcing policy decisions via webhooks that have pre-defined request/response formats. Note, the API path prefix is /v0 instead of /v1. The request message body defines the content of the The input Document. The request message body may be empty. The path separator is used to access values inside object and array documents.
+
+Params:
+- path::String (required)
+- request_body::Dict{String, Any} (required)
+- pretty::Bool
+
+Return: GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse
+"""
+function get_document_from_webhook(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing)
+    _ctx = _oacinternal_get_document_from_webhook(_api, path, request_body; pretty=pretty, _mediaType=_mediaType)
+    return OpenAPI.Clients.exec(_ctx)
+end
+
+function get_document_from_webhook(_api::DataAPIApi, response_stream::Channel, path::String, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing)
+    _ctx = _oacinternal_get_document_from_webhook(_api, path, request_body; pretty=pretty, _mediaType=_mediaType)
     return OpenAPI.Clients.exec(_ctx, response_stream)
 end
 
 const _returntypes_get_document_with_path_DataAPIApi = Dict{Regex,Type}(
-    Regex("^" * replace("200", "x"=>".") * "\$") => SuccessResponse,
-    Regex("^" * replace("400", "x"=>".") * "\$") => Response400,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Response400,
+    Regex("^" * replace("200", "x"=>".") * "\$") => GetDocumentSuccessResponse,
+    Regex("^" * replace("400", "x"=>".") * "\$") => ServerErrorResponse,
+    Regex("^" * replace("500", "x"=>".") * "\$") => ServerErrorResponse,
 )
 
-function _oacinternal_get_document_with_path(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, _mediaType=nothing)
+function _oacinternal_get_document_with_path(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing)
     _ctx = OpenAPI.Clients.Ctx(_api.client, "POST", _returntypes_get_document_with_path_DataAPIApi, "/v1/data/{path}", [], request_body)
     OpenAPI.Clients.set_param(_ctx.path, "path", path)  # type String
     OpenAPI.Clients.set_param(_ctx.query, "pretty", pretty)  # type Bool
@@ -70,14 +183,15 @@ function _oacinternal_get_document_with_path(_api::DataAPIApi, path::String, req
     OpenAPI.Clients.set_param(_ctx.query, "explain", explain)  # type String
     OpenAPI.Clients.set_param(_ctx.query, "metrics", metrics)  # type Bool
     OpenAPI.Clients.set_param(_ctx.query, "instrument", instrument)  # type Bool
+    OpenAPI.Clients.set_param(_ctx.query, "strict-builtin-errors", strict_builtin_errors)  # type Bool
     OpenAPI.Clients.set_header_accept(_ctx, ["application/json", ])
     OpenAPI.Clients.set_header_content_type(_ctx, (_mediaType === nothing) ? ["application/json", ] : [_mediaType])
     return _ctx
 end
 
-@doc raw"""Get a document (with input)
+@doc raw"""Get a document that required an input
 
-The server will return a *bad request* (400) response if either: - The query requires an input document and you do not provide it - You provided an input document but the query has already defined it.  If `path` indexes into an array, the server will attempt to convert the array index to an integer. If the path element cannot be converted to an integer, a *not found* response (404) will be returned.
+The request body contains an object that specifies a value for the input document.  The path separator is used to access values inside object and array documents. If the path indexes into an array, the server will attempt to convert the array index to an integer. If the path element cannot be converted to an integer, the server will respond with 404.  The server will return a *bad request* (400) response if either: - The query requires an input document and you do not provide it - You provided an input document but the query has already defined it.
 
 Params:
 - path::String (required)
@@ -87,18 +201,59 @@ Params:
 - explain::String
 - metrics::Bool
 - instrument::Bool
+- strict_builtin_errors::Bool
 
-Return: SuccessResponse, OpenAPI.Clients.ApiResponse
+Return: GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse
 """
-function get_document_with_path(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, _mediaType=nothing)
-    _ctx = _oacinternal_get_document_with_path(_api, path, request_body; pretty=pretty, provenance=provenance, explain=explain, metrics=metrics, instrument=instrument, _mediaType=_mediaType)
+function get_document_with_path(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing)
+    _ctx = _oacinternal_get_document_with_path(_api, path, request_body; pretty=pretty, provenance=provenance, explain=explain, metrics=metrics, instrument=instrument, strict_builtin_errors=strict_builtin_errors, _mediaType=_mediaType)
     return OpenAPI.Clients.exec(_ctx)
 end
 
-function get_document_with_path(_api::DataAPIApi, response_stream::Channel, path::String, request_body::Dict{String, Any}; pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, _mediaType=nothing)
-    _ctx = _oacinternal_get_document_with_path(_api, path, request_body; pretty=pretty, provenance=provenance, explain=explain, metrics=metrics, instrument=instrument, _mediaType=_mediaType)
+function get_document_with_path(_api::DataAPIApi, response_stream::Channel, path::String, request_body::Dict{String, Any}; pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing)
+    _ctx = _oacinternal_get_document_with_path(_api, path, request_body; pretty=pretty, provenance=provenance, explain=explain, metrics=metrics, instrument=instrument, strict_builtin_errors=strict_builtin_errors, _mediaType=_mediaType)
     return OpenAPI.Clients.exec(_ctx, response_stream)
 end
 
+const _returntypes_patch_document_DataAPIApi = Dict{Regex,Type}(
+    Regex("^" * replace("204", "x"=>".") * "\$") => Nothing,
+    Regex("^" * replace("304", "x"=>".") * "\$") => Nothing,
+    Regex("^" * replace("400", "x"=>".") * "\$") => ServerErrorResponse,
+    Regex("^" * replace("404", "x"=>".") * "\$") => ServerErrorResponse,
+    Regex("^" * replace("500", "x"=>".") * "\$") => ServerErrorResponse,
+)
+
+function _oacinternal_patch_document(_api::DataAPIApi, path::String, patch_document_request_inner::Vector{PatchDocumentRequestInner}; _mediaType=nothing)
+    _ctx = OpenAPI.Clients.Ctx(_api.client, "PATCH", _returntypes_patch_document_DataAPIApi, "/v1/data/{path}", [], patch_document_request_inner)
+    OpenAPI.Clients.set_param(_ctx.path, "path", path)  # type String
+    OpenAPI.Clients.set_header_accept(_ctx, ["application/json", ])
+    OpenAPI.Clients.set_header_content_type(_ctx, (_mediaType === nothing) ? ["application/json-patch+json", ] : [_mediaType])
+    return _ctx
+end
+
+@doc raw"""Patch a document
+
+Update a document. The patch operation is specified in the request body.
+
+Params:
+- path::String (required)
+- patch_document_request_inner::Vector{PatchDocumentRequestInner} (required)
+
+Return: Nothing, OpenAPI.Clients.ApiResponse
+"""
+function patch_document(_api::DataAPIApi, path::String, patch_document_request_inner::Vector{PatchDocumentRequestInner}; _mediaType=nothing)
+    _ctx = _oacinternal_patch_document(_api, path, patch_document_request_inner; _mediaType=_mediaType)
+    return OpenAPI.Clients.exec(_ctx)
+end
+
+function patch_document(_api::DataAPIApi, response_stream::Channel, path::String, patch_document_request_inner::Vector{PatchDocumentRequestInner}; _mediaType=nothing)
+    _ctx = _oacinternal_patch_document(_api, path, patch_document_request_inner; _mediaType=_mediaType)
+    return OpenAPI.Clients.exec(_ctx, response_stream)
+end
+
+export create_document
+export delete_document
 export get_document
+export get_document_from_webhook
 export get_document_with_path
+export patch_document

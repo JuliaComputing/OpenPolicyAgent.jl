@@ -9,7 +9,7 @@ end
 The default API base path for APIs in `HealthAPIApi`.
 This can be used to construct the `OpenAPI.Clients.Client` instance.
 """
-basepath(::Type{ HealthAPIApi }) = "http://localhost"
+basepath(::Type{ HealthAPIApi }) = "http://localhost:8181"
 
 const _returntypes_get_health_HealthAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("200", "x"=>".") * "\$") => Nothing,

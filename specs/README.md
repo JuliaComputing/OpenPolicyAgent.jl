@@ -1,6 +1,6 @@
 # OPA Client and CLI Code Generation
 
-We generate code for the OPA OpenAPI client and command line interface from specifications. With OPA having a sizeable REST API and command line interface, this is quite helpful.
+OPA OpenAPI client and command line interface code is mostly generated from specifications. With OPA having a sizeable REST API and command line interface, this is quite helpful.
 
 ## CLI
 

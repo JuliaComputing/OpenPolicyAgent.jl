@@ -22,12 +22,7 @@ tags:
 info:
   title: Open Policy Agent (OPA) REST API
   description: |-
-    OPA provides policy-based control for cloud native environments. The following *endpoints* (such as `PUT /v1/policies`) provide reference documentation for the OPA REST API.
-
-    ### API specification viewing options
-
-    - **[View the specification in *Redoc* (default)](index.html)**
-    - **[View the specification in *Swagger UI*](swagger-ui.html)**
+    OPA provides policy-based control for cloud native environments.
   version: 0.55.0
   x-logo:
     url: 'https://github.com/open-policy-agent/opa/blob/master/docs/website/static/img/logos/opa-horizontal-color.png?raw=true'

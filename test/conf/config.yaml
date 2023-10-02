@@ -1,0 +1,32 @@
+services:
+  - name: BundleServiceAPI
+    url: http://localhost:8080
+
+bundles:
+  policies:
+    service: BundleServiceAPI
+    resource: policies.tar.gz
+    persist: true
+    polling:
+      min_delay_seconds: 60
+      max_delay_seconds: 120
+    signing:
+      keyid: bundle_key
+
+  data:
+    service: BundleServiceAPI
+    resource: data.tar.gz
+    persist: true
+    polling:
+      min_delay_seconds: 60
+      max_delay_seconds: 120
+    signing:
+      keyid: bundle_key
+
+keys:
+  bundle_key:
+    algorithm: HS512
+    key: secret
+
+decision_logs:
+  console: true

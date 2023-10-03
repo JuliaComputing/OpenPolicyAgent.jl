@@ -8,8 +8,8 @@ Method | HTTP request | Description
 
 
 # **get_health**
-> get_health(_api::HealthAPIApi; bundles=nothing, plugins=nothing, _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
-> get_health(_api::HealthAPIApi, response_stream::Channel; bundles=nothing, plugins=nothing, _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
+> get_health(_api::HealthAPIApi; bundles=nothing, plugins=nothing, exclude_plugin=nothing, _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
+> get_health(_api::HealthAPIApi, response_stream::Channel; bundles=nothing, plugins=nothing, exclude_plugin=nothing, _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
 
 Health
 
@@ -27,6 +27,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **bundles** | **Bool**| Reports on bundle activation status (useful for &#39;ready&#39; checks at startup).  This includes any discovery bundles or bundles defined in the loaded discovery configuration. | [default to nothing]
  **plugins** | **Bool**| Reports on plugin status | [default to nothing]
+ **exclude_plugin** | **String**| String parameter to exclude a plugin from status checks. Can be added multiple times. Does nothing if plugins is not true. This parameter is useful for special use cases where a plugin depends on the server being fully initialized before it can fully initialize itself. Exclude the specified plugin from the response. | [default to nothing]
 
 ### Return type
 
@@ -39,7 +40,7 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: Not defined
- - **Accept**: Not defined
+ - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 

@@ -61,6 +61,7 @@ Class | Method
  - [Provenance](docs/Provenance.md)
  - [QueryParameterPost](docs/QueryParameterPost.md)
  - [ServerErrorResponse](docs/ServerErrorResponse.md)
+ - [UnhealthyResponse](docs/UnhealthyResponse.md)
 
 
 <a id="authorization"></a>

@@ -26,6 +26,7 @@ docs/QueryAPIApi.md
 docs/QueryParameterPost.md
 docs/ServerErrorResponse.md
 docs/StatusAPIApi.md
+docs/UnhealthyResponse.md
 src/Client.jl
 src/apis/api_CompileAPIApi.jl
 src/apis/api_ConfigAPIApi.jl
@@ -54,3 +55,4 @@ src/models/model_PolicyAstRulesInnerHeadKey.jl
 src/models/model_Provenance.jl
 src/models/model_QueryParameterPost.jl
 src/models/model_ServerErrorResponse.jl
+src/models/model_UnhealthyResponse.jl

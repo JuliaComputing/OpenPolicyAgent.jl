@@ -90,6 +90,47 @@ function test_data_api(openapi_client)
     @test query_user(opa_client, "bob") == true
 end
 
+function test_config_api(openapi_client)
+    opa_client = OpenPolicyAgent.Client.ConfigAPIApi(openapi_client)
+    result_dict, _http_resp = OpenPolicyAgent.Client.get_config(opa_client; pretty=true)
+
+    @test isa(result_dict, Dict{String,Any})
+    @test haskey(result_dict, "result")
+
+    result = result_dict["result"]
+    @test haskey(result, "services") && isa(result["services"], Vector)
+    services = result["services"]
+    @test length(services) == 1
+    @test services[1]["name"] == "BundleServiceAPI"
+
+    @test haskey(result, "bundles") && isa(result["bundles"], Dict)
+    bundles = result["bundles"]
+    @test Set(keys(bundles)) == Set(["data", "policies"])
+
+    @test haskey(result, "keys") && isa(result["keys"], Dict)
+    bundle_keys = result["keys"]
+    @test haskey(bundle_keys, "bundle_key")
+    @test haskey(bundle_keys["bundle_key"], "algorithm")
+    @test bundle_keys["bundle_key"]["algorithm"] == "HS512"
+end
+
+function test_status_api(openapi_client)
+    opa_client = OpenPolicyAgent.Client.StatusAPIApi(openapi_client)
+    result, _http_resp = OpenPolicyAgent.Client.get_status(opa_client; pretty=true)
+
+    # status plugin is not enabled by default
+    # https://github.com/open-policy-agent/opa/issues/4297
+    @test isa(result, OpenPolicyAgent.Client.ServerErrorResponse)
+    @test result.code == "internal_error"
+    @test result.message == "status plugin not enabled"
+end
+
+function test_health_api(openapi_client)
+    opa_client = OpenPolicyAgent.Client.HealthAPIApi(openapi_client)
+    result, _http_resp = OpenPolicyAgent.Client.get_health(opa_client; bundles=true, plugins=true)
+    @test isa(result, Nothing)
+end
+
 function runtests()
     mktempdir() do testdir
         bundle_location = joinpath(testdir, "bundle")
@@ -121,7 +162,18 @@ function runtests()
 
                     # create the client
                     openapi_client = OpenAPI.Clients.Client("http://localhost:8181"; escape_path_params=false)
-                    test_data_api(openapi_client)
+                    @testset "Data API" begin
+                        test_data_api(openapi_client)
+                    end
+                    @testset "Config API" begin
+                        test_config_api(openapi_client)
+                    end
+                    @testset "Status API" begin
+                        test_status_api(openapi_client)
+                    end
+                    @testset "Health API" begin
+                        test_health_api(openapi_client)
+                    end
                 finally
                     @info("Stopping OPA server")
                     OpenPolicyAgent.Server.stop!(opa_server)

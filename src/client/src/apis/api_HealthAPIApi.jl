@@ -13,14 +13,15 @@ basepath(::Type{ HealthAPIApi }) = "http://localhost:8181"
 
 const _returntypes_get_health_HealthAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("200", "x"=>".") * "\$") => Nothing,
-    Regex("^" * replace("500", "x"=>".") * "\$") => Nothing,
+    Regex("^" * replace("500", "x"=>".") * "\$") => UnhealthyResponse,
 )
 
-function _oacinternal_get_health(_api::HealthAPIApi; bundles=nothing, plugins=nothing, _mediaType=nothing)
+function _oacinternal_get_health(_api::HealthAPIApi; bundles=nothing, plugins=nothing, exclude_plugin=nothing, _mediaType=nothing)
     _ctx = OpenAPI.Clients.Ctx(_api.client, "GET", _returntypes_get_health_HealthAPIApi, "/health", [])
     OpenAPI.Clients.set_param(_ctx.query, "bundles", bundles)  # type Bool
     OpenAPI.Clients.set_param(_ctx.query, "plugins", plugins)  # type Bool
-    OpenAPI.Clients.set_header_accept(_ctx, [])
+    OpenAPI.Clients.set_param(_ctx.query, "exclude-plugin", exclude_plugin)  # type String
+    OpenAPI.Clients.set_header_accept(_ctx, ["application/json", ])
     OpenAPI.Clients.set_header_content_type(_ctx, (_mediaType === nothing) ? [] : [_mediaType])
     return _ctx
 end
@@ -32,16 +33,17 @@ This API endpoint verifies that the server is operational.  The response from th
 Params:
 - bundles::Bool
 - plugins::Bool
+- exclude_plugin::String
 
 Return: Nothing, OpenAPI.Clients.ApiResponse
 """
-function get_health(_api::HealthAPIApi; bundles=nothing, plugins=nothing, _mediaType=nothing)
-    _ctx = _oacinternal_get_health(_api; bundles=bundles, plugins=plugins, _mediaType=_mediaType)
+function get_health(_api::HealthAPIApi; bundles=nothing, plugins=nothing, exclude_plugin=nothing, _mediaType=nothing)
+    _ctx = _oacinternal_get_health(_api; bundles=bundles, plugins=plugins, exclude_plugin=exclude_plugin, _mediaType=_mediaType)
     return OpenAPI.Clients.exec(_ctx)
 end
 
-function get_health(_api::HealthAPIApi, response_stream::Channel; bundles=nothing, plugins=nothing, _mediaType=nothing)
-    _ctx = _oacinternal_get_health(_api; bundles=bundles, plugins=plugins, _mediaType=_mediaType)
+function get_health(_api::HealthAPIApi, response_stream::Channel; bundles=nothing, plugins=nothing, exclude_plugin=nothing, _mediaType=nothing)
+    _ctx = _oacinternal_get_health(_api; bundles=bundles, plugins=plugins, exclude_plugin=exclude_plugin, _mediaType=_mediaType)
     return OpenAPI.Clients.exec(_ctx, response_stream)
 end
 

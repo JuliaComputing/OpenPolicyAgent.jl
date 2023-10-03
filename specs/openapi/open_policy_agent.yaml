@@ -595,11 +595,12 @@ paths:
       parameters:
         - $ref: '#/components/parameters/bundlesParameter'
         - $ref: '#/components/parameters/pluginsParameter'
+        - $ref: '#/components/parameters/excludePluginsParameter'
       responses:
         '200':
           description: OPA service is healthy
         '500':
-          description: OPA service is not healthy
+          $ref: '#/components/responses/unhealthyResponse'
 components:
   parameters:
     idParameter:
@@ -710,6 +711,17 @@ components:
       required: false
       schema:
         type: boolean
+    excludePluginsParameter:
+      name: 'exclude-plugin'
+      description: |-
+        String parameter to exclude a plugin from status checks.
+        Can be added multiple times. Does nothing if plugins is not true.
+        This parameter is useful for special use cases where a plugin depends on the server being fully initialized before it can fully initialize itself.
+        Exclude the specified plugin from the response.
+      in: query
+      required: false
+      schema:
+        type: string
   responses:
     listPoliciesSuccessResponse:
       description: Success
@@ -785,7 +797,22 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/status'
+    unhealthyResponse:
+      description: Unhealthy
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/unhealthyResponse'
   schemas:
+    unhealthyResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: The error message
+          example: "not all plugins in OK state"
+      required:
+        - error
     status:
       type: object
       additionalProperties: {}

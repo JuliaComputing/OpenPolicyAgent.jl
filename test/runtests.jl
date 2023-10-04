@@ -16,18 +16,17 @@ const bundle_args = Dict(
 )
 
 const EXAMPLE_POLICY = """package opa.examples
+    import data.servers
+    import data.networks
+    import data.ports
 
-import data.servers
-import data.networks
-import data.ports
-
-public_servers[server] {
-  some k, m
-	server := servers[_]
-	server.ports[_] == ports[k].id
-	ports[k].networks[_] == networks[m].id
-	networks[m].public == true
-}
+    public_servers[server] {
+    some k, m
+        server := servers[_]
+        server.ports[_] == ports[k].id
+        ports[k].networks[_] == networks[m].id
+        networks[m].public == true
+    }
 """
 
 const PARTIAL_COMPILE = (
@@ -46,6 +45,24 @@ const PARTIAL_COMPILE = (
         "disableInlining" => []
     ),
     unknowns = ["data.reports"],
+)
+
+const EXAMPLE_QUERY = """input.servers[i].ports[_] = "p2"; input.servers[i].name = name"""
+const EXAMPLE_QUERY_INPUT = Dict{String,Any}(
+    "servers" => [
+        Dict{String,Any}(
+            "id" => "s1",
+            "name" => "app",
+            "ports" => ["p1", "p2", "p3"],
+            "protocols" => ["https", "ssh"]
+        ),
+        Dict{String,Any}(
+            "id" => "s4",
+            "name" => "dev",
+            "ports" => ["p1", "p2"],
+            "protocols" => ["http"]
+        )
+    ]
 )
 
 # Prepare the bundles
@@ -248,6 +265,31 @@ function test_compile_api(openapi_client)
     end
 end
 
+function test_query_api(openapi_client)
+    query_client = OpenPolicyAgent.Client.QueryAPIApi(openapi_client)
+    response, _http_resp = OpenPolicyAgent.Client.query_get(query_client, EXAMPLE_QUERY; pretty=true, explain=true, metrics=true)
+
+    @test isa(response, OpenPolicyAgent.Client.GetDocumentSuccessResponse)
+    metrics = response.metrics
+    @test isa(metrics, Dict{String,Any})
+    @test metrics["timer_rego_query_eval_ns"] > 0
+
+    query_param = OpenPolicyAgent.Client.QueryParameterPost(; query=EXAMPLE_QUERY, input=EXAMPLE_QUERY_INPUT)
+    response, _http_resp = OpenPolicyAgent.Client.query_post(query_client, query_param; pretty=true, explain=true, metrics=true)
+
+    @test isa(response, OpenPolicyAgent.Client.GetDocumentSuccessResponse)
+    metrics = response.metrics
+    @test isa(metrics, Dict{String,Any})
+    @test metrics["timer_rego_query_eval_ns"] > 0
+    result = response.result
+    @test isa(result, Vector)
+    @test length(result) == 2
+    @test result[1]["name"] in ("app", "dev")
+    @test result[2]["name"] in ("app", "dev")
+    @test result[1]["i"] in (0, 1)
+    @test result[2]["i"] in (0, 1)
+end
+
 function runtests()
     mktempdir() do testdir
         bundle_location = joinpath(testdir, "bundle")
@@ -296,6 +338,9 @@ function runtests()
                     end
                     @testset "Compile API" begin
                         test_compile_api(openapi_client)
+                    end
+                    @testset "Query API" begin
+                        test_query_api(openapi_client)
                     end
                 finally
                     @info("Stopping OPA server")

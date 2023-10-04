@@ -48,8 +48,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **get_policies**
-> get_policies(_api::PolicyAPIApi; pretty=nothing, _mediaType=nothing) -> Vector{Policy}, OpenAPI.Clients.ApiResponse <br/>
-> get_policies(_api::PolicyAPIApi, response_stream::Channel; pretty=nothing, _mediaType=nothing) -> Channel{ Vector{Policy} }, OpenAPI.Clients.ApiResponse
+> get_policies(_api::PolicyAPIApi; pretty=nothing, _mediaType=nothing) -> GetPolicyListSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> get_policies(_api::PolicyAPIApi, response_stream::Channel; pretty=nothing, _mediaType=nothing) -> Channel{ GetPolicyListSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 List policies
 
@@ -69,7 +69,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Vector{Policy}**](Policy.md)
+[**GetPolicyListSuccessResponse**](GetPolicyListSuccessResponse.md)
 
 ### Authorization
 
@@ -83,8 +83,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **get_policy_module**
-> get_policy_module(_api::PolicyAPIApi, id::String; pretty=nothing, _mediaType=nothing) -> Policy, OpenAPI.Clients.ApiResponse <br/>
-> get_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::String; pretty=nothing, _mediaType=nothing) -> Channel{ Policy }, OpenAPI.Clients.ApiResponse
+> get_policy_module(_api::PolicyAPIApi, id::String; pretty=nothing, _mediaType=nothing) -> GetPolicyModuleSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> get_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::String; pretty=nothing, _mediaType=nothing) -> Channel{ GetPolicyModuleSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Get a policy module
 
@@ -105,7 +105,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Policy**](Policy.md)
+[**GetPolicyModuleSuccessResponse**](GetPolicyModuleSuccessResponse.md)
 
 ### Authorization
 
@@ -119,8 +119,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **put_policy_module**
-> put_policy_module(_api::PolicyAPIApi, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
-> put_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
+> put_policy_module(_api::PolicyAPIApi, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> PutPolicySuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> put_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Channel{ PutPolicySuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Create or update a policy module
 
@@ -143,7 +143,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-Nothing
+[**PutPolicySuccessResponse**](PutPolicySuccessResponse.md)
 
 ### Authorization
 

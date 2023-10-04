@@ -7,6 +7,8 @@ docs/DataAPIApi.md
 docs/ErrorDetail.md
 docs/ErrorLocation.md
 docs/GetDocumentSuccessResponse.md
+docs/GetPolicyListSuccessResponse.md
+docs/GetPolicyModuleSuccessResponse.md
 docs/HealthAPIApi.md
 docs/PartialQuerySchema.md
 docs/PatchDocumentRequestInner.md
@@ -17,11 +19,10 @@ docs/PolicyAstPackage.md
 docs/PolicyAstPackagePathInner.md
 docs/PolicyAstRulesInner.md
 docs/PolicyAstRulesInnerBodyInner.md
-docs/PolicyAstRulesInnerBodyInnerTermsInner.md
-docs/PolicyAstRulesInnerBodyInnerTermsInnerValueInner.md
 docs/PolicyAstRulesInnerHead.md
 docs/PolicyAstRulesInnerHeadKey.md
 docs/Provenance.md
+docs/PutPolicySuccessResponse.md
 docs/QueryAPIApi.md
 docs/QueryParameterPost.md
 docs/ServerErrorResponse.md
@@ -40,6 +41,8 @@ src/models/model_CompileSuccessResponse.jl
 src/models/model_ErrorDetail.jl
 src/models/model_ErrorLocation.jl
 src/models/model_GetDocumentSuccessResponse.jl
+src/models/model_GetPolicyListSuccessResponse.jl
+src/models/model_GetPolicyModuleSuccessResponse.jl
 src/models/model_PartialQuerySchema.jl
 src/models/model_PatchDocumentRequestInner.jl
 src/models/model_Policy.jl
@@ -48,11 +51,10 @@ src/models/model_PolicyAstPackage.jl
 src/models/model_PolicyAstPackagePathInner.jl
 src/models/model_PolicyAstRulesInner.jl
 src/models/model_PolicyAstRulesInnerBodyInner.jl
-src/models/model_PolicyAstRulesInnerBodyInnerTermsInner.jl
-src/models/model_PolicyAstRulesInnerBodyInnerTermsInnerValueInner.jl
 src/models/model_PolicyAstRulesInnerHead.jl
 src/models/model_PolicyAstRulesInnerHeadKey.jl
 src/models/model_Provenance.jl
+src/models/model_PutPolicySuccessResponse.jl
 src/models/model_QueryParameterPost.jl
 src/models/model_ServerErrorResponse.jl
 src/models/model_UnhealthyResponse.jl

@@ -31,7 +31,4 @@ function check_required(o::PolicyAstPackagePathInner)
 end
 
 function OpenAPI.validate_property(::Type{ PolicyAstPackagePathInner }, name::Symbol, val)
-    if name === Symbol("type")
-        OpenAPI.validate_param(name, "PolicyAstPackagePathInner", :enum, val, ["import", "package"])
-    end
 end

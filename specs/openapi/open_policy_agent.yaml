@@ -451,7 +451,7 @@ paths:
         - Policy API
       responses:
         '200':
-          $ref: '#/components/responses/noContentResponse'
+          $ref: '#/components/responses/putPolicySuccessResponse'
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '500':
@@ -723,18 +723,24 @@ components:
       schema:
         type: string
   responses:
+    putPolicySuccessResponse:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/putPolicySuccessResponse'
     listPoliciesSuccessResponse:
       description: Success
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/policyList'
+            $ref: '#/components/schemas/getPolicyListSuccessResponse'
     getPolicyModuleSuccessResponse:
       description: Success
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/policy'
+            $ref: '#/components/schemas/getPolicyModuleSuccessResponse'
     getDocumentSuccessResponse:
       description: Success
       content:
@@ -940,6 +946,12 @@ components:
     simpleQuerySuccessResponse:
       type: object
       additionalProperties: {}
+    putPolicySuccessResponse:
+      type: object
+      properties:
+        metrics:
+          type: object
+          additionalProperties: {}
     compileSuccessResponse:
       type: object
       properties:
@@ -950,6 +962,20 @@ components:
         metrics:
           type: object
           additionalProperties: {}
+    getPolicyListSuccessResponse:
+      type: object
+      properties:
+        result:
+          $ref: '#/components/schemas/policyList'
+      required:
+        - result
+    getPolicyModuleSuccessResponse:
+      type: object
+      properties:
+        result:
+          $ref: '#/components/schemas/policy'
+      required:
+        - result
     policyList:
       type: array
       items:
@@ -960,7 +986,7 @@ components:
       properties:
         id:
           description: The name of a policy module
-          example: example2
+          example: "policies/policies/server/rest/policy.rego"
           type: string
           minLength: 1
         raw:
@@ -987,9 +1013,6 @@ components:
                         description: The type of the path operation
                         example: import
                         type: string
-                        enum:
-                          - import
-                          - package
                       value:
                         description: The path variable
                         example: data.opa.example
@@ -1020,7 +1043,7 @@ components:
                             type: string
                           value:
                             description: The value of the head
-                            example: $0
+                            example: server
                             type: string
                   body:
                     description: A list of the terms in this rule
@@ -1033,22 +1056,7 @@ components:
                           type: number
                         terms:
                           description: The type/value pairing for this term
-                          type: array
-                          items:
-                            properties:
-                              type:
-                                description: The type of the term variable
-                                example: var
-                                type: string
-                              value:
-                                description: The list of types and values for the term variable
-                                type: array
-                                items:
-                                  properties:
-                                    type:
-                                      type: string
-                                    value:
-                                      type: string
+                          type: object
     partialQuerySchema:
       type: object
       example: |-

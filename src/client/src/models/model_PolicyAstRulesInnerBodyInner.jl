@@ -10,11 +10,11 @@
     )
 
     - index::Float64 : The location of this term in the list (starts at 0)
-    - terms::Vector{PolicyAstRulesInnerBodyInnerTermsInner} : The type/value pairing for this term
+    - terms::Any : The type/value pairing for this term
 """
 Base.@kwdef mutable struct PolicyAstRulesInnerBodyInner <: OpenAPI.APIModel
     index::Union{Nothing, Float64} = nothing
-    terms::Union{Nothing, Vector} = nothing # spec type: Union{ Nothing, Vector{PolicyAstRulesInnerBodyInnerTermsInner} }
+    terms::Union{Nothing, Any} = nothing
 
     function PolicyAstRulesInnerBodyInner(index, terms, )
         OpenAPI.validate_property(PolicyAstRulesInnerBodyInner, Symbol("index"), index)
@@ -23,7 +23,7 @@ Base.@kwdef mutable struct PolicyAstRulesInnerBodyInner <: OpenAPI.APIModel
     end
 end # type PolicyAstRulesInnerBodyInner
 
-const _property_types_PolicyAstRulesInnerBodyInner = Dict{Symbol,String}(Symbol("index")=>"Float64", Symbol("terms")=>"Vector{PolicyAstRulesInnerBodyInnerTermsInner}", )
+const _property_types_PolicyAstRulesInnerBodyInner = Dict{Symbol,String}(Symbol("index")=>"Float64", Symbol("terms")=>"Any", )
 OpenAPI.property_type(::Type{ PolicyAstRulesInnerBodyInner }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_PolicyAstRulesInnerBodyInner[name]))}
 
 function check_required(o::PolicyAstRulesInnerBodyInner)

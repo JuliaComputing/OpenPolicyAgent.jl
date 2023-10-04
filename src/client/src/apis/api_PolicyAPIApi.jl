@@ -50,7 +50,7 @@ function delete_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::
 end
 
 const _returntypes_get_policies_PolicyAPIApi = Dict{Regex,Type}(
-    Regex("^" * replace("200", "x"=>".") * "\$") => Vector{Policy},
+    Regex("^" * replace("200", "x"=>".") * "\$") => GetPolicyListSuccessResponse,
     Regex("^" * replace("500", "x"=>".") * "\$") => ServerErrorResponse,
 )
 
@@ -69,7 +69,7 @@ This API endpoint responds with a list of all policy modules on the server (resu
 Params:
 - pretty::Bool
 
-Return: Vector{Policy}, OpenAPI.Clients.ApiResponse
+Return: GetPolicyListSuccessResponse, OpenAPI.Clients.ApiResponse
 """
 function get_policies(_api::PolicyAPIApi; pretty=nothing, _mediaType=nothing)
     _ctx = _oacinternal_get_policies(_api; pretty=pretty, _mediaType=_mediaType)
@@ -82,7 +82,7 @@ function get_policies(_api::PolicyAPIApi, response_stream::Channel; pretty=nothi
 end
 
 const _returntypes_get_policy_module_PolicyAPIApi = Dict{Regex,Type}(
-    Regex("^" * replace("200", "x"=>".") * "\$") => Policy,
+    Regex("^" * replace("200", "x"=>".") * "\$") => GetPolicyModuleSuccessResponse,
     Regex("^" * replace("404", "x"=>".") * "\$") => ServerErrorResponse,
     Regex("^" * replace("500", "x"=>".") * "\$") => ServerErrorResponse,
 )
@@ -104,7 +104,7 @@ Params:
 - id::String (required)
 - pretty::Bool
 
-Return: Policy, OpenAPI.Clients.ApiResponse
+Return: GetPolicyModuleSuccessResponse, OpenAPI.Clients.ApiResponse
 """
 function get_policy_module(_api::PolicyAPIApi, id::String; pretty=nothing, _mediaType=nothing)
     _ctx = _oacinternal_get_policy_module(_api, id; pretty=pretty, _mediaType=_mediaType)
@@ -117,7 +117,7 @@ function get_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::Str
 end
 
 const _returntypes_put_policy_module_PolicyAPIApi = Dict{Regex,Type}(
-    Regex("^" * replace("200", "x"=>".") * "\$") => Nothing,
+    Regex("^" * replace("200", "x"=>".") * "\$") => PutPolicySuccessResponse,
     Regex("^" * replace("400", "x"=>".") * "\$") => ServerErrorResponse,
     Regex("^" * replace("500", "x"=>".") * "\$") => ServerErrorResponse,
 )
@@ -142,7 +142,7 @@ Params:
 - pretty::Bool
 - metrics::Bool
 
-Return: Nothing, OpenAPI.Clients.ApiResponse
+Return: PutPolicySuccessResponse, OpenAPI.Clients.ApiResponse
 """
 function put_policy_module(_api::PolicyAPIApi, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing)
     _ctx = _oacinternal_put_policy_module(_api, id, body; pretty=pretty, metrics=metrics, _mediaType=_mediaType)

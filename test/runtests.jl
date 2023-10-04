@@ -15,6 +15,21 @@ const bundle_args = Dict(
     :signing_key => "secret",
 )
 
+const EXAMPLE_POLICY = """package opa.examples
+
+import data.servers
+import data.networks
+import data.ports
+
+public_servers[server] {
+  some k, m
+	server := servers[_]
+	server.ports[_] == ports[k].id
+	ports[k].networks[_] == networks[m].id
+	networks[m].public == true
+}
+"""
+
 # Prepare the bundles
 function prepare_bundle(bundle_location::String)
     signed_bundle_file = joinpath(bundle_location, "data.tar.gz")
@@ -84,7 +99,6 @@ function test_data_api(openapi_client)
     opa_client = OpenPolicyAgent.Client.DataAPIApi(openapi_client)
    
     result, _http_resp = OpenPolicyAgent.Client.get_document(opa_client, policy_path(); pretty=true, provenance=true, explain=true, metrics=true, instrument=true);
-    @info("Decision: $(result.result)")
     @test result.result == false
 
     @test query_user(opa_client, "bob") == true
@@ -131,6 +145,54 @@ function test_health_api(openapi_client)
     @test isa(result, Nothing)
 end
 
+function test_policy_api(openapi_client)
+    opa_client = OpenPolicyAgent.Client.PolicyAPIApi(openapi_client)
+    result, _http_resp = OpenPolicyAgent.Client.get_policies(opa_client; pretty=true)
+    @test isa(result, OpenPolicyAgent.Client.GetPolicyListSuccessResponse)
+    @test isa(result.result, Vector{OpenPolicyAgent.Client.Policy})
+    @test !isempty(result.result)
+
+    policy_id = result.result[1].id
+    result, _http_resp = OpenPolicyAgent.Client.get_policy_module(opa_client, policy_id; pretty=true)
+    @test isa(result, OpenPolicyAgent.Client.GetPolicyModuleSuccessResponse)
+    @test isa(result.result, OpenPolicyAgent.Client.Policy)
+    @test result.result.id == policy_id
+
+    example_policy_id = "example1"
+    result, _http_resp = OpenPolicyAgent.Client.put_policy_module(opa_client, example_policy_id, EXAMPLE_POLICY; pretty=true, metrics=true)
+    @test isa(result, OpenPolicyAgent.Client.PutPolicySuccessResponse)
+    @test isa(result.metrics, Dict{String,Any})
+    @test result.metrics["timer_rego_module_parse_ns"] > 0
+
+    result, _http_resp = OpenPolicyAgent.Client.get_policies(opa_client; pretty=true)
+    @test isa(result.result, Vector{OpenPolicyAgent.Client.Policy})
+    has_example_policy = false
+    for policy in result.result
+        if policy.id == example_policy_id
+            has_example_policy = true
+            break
+        end
+    end
+    @test has_example_policy
+
+    result, _http_resp = OpenPolicyAgent.Client.delete_policy_module(opa_client, policy_id; pretty=true)
+    @test isa(result, OpenPolicyAgent.Client.ServerErrorResponse)
+    @test result.code == "invalid_parameter"
+
+    result, _http_resp = OpenPolicyAgent.Client.delete_policy_module(opa_client, example_policy_id; pretty=true)
+    @test isa(result, Nothing)
+
+    result, _http_resp = OpenPolicyAgent.Client.get_policies(opa_client; pretty=true)
+    has_example_policy = false
+    for policy in result.result
+        if policy.id == example_policy_id
+            has_example_policy = true
+            break
+        end
+    end
+    @test !has_example_policy
+end
+
 function runtests()
     mktempdir() do testdir
         bundle_location = joinpath(testdir, "bundle")
@@ -173,6 +235,9 @@ function runtests()
                     end
                     @testset "Health API" begin
                         test_health_api(openapi_client)
+                    end
+                    @testset "Policy API" begin
+                        test_policy_api(openapi_client)
                     end
                 finally
                     @info("Stopping OPA server")

@@ -30,6 +30,24 @@ public_servers[server] {
 }
 """
 
+const PARTIAL_COMPILE = (
+    policy = """package example
+
+    allow {
+    input.subject.clearance_level >= data.reports[_].clearance_level
+    }""",
+    query = "data.example.allow == true",
+    input = Dict{String,Any}(
+        "subject" => Dict{String,Any}(
+            "clearance_level" => 4
+        )
+    ),
+    options = Dict{String,Any}(
+        "disableInlining" => []
+    ),
+    unknowns = ["data.reports"],
+)
+
 # Prepare the bundles
 function prepare_bundle(bundle_location::String)
     signed_bundle_file = joinpath(bundle_location, "data.tar.gz")
@@ -193,6 +211,43 @@ function test_policy_api(openapi_client)
     @test !has_example_policy
 end
 
+function test_compile_api(openapi_client)
+    policy_client = OpenPolicyAgent.Client.PolicyAPIApi(openapi_client)
+    compile_client = OpenPolicyAgent.Client.CompileAPIApi(openapi_client)
+
+    # create the test policy to evaluate the query on
+    result, _http_resp = OpenPolicyAgent.Client.put_policy_module(policy_client, "example", PARTIAL_COMPILE.policy)
+    @test isa(result, OpenPolicyAgent.Client.PutPolicySuccessResponse)
+
+    try
+        partial_query_schema = OpenPolicyAgent.Client.PartialQuerySchema(;
+            query = PARTIAL_COMPILE.query,
+            input = PARTIAL_COMPILE.input,
+            options = PARTIAL_COMPILE.options,
+            unknowns = PARTIAL_COMPILE.unknowns,
+        )
+        response, _http_resp = OpenPolicyAgent.Client.post_compile(compile_client;
+            partial_query_schema = partial_query_schema,
+            pretty=true,
+            explain=true,
+            metrics=true,
+            instrument=true
+        )
+        @test isa(response, OpenPolicyAgent.Client.CompileSuccessResponse)
+        @test !isnothing(response.metrics) && (response.metrics["timer_rego_partial_eval_ns"] > 0)
+
+        result = response.result
+        @test !isnothing(result["queries"]) && length(result["queries"]) == 1
+        # Note: The response queries can be translated to other forms. E.g.: 
+        # - https://github.com/open-policy-agent/contrib/tree/main/data_filter_example
+        # - https://github.com/open-policy-agent/contrib/tree/main/data_filter_elasticsearch
+    finally
+        # delete the test policy
+        result, _http_resp = OpenPolicyAgent.Client.delete_policy_module(policy_client, "example"; pretty=true)
+        @test isa(result, Nothing)
+    end
+end
+
 function runtests()
     mktempdir() do testdir
         bundle_location = joinpath(testdir, "bundle")
@@ -238,6 +293,9 @@ function runtests()
                     end
                     @testset "Policy API" begin
                         test_policy_api(openapi_client)
+                    end
+                    @testset "Compile API" begin
+                        test_compile_api(openapi_client)
                     end
                 finally
                     @info("Stopping OPA server")

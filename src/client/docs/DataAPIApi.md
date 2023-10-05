@@ -220,7 +220,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **_api** | **DataAPIApi** | API context | 
 **path** | **String**| A backslash (/) delimited path to access values inside object and array documents. If the path points to an array, the server will attempt to convert the array index to an integer. If the path element cannot be converted to an integer, the server will respond with 404. | [default to nothing]
-**patch_operation** | [**Vector{PatchOperation}**](PatchOperation.md)| The patch operation in application/json-patch+json format | 
+**patch_operation** | [**Vector{PatchOperation}**](PatchOperation.md)| The patch operation in &#x60;application/json-patch+json&#x60; format | 
 
 ### Return type
 

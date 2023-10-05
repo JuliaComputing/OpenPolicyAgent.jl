@@ -26,7 +26,7 @@ end
 
 @doc raw"""Get configurations
 
-The /config API endpoint returns OPA’s active configuration. When the discovery feature is enabled, this API can be used to fetch the discovered configuration in the last evaluated discovery bundle. The credentials field in the Services configuration and the private_key and key fields in the Keys configuration will be omitted from the API response.
+The /config API endpoint returns OPA's active configuration. When the discovery feature is enabled, this API can be used to fetch the discovered configuration in the last evaluated discovery bundle. The credentials field in the Services configuration and the private_key and key fields in the Keys configuration will be omitted from the API response.
 
 Params:
 - pretty::Bool

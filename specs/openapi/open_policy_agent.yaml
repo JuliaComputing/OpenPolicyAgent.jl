@@ -6,24 +6,41 @@ servers:
    description: Local server on default port
 tags:
   - name: Policy API
-    description: 'Allows you to add, remove and modify policy modules. *Policy module identifiers are only used for management purposes. They are not used outside the Policy API.*'
+    description: |-
+      The Policy API exposes CRUD endpoints for managing policy modules. Policy modules can be added, removed, and modified at any time.
+      The identifiers given to policy modules are only used for management purposes. They are not used outside of the Policy API.
   - name: Data API
-    description: 'Exposes endpoints for reading and writing documents in OPA. For an explanation of the different types of documents, see [the OPA document model](https://www.openpolicyagent.org/docs/latest/philosophy/#the-opa-document-model)'
+    description: |-
+      Exposes endpoints for reading and writing documents in OPA.
+      For an explanation of the different types of documents, see [How Does OPA Work?](https://www.openpolicyagent.org/docs/latest/philosophy#how-does-opa-work)
   - name: Query API
     description: Posting queries to OPA
   - name: Compile API
     description: Posting partial queries to OPA
   - name: Health API
-    description: Executes a simple built-in policy query to verify that the server is operational
+    description: |-
+      Executes a simple built-in policy query to verify that the server is operational.
+      Optionally it can account for bundle activation as well (useful for "ready" checks at startup).
   - name: Config API
-    description: 'Returns OPA’s active configuration. When the discovery feature is enabled, this API can be used to fetch the discovered configuration in the last evaluated discovery bundle.'
+    description: |-
+      Returns OPA’s active configuration.
+      When the discovery feature is enabled, this API can be used to fetch the discovered configuration in the last evaluated discovery bundle.
+      The credentials field in the Services configuration and the private_key and key fields in the Keys configuration will be omitted from the API response.
   - name: Status API
-    description: 'Returns the status of the OPA server. This includes the status of the bundles and plugins.'
+    description: |-
+      Exposes a pull-based API for accessing OPA Status information.
+      Normally this information is pushed by OPA to a remote service via HTTP, console, or custom plugins.
+      However, in some cases, callers may wish to poll OPA and fetch the information.
 info:
   title: Open Policy Agent (OPA) REST API
   description: |-
     OPA provides policy-based control for cloud native environments.
-  version: 0.55.0
+    The REST API is a very common way to integrate with OPA.
+    There are [18 OPA Ecosystem projects](https://www.openpolicyagent.org/ecosystem/rest-api-integration) - many
+    of which are open source - built on the REST API which might serve as inspiration. You may also want to
+    review the [integration documentation](https://www.openpolicyagent.org/docs/latest/integration) for other
+    options to build on OPA by embedding functionality directly into your application.
+  version: 0.57.0
   x-logo:
     url: 'https://github.com/open-policy-agent/opa/blob/master/docs/website/static/img/logos/opa-horizontal-color.png?raw=true'
     backgroundColor: '#FFFFFF'
@@ -43,7 +60,7 @@ paths:
       summary: Execute a simple query.
       operationId: simpleQuery
       description: |-
-        OPA serves POST requests without a URL path by querying for the document at path /data/system/main.
+        OPA serves POST requests without a URL path by querying for the document at path `/data/system/main`.
         The content of that document defines the response entirely.
       tags:
         - Query API
@@ -266,7 +283,7 @@ paths:
       tags:
         - Data API
       requestBody:
-        description: The patch operation in application/json-patch+json format
+        description: The patch operation in `application/json-patch+json` format
         required: true
         content:
           application/json-patch+json:
@@ -465,7 +482,15 @@ paths:
     post:
       summary: Compile
       description: |-
-        This API endpoint allows you to partially evaluate Rego queries and obtain a simplified version of the policy. The example below assumes that OPA has been given the following policy (use `PUT /v1/policies/{path}`):
+        Partially evaluate a query.
+        The Compile API allows you to partially evaluate Rego queries and obtain a simplified version of the policy.
+        This is most useful when building integrations where policy logic is to be translated and evaluated in another environment.
+
+        For example, [this post](https://blog.openpolicyagent.org/write-policy-in-opa-enforce-policy-in-sql-d9d24db93bf4) on the
+        OPA blog shows how SQL can be generated based on Compile API output. For more details on Partial Evaluation in OPA, please
+        refer to [this blog post](https://blog.openpolicyagent.org/partial-evaluation-162750eaf422).
+
+        The example below assumes that OPA has been given the following policy (use `PUT /v1/policies/{path}`):
 
         ```yaml
         package example
@@ -479,6 +504,7 @@ paths:
         | --- | --- | --- | --- |
         | `query` | `string` | Yes | The query to partially evaluate and compile. |
         | `input` | `any` | No | The input document to use during partial evaluation (default: undefined). |
+        | `options` | `object[string, any]` | No | Additional options to use during partial evaluation. Only `disableInlining` option is supported. (default: undefined).
         | `unknowns` | `array[string]` | No | The terms to treat as unknown during partial evaluation (default: `["input"]`]). |
 
         For example:
@@ -496,8 +522,10 @@ paths:
             ]
         }
         ```
-        ### Partial evaluation
-        In some cases, the result of partial valuation is a conclusive, unconditional answer. See [the guidance](https://www.openpolicyagent.org/docs/latest/rest-api/#unconditional-results-from-partial-evaluation) for details.
+        ### Unconditional Results from Partial Evaluation
+        When you partially evaluate a query with the Compile API, OPA returns a new set of queries and supporting policies.
+        However, in some cases, the result of Partial Evaluation is a conclusive, unconditional answer.
+        See [the guidance](https://www.openpolicyagent.org/docs/latest/rest-api/#unconditional-results-from-partial-evaluation) for details.
       tags:
         - Compile API
       externalDocs:
@@ -527,7 +555,7 @@ paths:
     get:
       summary: Get configurations
       description: |-
-        The /config API endpoint returns OPA’s active configuration.
+        The /config API endpoint returns OPA's active configuration.
         When the discovery feature is enabled, this API can be used to fetch the discovered configuration in the last evaluated discovery bundle.
         The credentials field in the Services configuration and the private_key and key fields in the Keys configuration will be omitted from the API response.
       operationId: getConfig

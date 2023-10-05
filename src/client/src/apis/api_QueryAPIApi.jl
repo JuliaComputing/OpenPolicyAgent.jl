@@ -109,7 +109,7 @@ end
 
 @doc raw"""Execute a simple query.
 
-OPA serves POST requests without a URL path by querying for the document at path /data/system/main. The content of that document defines the response entirely.
+OPA serves POST requests without a URL path by querying for the document at path `/data/system/main`. The content of that document defines the response entirely.
 
 Params:
 - request_body::Dict{String, Any} (required)

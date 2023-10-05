@@ -26,7 +26,7 @@ Documentation is also embedded in Julia which can be used with a Julia specific 
 
 Class | Method
 ------------ | -------------
-*CompileAPIApi* | [**post_compile**](docs/CompileAPIApi.md#post_compile)<br/>**POST** /v1/compile<br/>Compile
+*CompileAPIApi* | [**post_compile**](docs/CompileAPIApi.md#post_compile)<br/>**POST** /v1/compile<br/>Partially evaluate a query.
 *ConfigAPIApi* | [**get_config**](docs/ConfigAPIApi.md#get_config)<br/>**GET** /v1/config<br/>Get configurations
 *DataAPIApi* | [**create_document**](docs/DataAPIApi.md#create_document)<br/>**PUT** /v1/data/{path}<br/>Create or overwrite a document.
 *DataAPIApi* | [**delete_document**](docs/DataAPIApi.md#delete_document)<br/>**DELETE** /v1/data/{path}<br/>Delete a document

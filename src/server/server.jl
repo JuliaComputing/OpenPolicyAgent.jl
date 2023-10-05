@@ -6,6 +6,25 @@ import Base: Process
 
 const DEFAULT_PORT = 8181
 
+"""
+    MonitoredOPAServer(configfile::String;
+        host::String = "localhost",
+        port::Int = DEFAULT_PORT,
+        stdout = nothing,
+        stderr = nothing,
+    )
+
+A server that is monitored and restarted if it dies.
+
+Arguments:
+- `configfile`: The path to the OPA configuration file.
+
+Keyword arguments:
+- `host`: The host to bind to.
+- `port`: The port to bind to.
+- `stdout`: The stream or file to redirect stdout to.
+- `stderr`: The stream or file to redirect stderr to.
+"""
 struct MonitoredOPAServer
     configfile::String
     host::String
@@ -51,6 +70,12 @@ function start_opa_server!(server::MonitoredOPAServer)
     return server.server_proc[]
 end
 
+"""
+    start!(server::MonitoredOPAServer)
+
+Starts the server. If the server is already started, an error is thrown.
+Monitors the server and restarts it if it dies.
+"""
 function start!(server::MonitoredOPAServer)
     lock(server.lck) do
         if !isnothing(server.monitor_task[]) && !istaskdone(server.monitor_task[])
@@ -61,6 +86,11 @@ function start!(server::MonitoredOPAServer)
     end
 end
 
+"""
+    stop!(server::MonitoredOPAServer)
+
+Stops the server. If the server is not started, an error is thrown.
+"""
 function stop!(server::MonitoredOPAServer)
     lock(server.lck) do
         if server.stopped[] || isnothing(server.monitor_task[]) || istaskdone(server.monitor_task[])

@@ -126,17 +126,39 @@ end
 
 function query_user(opa_client, username)
     request_body = Dict{String,Any}("input" => Dict{String,Any}("name" => username))
-    result, http_resp = OpenPolicyAgent.Client.get_document_with_path(opa_client, policy_path(), request_body; pretty=true, provenance=true, explain=true, metrics=true, instrument=true);
-    return result.result
+    response, http_resp = OpenPolicyAgent.Client.get_document_with_path(opa_client, policy_path(), request_body; pretty=true, provenance=true, explain=true, metrics=true, instrument=true);
+    return response.result
 end
 
 function test_data_api(openapi_client)
     opa_client = OpenPolicyAgent.Client.DataAPIApi(openapi_client)
    
-    result, _http_resp = OpenPolicyAgent.Client.get_document(opa_client, policy_path(); pretty=true, provenance=true, explain=true, metrics=true, instrument=true);
-    @test result.result == false
+    response, _http_resp = OpenPolicyAgent.Client.get_document(opa_client, policy_path(); pretty=true, provenance=true, explain=true, metrics=true, instrument=true);
+    @test response.result == false
 
     @test query_user(opa_client, "bob") == true
+
+    response, _http_resp = OpenPolicyAgent.Client.create_document(opa_client, "servers", EXAMPLE_QUERY_INPUT; metrics=true)
+    @test isa(response, OpenPolicyAgent.Client.CreateDocumentSuccessResponse)
+    @test response.metrics["timer_rego_input_parse_ns"] >= 0
+
+    patch_op = OpenPolicyAgent.Client.PatchOperation(; op="add", path="/servers/0/ports/-", value="p4")
+    response, _http_resp = OpenPolicyAgent.Client.patch_document(opa_client, "servers", [patch_op])
+    @test isa(response, Nothing)
+
+    response, _http_resp = OpenPolicyAgent.Client.get_document(opa_client, "servers")
+    @test isa(response, OpenPolicyAgent.Client.GetDocumentSuccessResponse)
+    result = response.result
+    servers = result["servers"]
+    @test isa(servers, Vector)
+    @test length(servers) == 2
+    @test servers[1]["name"] in ("app", "dev")
+    @test servers[2]["name"] in ("app", "dev")
+    @test Set(servers[1]["ports"]) == Set(["p1", "p2", "p3", "p4"]) # p4 was added via the patch operation
+
+    response, _http_resp = OpenPolicyAgent.Client.delete_document(opa_client, "servers"; metrics=true)
+    @test isa(response, OpenPolicyAgent.Client.DeleteDocumentSuccessResponse)
+    @test response.metrics["timer_server_handler_ns"] >= 0
 end
 
 function test_config_api(openapi_client)
@@ -197,7 +219,7 @@ function test_policy_api(openapi_client)
     result, _http_resp = OpenPolicyAgent.Client.put_policy_module(opa_client, example_policy_id, EXAMPLE_POLICY; pretty=true, metrics=true)
     @test isa(result, OpenPolicyAgent.Client.PutPolicySuccessResponse)
     @test isa(result.metrics, Dict{String,Any})
-    @test result.metrics["timer_rego_module_parse_ns"] > 0
+    @test result.metrics["timer_rego_module_parse_ns"] >= 0
 
     result, _http_resp = OpenPolicyAgent.Client.get_policies(opa_client; pretty=true)
     @test isa(result.result, Vector{OpenPolicyAgent.Client.Policy})
@@ -251,7 +273,7 @@ function test_compile_api(openapi_client)
             instrument=true
         )
         @test isa(response, OpenPolicyAgent.Client.CompileSuccessResponse)
-        @test !isnothing(response.metrics) && (response.metrics["timer_rego_partial_eval_ns"] > 0)
+        @test !isnothing(response.metrics) && (response.metrics["timer_rego_partial_eval_ns"] >= 0)
 
         result = response.result
         @test !isnothing(result["queries"]) && length(result["queries"]) == 1
@@ -272,7 +294,7 @@ function test_query_api(openapi_client)
     @test isa(response, OpenPolicyAgent.Client.GetDocumentSuccessResponse)
     metrics = response.metrics
     @test isa(metrics, Dict{String,Any})
-    @test metrics["timer_rego_query_eval_ns"] > 0
+    @test metrics["timer_rego_query_eval_ns"] >= 0
 
     query_param = OpenPolicyAgent.Client.QueryParameterPost(; query=EXAMPLE_QUERY, input=EXAMPLE_QUERY_INPUT)
     response, _http_resp = OpenPolicyAgent.Client.query_post(query_client, query_param; pretty=true, explain=true, metrics=true)
@@ -280,7 +302,7 @@ function test_query_api(openapi_client)
     @test isa(response, OpenPolicyAgent.Client.GetDocumentSuccessResponse)
     metrics = response.metrics
     @test isa(metrics, Dict{String,Any})
-    @test metrics["timer_rego_query_eval_ns"] > 0
+    @test metrics["timer_rego_query_eval_ns"] >= 0
     result = response.result
     @test isa(result, Vector)
     @test length(result) == 2

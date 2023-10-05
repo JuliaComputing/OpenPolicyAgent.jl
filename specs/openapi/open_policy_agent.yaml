@@ -246,6 +246,8 @@ paths:
               additionalProperties: {}
               example: {"example": {"flag": true}}
       responses:
+        '200':
+          $ref: '#/components/responses/createDocumentSuccessResponse'
         '204':
           $ref: '#/components/responses/noContentResponse'
         '304':
@@ -271,24 +273,7 @@ paths:
             schema:
               type: array
               items:
-                type: object
-                properties:
-                  op:
-                    type: string
-                    enum:
-                      - add
-                      - remove
-                      - replace
-                      - move
-                      - copy
-                      - test
-                  path:
-                    type: string
-                  from:
-                    type: string
-                  value:
-                    type: object
-                    additionalProperties: {}
+                $ref: '#/components/schemas/patchOperation'
       responses:
         '204':
           $ref: '#/components/responses/noContentResponse'
@@ -310,6 +295,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/metricsParameter'
       responses:
+        '200':
+          $ref: '#/components/responses/deleteDocumentSuccessResponse'
         '204':
           $ref: '#/components/responses/noContentResponse'
         '304':
@@ -729,6 +716,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/putPolicySuccessResponse'
+    createDocumentSuccessResponse:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/createDocumentSuccessResponse'
+    deleteDocumentSuccessResponse:
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/deleteDocumentSuccessResponse'
     listPoliciesSuccessResponse:
       description: Success
       content:
@@ -952,6 +951,36 @@ components:
         metrics:
           type: object
           additionalProperties: {}
+    createDocumentSuccessResponse:
+      type: object
+      properties:
+        metrics:
+          type: object
+          additionalProperties: {}
+    deleteDocumentSuccessResponse:
+      type: object
+      properties:
+        metrics:
+          type: object
+          additionalProperties: {}
+    patchOperation:
+      type: object
+      properties:
+        op:
+          type: string
+          enum:
+            - add
+            - remove
+            - replace
+            - move
+            - copy
+            - test
+        path:
+          type: string
+        from:
+          type: string
+        value:
+          type: object
     compileSuccessResponse:
       type: object
       properties:

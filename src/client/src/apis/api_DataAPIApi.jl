@@ -12,6 +12,7 @@ This can be used to construct the `OpenAPI.Clients.Client` instance.
 basepath(::Type{ DataAPIApi }) = "http://localhost:8181"
 
 const _returntypes_create_document_DataAPIApi = Dict{Regex,Type}(
+    Regex("^" * replace("200", "x"=>".") * "\$") => CreateDocumentSuccessResponse,
     Regex("^" * replace("204", "x"=>".") * "\$") => Nothing,
     Regex("^" * replace("304", "x"=>".") * "\$") => Nothing,
     Regex("^" * replace("400", "x"=>".") * "\$") => ServerErrorResponse,
@@ -37,7 +38,7 @@ Params:
 - request_body::Dict{String, Any} (required)
 - metrics::Bool
 
-Return: Nothing, OpenAPI.Clients.ApiResponse
+Return: CreateDocumentSuccessResponse, OpenAPI.Clients.ApiResponse
 """
 function create_document(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; metrics=nothing, _mediaType=nothing)
     _ctx = _oacinternal_create_document(_api, path, request_body; metrics=metrics, _mediaType=_mediaType)
@@ -50,6 +51,7 @@ function create_document(_api::DataAPIApi, response_stream::Channel, path::Strin
 end
 
 const _returntypes_delete_document_DataAPIApi = Dict{Regex,Type}(
+    Regex("^" * replace("200", "x"=>".") * "\$") => DeleteDocumentSuccessResponse,
     Regex("^" * replace("204", "x"=>".") * "\$") => Nothing,
     Regex("^" * replace("304", "x"=>".") * "\$") => Nothing,
     Regex("^" * replace("400", "x"=>".") * "\$") => ServerErrorResponse,
@@ -74,7 +76,7 @@ Params:
 - path::String (required)
 - metrics::Bool
 
-Return: Nothing, OpenAPI.Clients.ApiResponse
+Return: DeleteDocumentSuccessResponse, OpenAPI.Clients.ApiResponse
 """
 function delete_document(_api::DataAPIApi, path::String; metrics=nothing, _mediaType=nothing)
     _ctx = _oacinternal_delete_document(_api, path; metrics=metrics, _mediaType=_mediaType)
@@ -223,8 +225,8 @@ const _returntypes_patch_document_DataAPIApi = Dict{Regex,Type}(
     Regex("^" * replace("500", "x"=>".") * "\$") => ServerErrorResponse,
 )
 
-function _oacinternal_patch_document(_api::DataAPIApi, path::String, patch_document_request_inner::Vector{PatchDocumentRequestInner}; _mediaType=nothing)
-    _ctx = OpenAPI.Clients.Ctx(_api.client, "PATCH", _returntypes_patch_document_DataAPIApi, "/v1/data/{path}", [], patch_document_request_inner)
+function _oacinternal_patch_document(_api::DataAPIApi, path::String, patch_operation::Vector{PatchOperation}; _mediaType=nothing)
+    _ctx = OpenAPI.Clients.Ctx(_api.client, "PATCH", _returntypes_patch_document_DataAPIApi, "/v1/data/{path}", [], patch_operation)
     OpenAPI.Clients.set_param(_ctx.path, "path", path)  # type String
     OpenAPI.Clients.set_header_accept(_ctx, ["application/json", ])
     OpenAPI.Clients.set_header_content_type(_ctx, (_mediaType === nothing) ? ["application/json-patch+json", ] : [_mediaType])
@@ -237,17 +239,17 @@ Update a document. The patch operation is specified in the request body.
 
 Params:
 - path::String (required)
-- patch_document_request_inner::Vector{PatchDocumentRequestInner} (required)
+- patch_operation::Vector{PatchOperation} (required)
 
 Return: Nothing, OpenAPI.Clients.ApiResponse
 """
-function patch_document(_api::DataAPIApi, path::String, patch_document_request_inner::Vector{PatchDocumentRequestInner}; _mediaType=nothing)
-    _ctx = _oacinternal_patch_document(_api, path, patch_document_request_inner; _mediaType=_mediaType)
+function patch_document(_api::DataAPIApi, path::String, patch_operation::Vector{PatchOperation}; _mediaType=nothing)
+    _ctx = _oacinternal_patch_document(_api, path, patch_operation; _mediaType=_mediaType)
     return OpenAPI.Clients.exec(_ctx)
 end
 
-function patch_document(_api::DataAPIApi, response_stream::Channel, path::String, patch_document_request_inner::Vector{PatchDocumentRequestInner}; _mediaType=nothing)
-    _ctx = _oacinternal_patch_document(_api, path, patch_document_request_inner; _mediaType=_mediaType)
+function patch_document(_api::DataAPIApi, response_stream::Channel, path::String, patch_operation::Vector{PatchOperation}; _mediaType=nothing)
+    _ctx = _oacinternal_patch_document(_api, path, patch_operation; _mediaType=_mediaType)
     return OpenAPI.Clients.exec(_ctx, response_stream)
 end
 

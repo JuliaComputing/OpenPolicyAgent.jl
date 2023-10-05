@@ -3,7 +3,9 @@ README.md
 docs/CompileAPIApi.md
 docs/CompileSuccessResponse.md
 docs/ConfigAPIApi.md
+docs/CreateDocumentSuccessResponse.md
 docs/DataAPIApi.md
+docs/DeleteDocumentSuccessResponse.md
 docs/ErrorDetail.md
 docs/ErrorLocation.md
 docs/GetDocumentSuccessResponse.md
@@ -11,7 +13,7 @@ docs/GetPolicyListSuccessResponse.md
 docs/GetPolicyModuleSuccessResponse.md
 docs/HealthAPIApi.md
 docs/PartialQuerySchema.md
-docs/PatchDocumentRequestInner.md
+docs/PatchOperation.md
 docs/Policy.md
 docs/PolicyAPIApi.md
 docs/PolicyAst.md
@@ -38,13 +40,15 @@ src/apis/api_QueryAPIApi.jl
 src/apis/api_StatusAPIApi.jl
 src/modelincludes.jl
 src/models/model_CompileSuccessResponse.jl
+src/models/model_CreateDocumentSuccessResponse.jl
+src/models/model_DeleteDocumentSuccessResponse.jl
 src/models/model_ErrorDetail.jl
 src/models/model_ErrorLocation.jl
 src/models/model_GetDocumentSuccessResponse.jl
 src/models/model_GetPolicyListSuccessResponse.jl
 src/models/model_GetPolicyModuleSuccessResponse.jl
 src/models/model_PartialQuerySchema.jl
-src/models/model_PatchDocumentRequestInner.jl
+src/models/model_PatchOperation.jl
 src/models/model_Policy.jl
 src/models/model_PolicyAst.jl
 src/models/model_PolicyAstPackage.jl

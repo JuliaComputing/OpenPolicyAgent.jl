@@ -13,8 +13,8 @@ Method | HTTP request | Description
 
 
 # **create_document**
-> create_document(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; metrics=nothing, _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
-> create_document(_api::DataAPIApi, response_stream::Channel, path::String, request_body::Dict{String, Any}; metrics=nothing, _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
+> create_document(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; metrics=nothing, _mediaType=nothing) -> CreateDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> create_document(_api::DataAPIApi, response_stream::Channel, path::String, request_body::Dict{String, Any}; metrics=nothing, _mediaType=nothing) -> Channel{ CreateDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Create or overwrite a document.
 
@@ -36,7 +36,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-Nothing
+[**CreateDocumentSuccessResponse**](CreateDocumentSuccessResponse.md)
 
 ### Authorization
 
@@ -50,8 +50,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **delete_document**
-> delete_document(_api::DataAPIApi, path::String; metrics=nothing, _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
-> delete_document(_api::DataAPIApi, response_stream::Channel, path::String; metrics=nothing, _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
+> delete_document(_api::DataAPIApi, path::String; metrics=nothing, _mediaType=nothing) -> DeleteDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> delete_document(_api::DataAPIApi, response_stream::Channel, path::String; metrics=nothing, _mediaType=nothing) -> Channel{ DeleteDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Delete a document
 
@@ -72,7 +72,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-Nothing
+[**DeleteDocumentSuccessResponse**](DeleteDocumentSuccessResponse.md)
 
 ### Authorization
 
@@ -207,8 +207,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **patch_document**
-> patch_document(_api::DataAPIApi, path::String, patch_document_request_inner::Vector{PatchDocumentRequestInner}; _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
-> patch_document(_api::DataAPIApi, response_stream::Channel, path::String, patch_document_request_inner::Vector{PatchDocumentRequestInner}; _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
+> patch_document(_api::DataAPIApi, path::String, patch_operation::Vector{PatchOperation}; _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
+> patch_document(_api::DataAPIApi, response_stream::Channel, path::String, patch_operation::Vector{PatchOperation}; _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
 
 Patch a document
 
@@ -220,7 +220,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **_api** | **DataAPIApi** | API context | 
 **path** | **String**| A backslash (/) delimited path to access values inside object and array documents. If the path points to an array, the server will attempt to convert the array index to an integer. If the path element cannot be converted to an integer, the server will respond with 404. | [default to nothing]
-**patch_document_request_inner** | [**Vector{PatchDocumentRequestInner}**](PatchDocumentRequestInner.md)| The patch operation in application/json-patch+json format | 
+**patch_operation** | [**Vector{PatchOperation}**](PatchOperation.md)| The patch operation in application/json-patch+json format | 
 
 ### Return type
 

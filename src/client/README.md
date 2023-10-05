@@ -43,13 +43,15 @@ Class | Method
 ## Models
 
  - [CompileSuccessResponse](docs/CompileSuccessResponse.md)
+ - [CreateDocumentSuccessResponse](docs/CreateDocumentSuccessResponse.md)
+ - [DeleteDocumentSuccessResponse](docs/DeleteDocumentSuccessResponse.md)
  - [ErrorDetail](docs/ErrorDetail.md)
  - [ErrorLocation](docs/ErrorLocation.md)
  - [GetDocumentSuccessResponse](docs/GetDocumentSuccessResponse.md)
  - [GetPolicyListSuccessResponse](docs/GetPolicyListSuccessResponse.md)
  - [GetPolicyModuleSuccessResponse](docs/GetPolicyModuleSuccessResponse.md)
  - [PartialQuerySchema](docs/PartialQuerySchema.md)
- - [PatchDocumentRequestInner](docs/PatchDocumentRequestInner.md)
+ - [PatchOperation](docs/PatchOperation.md)
  - [Policy](docs/Policy.md)
  - [PolicyAst](docs/PolicyAst.md)
  - [PolicyAstPackage](docs/PolicyAstPackage.md)

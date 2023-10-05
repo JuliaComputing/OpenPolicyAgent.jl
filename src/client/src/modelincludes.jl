@@ -2,13 +2,15 @@
 # Do not modify this file directly. Modify the OpenAPI specification instead.
 
 include("models/model_CompileSuccessResponse.jl")
+include("models/model_CreateDocumentSuccessResponse.jl")
+include("models/model_DeleteDocumentSuccessResponse.jl")
 include("models/model_ErrorDetail.jl")
 include("models/model_ErrorLocation.jl")
 include("models/model_GetDocumentSuccessResponse.jl")
 include("models/model_GetPolicyListSuccessResponse.jl")
 include("models/model_GetPolicyModuleSuccessResponse.jl")
 include("models/model_PartialQuerySchema.jl")
-include("models/model_PatchDocumentRequestInner.jl")
+include("models/model_PatchOperation.jl")
 include("models/model_Policy.jl")
 include("models/model_PolicyAst.jl")
 include("models/model_PolicyAstPackage.jl")

@@ -75,7 +75,7 @@ OPA exposes domain-agnostic APIs that your service can call to manage and enforc
 The `OpenPolicyAgent.Client` module includes methods to help interact with the OPA server using the OpenAPI client.
 
 ```julia
-opa_client = OpenPolicyAgent.Client.DataAPIApi(openapi_client)
+opa_client = OpenPolicyAgent.Client.DataApi(openapi_client)
 
 response, _http_resp = OpenPolicyAgent.Client.get_document(
     opa_client,

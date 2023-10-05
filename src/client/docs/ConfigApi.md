@@ -1,15 +1,15 @@
-# ConfigAPIApi
+# ConfigApi
 
 All URIs are relative to *http://localhost:8181*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**get_config**](ConfigAPIApi.md#get_config) | **GET** /v1/config | Get configurations
+[**get_config**](ConfigApi.md#get_config) | **GET** /v1/config | Get configurations
 
 
 # **get_config**
-> get_config(_api::ConfigAPIApi; pretty=nothing, _mediaType=nothing) -> Dict{String, Any}, OpenAPI.Clients.ApiResponse <br/>
-> get_config(_api::ConfigAPIApi, response_stream::Channel; pretty=nothing, _mediaType=nothing) -> Channel{ Dict{String, Any} }, OpenAPI.Clients.ApiResponse
+> get_config(_api::ConfigApi; pretty=nothing, _mediaType=nothing) -> Dict{String, Any}, OpenAPI.Clients.ApiResponse <br/>
+> get_config(_api::ConfigApi, response_stream::Channel; pretty=nothing, _mediaType=nothing) -> Channel{ Dict{String, Any} }, OpenAPI.Clients.ApiResponse
 
 Get configurations
 
@@ -19,7 +19,7 @@ The /config API endpoint returns OPA's active configuration. When the discovery 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **ConfigAPIApi** | API context | 
+ **_api** | **ConfigApi** | API context | 
 
 ### Optional Parameters
 

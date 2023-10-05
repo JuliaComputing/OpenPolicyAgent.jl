@@ -131,7 +131,7 @@ function query_user(opa_client, username)
 end
 
 function test_data_api(openapi_client)
-    opa_client = OpenPolicyAgent.Client.DataAPIApi(openapi_client)
+    opa_client = OpenPolicyAgent.Client.DataApi(openapi_client)
    
     response, _http_resp = OpenPolicyAgent.Client.get_document(opa_client, policy_path(); pretty=true, provenance=true, explain=true, metrics=true, instrument=true);
     @test response.result == false
@@ -162,7 +162,7 @@ function test_data_api(openapi_client)
 end
 
 function test_config_api(openapi_client)
-    opa_client = OpenPolicyAgent.Client.ConfigAPIApi(openapi_client)
+    opa_client = OpenPolicyAgent.Client.ConfigApi(openapi_client)
     result_dict, _http_resp = OpenPolicyAgent.Client.get_config(opa_client; pretty=true)
 
     @test isa(result_dict, Dict{String,Any})
@@ -186,7 +186,7 @@ function test_config_api(openapi_client)
 end
 
 function test_status_api(openapi_client)
-    opa_client = OpenPolicyAgent.Client.StatusAPIApi(openapi_client)
+    opa_client = OpenPolicyAgent.Client.StatusApi(openapi_client)
     result, _http_resp = OpenPolicyAgent.Client.get_status(opa_client; pretty=true)
 
     # status plugin is not enabled by default
@@ -197,13 +197,13 @@ function test_status_api(openapi_client)
 end
 
 function test_health_api(openapi_client)
-    opa_client = OpenPolicyAgent.Client.HealthAPIApi(openapi_client)
+    opa_client = OpenPolicyAgent.Client.HealthApi(openapi_client)
     result, _http_resp = OpenPolicyAgent.Client.get_health(opa_client; bundles=true, plugins=true)
     @test isa(result, Nothing)
 end
 
 function test_policy_api(openapi_client)
-    opa_client = OpenPolicyAgent.Client.PolicyAPIApi(openapi_client)
+    opa_client = OpenPolicyAgent.Client.PolicyApi(openapi_client)
     result, _http_resp = OpenPolicyAgent.Client.get_policies(opa_client; pretty=true)
     @test isa(result, OpenPolicyAgent.Client.GetPolicyListSuccessResponse)
     @test isa(result.result, Vector{OpenPolicyAgent.Client.Policy})
@@ -251,8 +251,8 @@ function test_policy_api(openapi_client)
 end
 
 function test_compile_api(openapi_client)
-    policy_client = OpenPolicyAgent.Client.PolicyAPIApi(openapi_client)
-    compile_client = OpenPolicyAgent.Client.CompileAPIApi(openapi_client)
+    policy_client = OpenPolicyAgent.Client.PolicyApi(openapi_client)
+    compile_client = OpenPolicyAgent.Client.CompileApi(openapi_client)
 
     # create the test policy to evaluate the query on
     result, _http_resp = OpenPolicyAgent.Client.put_policy_module(policy_client, "example", PARTIAL_COMPILE.policy)
@@ -288,7 +288,7 @@ function test_compile_api(openapi_client)
 end
 
 function test_query_api(openapi_client)
-    query_client = OpenPolicyAgent.Client.QueryAPIApi(openapi_client)
+    query_client = OpenPolicyAgent.Client.QueryApi(openapi_client)
     response, _http_resp = OpenPolicyAgent.Client.query_get(query_client, EXAMPLE_QUERY; pretty=true, explain=true, metrics=true)
 
     @test isa(response, OpenPolicyAgent.Client.GetDocumentSuccessResponse)

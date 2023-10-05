@@ -11,12 +11,12 @@ const API_VERSION = "0.57.0"
 
 include("modelincludes.jl")
 
-include("apis/api_CompileAPIApi.jl")
-include("apis/api_ConfigAPIApi.jl")
-include("apis/api_DataAPIApi.jl")
-include("apis/api_HealthAPIApi.jl")
-include("apis/api_PolicyAPIApi.jl")
-include("apis/api_QueryAPIApi.jl")
-include("apis/api_StatusAPIApi.jl")
+include("apis/api_CompileApi.jl")
+include("apis/api_ConfigApi.jl")
+include("apis/api_DataApi.jl")
+include("apis/api_HealthApi.jl")
+include("apis/api_PolicyApi.jl")
+include("apis/api_QueryApi.jl")
+include("apis/api_StatusApi.jl")
 
 end # module Client

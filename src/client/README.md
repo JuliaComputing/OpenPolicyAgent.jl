@@ -26,23 +26,23 @@ Documentation is also embedded in Julia which can be used with a Julia specific 
 
 Class | Method
 ------------ | -------------
-*CompileAPIApi* | [**post_compile**](docs/CompileAPIApi.md#post_compile)<br/>**POST** /v1/compile<br/>Partially evaluate a query.
-*ConfigAPIApi* | [**get_config**](docs/ConfigAPIApi.md#get_config)<br/>**GET** /v1/config<br/>Get configurations
-*DataAPIApi* | [**create_document**](docs/DataAPIApi.md#create_document)<br/>**PUT** /v1/data/{path}<br/>Create or overwrite a document.
-*DataAPIApi* | [**delete_document**](docs/DataAPIApi.md#delete_document)<br/>**DELETE** /v1/data/{path}<br/>Delete a document
-*DataAPIApi* | [**get_document**](docs/DataAPIApi.md#get_document)<br/>**GET** /v1/data/{path}<br/>Get a document
-*DataAPIApi* | [**get_document_from_webhook**](docs/DataAPIApi.md#get_document_from_webhook)<br/>**POST** /v0/data/{path}<br/>Get a document from a webhook.
-*DataAPIApi* | [**get_document_with_path**](docs/DataAPIApi.md#get_document_with_path)<br/>**POST** /v1/data/{path}<br/>Get a document that required an input
-*DataAPIApi* | [**patch_document**](docs/DataAPIApi.md#patch_document)<br/>**PATCH** /v1/data/{path}<br/>Patch a document
-*HealthAPIApi* | [**get_health**](docs/HealthAPIApi.md#get_health)<br/>**GET** /health<br/>Health
-*PolicyAPIApi* | [**delete_policy_module**](docs/PolicyAPIApi.md#delete_policy_module)<br/>**DELETE** /v1/policies/{id}<br/>Delete a policy module
-*PolicyAPIApi* | [**get_policies**](docs/PolicyAPIApi.md#get_policies)<br/>**GET** /v1/policies<br/>List policies
-*PolicyAPIApi* | [**get_policy_module**](docs/PolicyAPIApi.md#get_policy_module)<br/>**GET** /v1/policies/{id}<br/>Get a policy module
-*PolicyAPIApi* | [**put_policy_module**](docs/PolicyAPIApi.md#put_policy_module)<br/>**PUT** /v1/policies/{id}<br/>Create or update a policy module
-*QueryAPIApi* | [**query_get**](docs/QueryAPIApi.md#query_get)<br/>**GET** /v1/query<br/>Execute an ad-hoc query and return bindings for variables found in the query.
-*QueryAPIApi* | [**query_post**](docs/QueryAPIApi.md#query_post)<br/>**POST** /v1/query<br/>Execute an ad-hoc query and return bindings for variables found in the query.
-*QueryAPIApi* | [**simple_query**](docs/QueryAPIApi.md#simple_query)<br/>**POST** /<br/>Execute a simple query.
-*StatusAPIApi* | [**get_status**](docs/StatusAPIApi.md#get_status)<br/>**GET** /v1/status<br/>Get status
+*CompileApi* | [**post_compile**](docs/CompileApi.md#post_compile)<br/>**POST** /v1/compile<br/>Partially evaluate a query.
+*ConfigApi* | [**get_config**](docs/ConfigApi.md#get_config)<br/>**GET** /v1/config<br/>Get configurations
+*DataApi* | [**create_document**](docs/DataApi.md#create_document)<br/>**PUT** /v1/data/{path}<br/>Create or overwrite a document.
+*DataApi* | [**delete_document**](docs/DataApi.md#delete_document)<br/>**DELETE** /v1/data/{path}<br/>Delete a document
+*DataApi* | [**get_document**](docs/DataApi.md#get_document)<br/>**GET** /v1/data/{path}<br/>Get a document
+*DataApi* | [**get_document_from_webhook**](docs/DataApi.md#get_document_from_webhook)<br/>**POST** /v0/data/{path}<br/>Get a document from a webhook.
+*DataApi* | [**get_document_with_path**](docs/DataApi.md#get_document_with_path)<br/>**POST** /v1/data/{path}<br/>Get a document that required an input
+*DataApi* | [**patch_document**](docs/DataApi.md#patch_document)<br/>**PATCH** /v1/data/{path}<br/>Patch a document
+*HealthApi* | [**get_health**](docs/HealthApi.md#get_health)<br/>**GET** /health<br/>Health
+*PolicyApi* | [**delete_policy_module**](docs/PolicyApi.md#delete_policy_module)<br/>**DELETE** /v1/policies/{id}<br/>Delete a policy module
+*PolicyApi* | [**get_policies**](docs/PolicyApi.md#get_policies)<br/>**GET** /v1/policies<br/>List policies
+*PolicyApi* | [**get_policy_module**](docs/PolicyApi.md#get_policy_module)<br/>**GET** /v1/policies/{id}<br/>Get a policy module
+*PolicyApi* | [**put_policy_module**](docs/PolicyApi.md#put_policy_module)<br/>**PUT** /v1/policies/{id}<br/>Create or update a policy module
+*QueryApi* | [**query_get**](docs/QueryApi.md#query_get)<br/>**GET** /v1/query<br/>Execute an ad-hoc query and return bindings for variables found in the query.
+*QueryApi* | [**query_post**](docs/QueryApi.md#query_post)<br/>**POST** /v1/query<br/>Execute an ad-hoc query and return bindings for variables found in the query.
+*QueryApi* | [**simple_query**](docs/QueryApi.md#simple_query)<br/>**POST** /<br/>Execute a simple query.
+*StatusApi* | [**get_status**](docs/StatusApi.md#get_status)<br/>**GET** /v1/status<br/>Get status
 
 
 ## Models

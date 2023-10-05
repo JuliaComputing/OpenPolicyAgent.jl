@@ -1,20 +1,20 @@
-# DataAPIApi
+# DataApi
 
 All URIs are relative to *http://localhost:8181*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**create_document**](DataAPIApi.md#create_document) | **PUT** /v1/data/{path} | Create or overwrite a document.
-[**delete_document**](DataAPIApi.md#delete_document) | **DELETE** /v1/data/{path} | Delete a document
-[**get_document**](DataAPIApi.md#get_document) | **GET** /v1/data/{path} | Get a document
-[**get_document_from_webhook**](DataAPIApi.md#get_document_from_webhook) | **POST** /v0/data/{path} | Get a document from a webhook.
-[**get_document_with_path**](DataAPIApi.md#get_document_with_path) | **POST** /v1/data/{path} | Get a document that required an input
-[**patch_document**](DataAPIApi.md#patch_document) | **PATCH** /v1/data/{path} | Patch a document
+[**create_document**](DataApi.md#create_document) | **PUT** /v1/data/{path} | Create or overwrite a document.
+[**delete_document**](DataApi.md#delete_document) | **DELETE** /v1/data/{path} | Delete a document
+[**get_document**](DataApi.md#get_document) | **GET** /v1/data/{path} | Get a document
+[**get_document_from_webhook**](DataApi.md#get_document_from_webhook) | **POST** /v0/data/{path} | Get a document from a webhook.
+[**get_document_with_path**](DataApi.md#get_document_with_path) | **POST** /v1/data/{path} | Get a document that required an input
+[**patch_document**](DataApi.md#patch_document) | **PATCH** /v1/data/{path} | Patch a document
 
 
 # **create_document**
-> create_document(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; metrics=nothing, _mediaType=nothing) -> CreateDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
-> create_document(_api::DataAPIApi, response_stream::Channel, path::String, request_body::Dict{String, Any}; metrics=nothing, _mediaType=nothing) -> Channel{ CreateDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
+> create_document(_api::DataApi, path::String, request_body::Dict{String, Any}; metrics=nothing, _mediaType=nothing) -> CreateDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> create_document(_api::DataApi, response_stream::Channel, path::String, request_body::Dict{String, Any}; metrics=nothing, _mediaType=nothing) -> Channel{ CreateDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Create or overwrite a document.
 
@@ -24,7 +24,7 @@ If the path does not refer to an existing document, the server will attempt to c
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **DataAPIApi** | API context | 
+ **_api** | **DataApi** | API context | 
 **path** | **String**| A backslash (/) delimited path to access values inside object and array documents. If the path points to an array, the server will attempt to convert the array index to an integer. If the path element cannot be converted to an integer, the server will respond with 404. | [default to nothing]
 **request_body** | [**Dict{String, Any}**](Any.md)| The document to create or overwrite (in JSON format) | 
 
@@ -50,8 +50,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **delete_document**
-> delete_document(_api::DataAPIApi, path::String; metrics=nothing, _mediaType=nothing) -> DeleteDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
-> delete_document(_api::DataAPIApi, response_stream::Channel, path::String; metrics=nothing, _mediaType=nothing) -> Channel{ DeleteDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
+> delete_document(_api::DataApi, path::String; metrics=nothing, _mediaType=nothing) -> DeleteDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> delete_document(_api::DataApi, response_stream::Channel, path::String; metrics=nothing, _mediaType=nothing) -> Channel{ DeleteDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Delete a document
 
@@ -61,7 +61,7 @@ The server processes the DELETE method as if the client had sent a PATCH request
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **DataAPIApi** | API context | 
+ **_api** | **DataApi** | API context | 
 **path** | **String**| A backslash (/) delimited path to access values inside object and array documents. If the path points to an array, the server will attempt to convert the array index to an integer. If the path element cannot be converted to an integer, the server will respond with 404. | [default to nothing]
 
 ### Optional Parameters
@@ -86,8 +86,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **get_document**
-> get_document(_api::DataAPIApi, path::String; input=nothing, pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing) -> GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
-> get_document(_api::DataAPIApi, response_stream::Channel, path::String; input=nothing, pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing) -> Channel{ GetDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
+> get_document(_api::DataApi, path::String; input=nothing, pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing) -> GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> get_document(_api::DataApi, response_stream::Channel, path::String; input=nothing, pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing) -> Channel{ GetDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Get a document
 
@@ -97,7 +97,7 @@ This API endpoint returns the document specified by `path`.  The path separator 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **DataAPIApi** | API context | 
+ **_api** | **DataApi** | API context | 
 **path** | **String**| A backslash (/) delimited path to access values inside object and array documents. If the path points to an array, the server will attempt to convert the array index to an integer. If the path element cannot be converted to an integer, the server will respond with 404. | [default to nothing]
 
 ### Optional Parameters
@@ -128,8 +128,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **get_document_from_webhook**
-> get_document_from_webhook(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing) -> GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
-> get_document_from_webhook(_api::DataAPIApi, response_stream::Channel, path::String, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing) -> Channel{ GetDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
+> get_document_from_webhook(_api::DataApi, path::String, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing) -> GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> get_document_from_webhook(_api::DataApi, response_stream::Channel, path::String, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing) -> Channel{ GetDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Get a document from a webhook.
 
@@ -139,7 +139,7 @@ Use this API if you are enforcing policy decisions via webhooks that have pre-de
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **DataAPIApi** | API context | 
+ **_api** | **DataApi** | API context | 
 **path** | **String**| A backslash (/) delimited path to access values inside object and array documents. If the path points to an array, the server will attempt to convert the array index to an integer. If the path element cannot be converted to an integer, the server will respond with 404. | [default to nothing]
 **request_body** | [**Dict{String, Any}**](Any.md)| The input document (in JSON format) | 
 
@@ -165,8 +165,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **get_document_with_path**
-> get_document_with_path(_api::DataAPIApi, path::String, request_body::Dict{String, Any}; pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing) -> GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
-> get_document_with_path(_api::DataAPIApi, response_stream::Channel, path::String, request_body::Dict{String, Any}; pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing) -> Channel{ GetDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
+> get_document_with_path(_api::DataApi, path::String, request_body::Dict{String, Any}; pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing) -> GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> get_document_with_path(_api::DataApi, response_stream::Channel, path::String, request_body::Dict{String, Any}; pretty=nothing, provenance=nothing, explain=nothing, metrics=nothing, instrument=nothing, strict_builtin_errors=nothing, _mediaType=nothing) -> Channel{ GetDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Get a document that required an input
 
@@ -176,7 +176,7 @@ The request body contains an object that specifies a value for the input documen
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **DataAPIApi** | API context | 
+ **_api** | **DataApi** | API context | 
 **path** | **String**| A backslash (/) delimited path to access values inside object and array documents. If the path points to an array, the server will attempt to convert the array index to an integer. If the path element cannot be converted to an integer, the server will respond with 404. | [default to nothing]
 **request_body** | [**Dict{String, Any}**](Any.md)| The input document (in JSON format) | 
 
@@ -207,8 +207,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **patch_document**
-> patch_document(_api::DataAPIApi, path::String, patch_operation::Vector{PatchOperation}; _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
-> patch_document(_api::DataAPIApi, response_stream::Channel, path::String, patch_operation::Vector{PatchOperation}; _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
+> patch_document(_api::DataApi, path::String, patch_operation::Vector{PatchOperation}; _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
+> patch_document(_api::DataApi, response_stream::Channel, path::String, patch_operation::Vector{PatchOperation}; _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
 
 Patch a document
 
@@ -218,7 +218,7 @@ Update a document. The patch operation is specified in the request body.
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **DataAPIApi** | API context | 
+ **_api** | **DataApi** | API context | 
 **path** | **String**| A backslash (/) delimited path to access values inside object and array documents. If the path points to an array, the server will attempt to convert the array index to an integer. If the path element cannot be converted to an integer, the server will respond with 404. | [default to nothing]
 **patch_operation** | [**Vector{PatchOperation}**](PatchOperation.md)| The patch operation in &#x60;application/json-patch+json&#x60; format | 
 

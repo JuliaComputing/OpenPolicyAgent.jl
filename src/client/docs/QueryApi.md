@@ -1,17 +1,17 @@
-# QueryAPIApi
+# QueryApi
 
 All URIs are relative to *http://localhost:8181*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**query_get**](QueryAPIApi.md#query_get) | **GET** /v1/query | Execute an ad-hoc query and return bindings for variables found in the query.
-[**query_post**](QueryAPIApi.md#query_post) | **POST** /v1/query | Execute an ad-hoc query and return bindings for variables found in the query.
-[**simple_query**](QueryAPIApi.md#simple_query) | **POST** / | Execute a simple query.
+[**query_get**](QueryApi.md#query_get) | **GET** /v1/query | Execute an ad-hoc query and return bindings for variables found in the query.
+[**query_post**](QueryApi.md#query_post) | **POST** /v1/query | Execute an ad-hoc query and return bindings for variables found in the query.
+[**simple_query**](QueryApi.md#simple_query) | **POST** / | Execute a simple query.
 
 
 # **query_get**
-> query_get(_api::QueryAPIApi, q::String; pretty=nothing, explain=nothing, metrics=nothing, _mediaType=nothing) -> GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
-> query_get(_api::QueryAPIApi, response_stream::Channel, q::String; pretty=nothing, explain=nothing, metrics=nothing, _mediaType=nothing) -> Channel{ GetDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
+> query_get(_api::QueryApi, q::String; pretty=nothing, explain=nothing, metrics=nothing, _mediaType=nothing) -> GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> query_get(_api::QueryApi, response_stream::Channel, q::String; pretty=nothing, explain=nothing, metrics=nothing, _mediaType=nothing) -> Channel{ GetDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Execute an ad-hoc query and return bindings for variables found in the query.
 
@@ -21,7 +21,7 @@ For queries that have large JSON values it is recommended to use the POST method
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **QueryAPIApi** | API context | 
+ **_api** | **QueryApi** | API context | 
 **q** | **String**| The ad-hoc query to execute. OPA will parse, compile, and execute the query represented by the parameter value. The value MUST be URL encoded. Only used in GET method. For POST method the query is sent as part of the request body and this parameter is not used. | [default to nothing]
 
 ### Optional Parameters
@@ -48,8 +48,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **query_post**
-> query_post(_api::QueryAPIApi, query_parameter_post::QueryParameterPost; pretty=nothing, explain=nothing, metrics=nothing, _mediaType=nothing) -> GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
-> query_post(_api::QueryAPIApi, response_stream::Channel, query_parameter_post::QueryParameterPost; pretty=nothing, explain=nothing, metrics=nothing, _mediaType=nothing) -> Channel{ GetDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
+> query_post(_api::QueryApi, query_parameter_post::QueryParameterPost; pretty=nothing, explain=nothing, metrics=nothing, _mediaType=nothing) -> GetDocumentSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> query_post(_api::QueryApi, response_stream::Channel, query_parameter_post::QueryParameterPost; pretty=nothing, explain=nothing, metrics=nothing, _mediaType=nothing) -> Channel{ GetDocumentSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Execute an ad-hoc query and return bindings for variables found in the query.
 
@@ -59,7 +59,7 @@ Query included as the POST body. E.g.: ``` {   \"query\": \"input.servers[i].por
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **QueryAPIApi** | API context | 
+ **_api** | **QueryApi** | API context | 
 **query_parameter_post** | [**QueryParameterPost**](QueryParameterPost.md)| The query and input document (in JSON format) | 
 
 ### Optional Parameters
@@ -86,8 +86,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **simple_query**
-> simple_query(_api::QueryAPIApi, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing) -> Dict{String, Any}, OpenAPI.Clients.ApiResponse <br/>
-> simple_query(_api::QueryAPIApi, response_stream::Channel, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing) -> Channel{ Dict{String, Any} }, OpenAPI.Clients.ApiResponse
+> simple_query(_api::QueryApi, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing) -> Dict{String, Any}, OpenAPI.Clients.ApiResponse <br/>
+> simple_query(_api::QueryApi, response_stream::Channel, request_body::Dict{String, Any}; pretty=nothing, _mediaType=nothing) -> Channel{ Dict{String, Any} }, OpenAPI.Clients.ApiResponse
 
 Execute a simple query.
 
@@ -97,7 +97,7 @@ OPA serves POST requests without a URL path by querying for the document at path
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **QueryAPIApi** | API context | 
+ **_api** | **QueryApi** | API context | 
 **request_body** | [**Dict{String, Any}**](Any.md)| The input document (in JSON format) | 
 
 ### Optional Parameters

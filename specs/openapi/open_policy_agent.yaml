@@ -5,28 +5,28 @@ servers:
  - url: 'http://localhost:8181'
    description: Local server on default port
 tags:
-  - name: Policy API
+  - name: Policy
     description: |-
       The Policy API exposes CRUD endpoints for managing policy modules. Policy modules can be added, removed, and modified at any time.
       The identifiers given to policy modules are only used for management purposes. They are not used outside of the Policy API.
-  - name: Data API
+  - name: Data
     description: |-
       Exposes endpoints for reading and writing documents in OPA.
       For an explanation of the different types of documents, see [How Does OPA Work?](https://www.openpolicyagent.org/docs/latest/philosophy#how-does-opa-work)
-  - name: Query API
+  - name: Query
     description: Posting queries to OPA
-  - name: Compile API
+  - name: Compile
     description: Posting partial queries to OPA
-  - name: Health API
+  - name: Health
     description: |-
       Executes a simple built-in policy query to verify that the server is operational.
       Optionally it can account for bundle activation as well (useful for "ready" checks at startup).
-  - name: Config API
+  - name: Config
     description: |-
       Returns OPA’s active configuration.
       When the discovery feature is enabled, this API can be used to fetch the discovered configuration in the last evaluated discovery bundle.
       The credentials field in the Services configuration and the private_key and key fields in the Keys configuration will be omitted from the API response.
-  - name: Status API
+  - name: Status
     description: |-
       Exposes a pull-based API for accessing OPA Status information.
       Normally this information is pushed by OPA to a remote service via HTTP, console, or custom plugins.
@@ -63,7 +63,7 @@ paths:
         OPA serves POST requests without a URL path by querying for the document at path `/data/system/main`.
         The content of that document defines the response entirely.
       tags:
-        - Query API
+        - Query
       parameters:
         - $ref: '#/components/parameters/prettyParameter'
       requestBody:
@@ -89,7 +89,7 @@ paths:
       description: |-
         For queries that have large JSON values it is recommended to use the POST method with the query included as the POST body
       tags:
-        - Query API
+        - Query
       parameters:
         - $ref: '#/components/parameters/prettyParameter'
         - $ref: '#/components/parameters/explainParameter'
@@ -120,7 +120,7 @@ paths:
         }
         ```
       tags:
-        - Query API
+        - Query
       parameters:
         - $ref: '#/components/parameters/prettyParameter'
         - $ref: '#/components/parameters/explainParameter'
@@ -154,7 +154,7 @@ paths:
         The request message body defines the content of the The input Document. The request message body may be empty.
         The path separator is used to access values inside object and array documents.
       tags:
-        - Data API
+        - Data
       operationId: getDocumentFromWebhook
       parameters:
         - $ref: '#/components/parameters/prettyParameter'
@@ -188,7 +188,7 @@ paths:
         - The query requires an input document and you do not provide it
         - You provide the input document but the query has already defined it.
       tags:
-        - Data API
+        - Data
       operationId: getDocument
       parameters:
         - $ref: '#/components/parameters/inputParameter'
@@ -218,7 +218,7 @@ paths:
         - The query requires an input document and you do not provide it
         - You provided an input document but the query has already defined it.
       tags:
-        - Data API
+        - Data
       operationId: getDocumentWithPath
       parameters:
         - $ref: '#/components/parameters/prettyParameter'
@@ -250,7 +250,7 @@ paths:
         The server will respect the If-None-Match header if it is set to *.
         In this case, the server will not overwrite an existing document located at the path.
       tags:
-        - Data API
+        - Data
       parameters:
         - $ref: '#/components/parameters/metricsParameter'
       requestBody:
@@ -281,7 +281,7 @@ paths:
       description: |-
         Update a document. The patch operation is specified in the request body.
       tags:
-        - Data API
+        - Data
       requestBody:
         description: The patch operation in `application/json-patch+json` format
         required: true
@@ -308,7 +308,7 @@ paths:
       description: |-
         The server processes the DELETE method as if the client had sent a PATCH request containing a single remove operation.
       tags:
-        - Data API
+        - Data
       parameters:
         - $ref: '#/components/parameters/metricsParameter'
       responses:
@@ -329,7 +329,7 @@ paths:
       summary: List policies
       description: This API endpoint responds with a list of all policy modules on the server (result response)
       tags:
-        - Policy API
+        - Policy
       operationId: getPolicies
       parameters:
         - $ref: '#/components/parameters/prettyParameter'
@@ -392,7 +392,7 @@ paths:
       summary: Get a policy module
       description: This API endpoint returns the details of the specified policy module (`{id}`)
       tags:
-        - Policy API
+        - Policy
       operationId: getPolicyModule
       parameters:
         - $ref: '#/components/parameters/prettyParameter'
@@ -452,7 +452,7 @@ paths:
                   	networks[m].public == true
                 }
       tags:
-        - Policy API
+        - Policy
       responses:
         '200':
           $ref: '#/components/responses/putPolicySuccessResponse'
@@ -464,7 +464,7 @@ paths:
       summary: Delete a policy module
       description: This API endpoint removes an existing policy module from the server
       tags:
-        - Policy API
+        - Policy
       operationId: deletePolicyModule
       parameters:
         - $ref: '#/components/parameters/prettyParameter'
@@ -530,7 +530,7 @@ paths:
         <br/>
         See [the guidance](https://www.openpolicyagent.org/docs/latest/rest-api/#unconditional-results-from-partial-evaluation) for details.
       tags:
-        - Compile API
+        - Compile
       externalDocs:
         description: Partial evaluation article
         url: 'https://blog.openpolicyagent.org/partial-evaluation-162750eaf422'
@@ -565,7 +565,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/prettyParameter'
       tags:
-        - Config API
+        - Config
       responses:
         '200':
           $ref: '#/components/responses/getConfigSuccessResponse'
@@ -581,7 +581,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/prettyParameter'
       tags:
-        - Status API
+        - Status
       responses:
         '200':
           $ref: '#/components/responses/getStatusResponse'
@@ -605,7 +605,7 @@ paths:
 
         ---
       tags:
-        - Health API
+        - Health
       externalDocs:
         description: Health API
         url: 'https://www.openpolicyagent.org/docs/latest/rest-api/#health-api'

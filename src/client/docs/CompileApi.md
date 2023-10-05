@@ -1,15 +1,15 @@
-# CompileAPIApi
+# CompileApi
 
 All URIs are relative to *http://localhost:8181*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**post_compile**](CompileAPIApi.md#post_compile) | **POST** /v1/compile | Partially evaluate a query.
+[**post_compile**](CompileApi.md#post_compile) | **POST** /v1/compile | Partially evaluate a query.
 
 
 # **post_compile**
-> post_compile(_api::CompileAPIApi; pretty=nothing, explain=nothing, metrics=nothing, instrument=nothing, partial_query_schema=nothing, _mediaType=nothing) -> CompileSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
-> post_compile(_api::CompileAPIApi, response_stream::Channel; pretty=nothing, explain=nothing, metrics=nothing, instrument=nothing, partial_query_schema=nothing, _mediaType=nothing) -> Channel{ CompileSuccessResponse }, OpenAPI.Clients.ApiResponse
+> post_compile(_api::CompileApi; pretty=nothing, explain=nothing, metrics=nothing, instrument=nothing, partial_query_schema=nothing, _mediaType=nothing) -> CompileSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> post_compile(_api::CompileApi, response_stream::Channel; pretty=nothing, explain=nothing, metrics=nothing, instrument=nothing, partial_query_schema=nothing, _mediaType=nothing) -> Channel{ CompileSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Partially evaluate a query.
 
@@ -19,7 +19,7 @@ The Compile API allows you to partially evaluate Rego queries and obtain a simpl
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **CompileAPIApi** | API context | 
+ **_api** | **CompileApi** | API context | 
 
 ### Optional Parameters
 

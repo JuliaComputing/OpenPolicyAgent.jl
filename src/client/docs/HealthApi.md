@@ -1,15 +1,15 @@
-# HealthAPIApi
+# HealthApi
 
 All URIs are relative to *http://localhost:8181*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**get_health**](HealthAPIApi.md#get_health) | **GET** /health | Health
+[**get_health**](HealthApi.md#get_health) | **GET** /health | Health
 
 
 # **get_health**
-> get_health(_api::HealthAPIApi; bundles=nothing, plugins=nothing, exclude_plugin=nothing, _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
-> get_health(_api::HealthAPIApi, response_stream::Channel; bundles=nothing, plugins=nothing, exclude_plugin=nothing, _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
+> get_health(_api::HealthApi; bundles=nothing, plugins=nothing, exclude_plugin=nothing, _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
+> get_health(_api::HealthApi, response_stream::Channel; bundles=nothing, plugins=nothing, exclude_plugin=nothing, _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
 
 Health
 
@@ -19,7 +19,7 @@ This API endpoint verifies that the server is operational.  The response from th
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **HealthAPIApi** | API context | 
+ **_api** | **HealthApi** | API context | 
 
 ### Optional Parameters
 

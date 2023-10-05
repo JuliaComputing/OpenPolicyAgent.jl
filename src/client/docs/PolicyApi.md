@@ -1,18 +1,18 @@
-# PolicyAPIApi
+# PolicyApi
 
 All URIs are relative to *http://localhost:8181*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**delete_policy_module**](PolicyAPIApi.md#delete_policy_module) | **DELETE** /v1/policies/{id} | Delete a policy module
-[**get_policies**](PolicyAPIApi.md#get_policies) | **GET** /v1/policies | List policies
-[**get_policy_module**](PolicyAPIApi.md#get_policy_module) | **GET** /v1/policies/{id} | Get a policy module
-[**put_policy_module**](PolicyAPIApi.md#put_policy_module) | **PUT** /v1/policies/{id} | Create or update a policy module
+[**delete_policy_module**](PolicyApi.md#delete_policy_module) | **DELETE** /v1/policies/{id} | Delete a policy module
+[**get_policies**](PolicyApi.md#get_policies) | **GET** /v1/policies | List policies
+[**get_policy_module**](PolicyApi.md#get_policy_module) | **GET** /v1/policies/{id} | Get a policy module
+[**put_policy_module**](PolicyApi.md#put_policy_module) | **PUT** /v1/policies/{id} | Create or update a policy module
 
 
 # **delete_policy_module**
-> delete_policy_module(_api::PolicyAPIApi, id::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
-> delete_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
+> delete_policy_module(_api::PolicyApi, id::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Nothing, OpenAPI.Clients.ApiResponse <br/>
+> delete_policy_module(_api::PolicyApi, response_stream::Channel, id::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Channel{ Nothing }, OpenAPI.Clients.ApiResponse
 
 Delete a policy module
 
@@ -22,7 +22,7 @@ This API endpoint removes an existing policy module from the server
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **PolicyAPIApi** | API context | 
+ **_api** | **PolicyApi** | API context | 
 **id** | **String**| The name of a policy module | [default to nothing]
 
 ### Optional Parameters
@@ -48,8 +48,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **get_policies**
-> get_policies(_api::PolicyAPIApi; pretty=nothing, _mediaType=nothing) -> GetPolicyListSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
-> get_policies(_api::PolicyAPIApi, response_stream::Channel; pretty=nothing, _mediaType=nothing) -> Channel{ GetPolicyListSuccessResponse }, OpenAPI.Clients.ApiResponse
+> get_policies(_api::PolicyApi; pretty=nothing, _mediaType=nothing) -> GetPolicyListSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> get_policies(_api::PolicyApi, response_stream::Channel; pretty=nothing, _mediaType=nothing) -> Channel{ GetPolicyListSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 List policies
 
@@ -59,7 +59,7 @@ This API endpoint responds with a list of all policy modules on the server (resu
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **PolicyAPIApi** | API context | 
+ **_api** | **PolicyApi** | API context | 
 
 ### Optional Parameters
 
@@ -83,8 +83,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **get_policy_module**
-> get_policy_module(_api::PolicyAPIApi, id::String; pretty=nothing, _mediaType=nothing) -> GetPolicyModuleSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
-> get_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::String; pretty=nothing, _mediaType=nothing) -> Channel{ GetPolicyModuleSuccessResponse }, OpenAPI.Clients.ApiResponse
+> get_policy_module(_api::PolicyApi, id::String; pretty=nothing, _mediaType=nothing) -> GetPolicyModuleSuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> get_policy_module(_api::PolicyApi, response_stream::Channel, id::String; pretty=nothing, _mediaType=nothing) -> Channel{ GetPolicyModuleSuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Get a policy module
 
@@ -94,7 +94,7 @@ This API endpoint returns the details of the specified policy module (`{id}`)
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **PolicyAPIApi** | API context | 
+ **_api** | **PolicyApi** | API context | 
 **id** | **String**| The name of a policy module | [default to nothing]
 
 ### Optional Parameters
@@ -119,8 +119,8 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 # **put_policy_module**
-> put_policy_module(_api::PolicyAPIApi, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> PutPolicySuccessResponse, OpenAPI.Clients.ApiResponse <br/>
-> put_policy_module(_api::PolicyAPIApi, response_stream::Channel, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Channel{ PutPolicySuccessResponse }, OpenAPI.Clients.ApiResponse
+> put_policy_module(_api::PolicyApi, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> PutPolicySuccessResponse, OpenAPI.Clients.ApiResponse <br/>
+> put_policy_module(_api::PolicyApi, response_stream::Channel, id::String, body::String; pretty=nothing, metrics=nothing, _mediaType=nothing) -> Channel{ PutPolicySuccessResponse }, OpenAPI.Clients.ApiResponse
 
 Create or update a policy module
 
@@ -130,7 +130,7 @@ Create or update a policy module
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **_api** | **PolicyAPIApi** | API context | 
+ **_api** | **PolicyApi** | API context | 
 **id** | **String**| The name of a policy module | [default to nothing]
 **body** | **String**|  | 
 

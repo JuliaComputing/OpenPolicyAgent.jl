@@ -86,19 +86,25 @@ end
 
 # Check version and help output
 function test_version_help()
-    iob = IOBuffer()
-    pipelineopts = Dict(:stdout => iob, :stderr => iob)
+    iob_stdout = IOBuffer()
+    iob_stderr = IOBuffer()
+    pipelineopts = Dict(:stdout => iob_stdout, :stderr => iob_stderr)
     cmd = OpenPolicyAgent.CLI.CommandLine(; pipelineopts=pipelineopts)
     CLI.version(cmd)
-    output = String(take!(iob))
+    output = string(String(take!(iob_stdout)), String(take!(iob_stderr)))
     @test occursin(r"Version: \d+\.\d+\.\d+", output)
 
-    iob = IOBuffer()
-    pipelineopts = Dict(:stdout => iob, :stderr => iob)
+    iob_stdout = IOBuffer()
+    iob_stderr = IOBuffer()
+    pipelineopts = Dict(:stdout => iob_stdout, :stderr => iob_stderr)
     cmd = OpenPolicyAgent.CLI.CommandLine(; pipelineopts=pipelineopts)
     CLI.help(cmd)
-    output = String(take!(iob))
-    @test occursin(r"Usage:\s+opa \[command\]", output)
+    output = string(String(take!(iob_stdout)), String(take!(iob_stderr)))
+    if Sys.iswindows()
+        @test occursin(r"Usage:\s+.*opa.exe \[command\]", output)
+    else
+        @test occursin(r"Usage:\s+.*opa \[command\]", output)
+    end
 end
 
 function file_response(path)

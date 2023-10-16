@@ -18,3 +18,5 @@ end
 
 start_opa_server("/tmp/opaserver")
 ```
+
+Complete reference is available in the Reference section.

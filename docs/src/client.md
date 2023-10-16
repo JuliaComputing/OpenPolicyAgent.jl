@@ -22,4 +22,6 @@ response, _http_resp = OpenPolicyAgent.Client.get_document(
 @test response.result == false
 ```
 
-OpenAPI [API Documents](https://github.com/JuliaComputing/OpenPolicyAgent.jl/blob/main/src/client/README.md) give more details on the API methods.
+Complete reference is available in the Reference section.
+
+OpenAPI [API Documents](https://github.com/JuliaComputing/OpenPolicyAgent.jl/blob/main/src/client/README.md) also give more details on the API methods.

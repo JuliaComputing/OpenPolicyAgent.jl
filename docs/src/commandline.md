@@ -40,3 +40,5 @@ Flags:
 
 Use "opa [command] --help" for more information about a command.
 ```
+
+Complete reference is available in the Reference section.

@@ -84,6 +84,23 @@ function prepare_bundle(bundle_location::String)
     )
 end
 
+# Check version and help output
+function test_version_help()
+    iob = IOBuffer()
+    pipelineopts = Dict(:stdout => iob, :stderr => iob)
+    cmd = OpenPolicyAgent.CLI.CommandLine(; pipelineopts=pipelineopts)
+    CLI.version(cmd)
+    output = String(take!(iob))
+    @test occursin(r"Version: \d+\.\d+\.\d+", output)
+
+    iob = IOBuffer()
+    pipelineopts = Dict(:stdout => iob, :stderr => iob)
+    cmd = OpenPolicyAgent.CLI.CommandLine(; pipelineopts=pipelineopts)
+    CLI.help(cmd)
+    output = String(take!(iob))
+    @test occursin(r"Usage:\s+opa \[command\]", output)
+end
+
 function file_response(path)
     open(path, "r") do io
         return HTTP.Response(200, readavailable(io))
@@ -323,6 +340,10 @@ function runtests()
         mkpath(bundle_location)
         mkpath(opa_server_location)
         cp(opa_config_template, joinpath(opa_server_location, "config.yaml"))
+
+        # Check version and help output
+        @info("Checking OPA version")
+        test_version_help()
 
         # Prepare the bundles
         @info("Preparing signed bundles at: $(bundle_location)")

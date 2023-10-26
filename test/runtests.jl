@@ -131,12 +131,21 @@ function start_bundle_server(root_path)
     return server
 end
 
-function start_opa_server(root_path)
-    opa_server = OpenPolicyAgent.Server.MonitoredOPAServer(
-        joinpath(root_path, "config.yaml"),
-        stdout = joinpath(root_path, "server.stdout"),
-        stderr = joinpath(root_path, "server.stderr"),
-    )
+function start_opa_server(root_path; change_dir::Bool=true)
+    if change_dir
+        opa_server = OpenPolicyAgent.Server.MonitoredOPAServer(
+            joinpath(root_path, "config.yaml");
+            stdout = joinpath(root_path, "server.stdout"),
+            stderr = joinpath(root_path, "server.stderr"),
+            cmdline = OpenPolicyAgent.CLI.CommandLine(; cmdopts=Dict(:dir => root_path)),
+        )
+    else
+        opa_server = OpenPolicyAgent.Server.MonitoredOPAServer(
+            joinpath(root_path, "config.yaml");
+            stdout = joinpath(root_path, "server.stdout"),
+            stderr = joinpath(root_path, "server.stderr"),
+        )
+    end
     OpenPolicyAgent.Server.start!(opa_server)
     return opa_server
 end
@@ -399,6 +408,33 @@ function runtests()
                     @info("Stopping OPA server")
                     OpenPolicyAgent.Server.stop!(opa_server)
                 end
+                sleep(5)
+                @test opa_server.stopped[]
+
+                # run again withoug changing the directory
+                @info("Starting OPA server without changing the directory")
+                opa_server = start_opa_server(opa_server_location; change_dir=false)
+                try
+                    # Wait for servers to start
+                    sleep(15)
+                    @test !(opa_server.stopped[])
+                    @test !isnothing(opa_server.monitor_task[])
+                    @test !istaskdone(opa_server.monitor_task[])
+
+                    # create the client
+                    openapi_client = OpenAPI.Clients.Client("http://localhost:8181"; escape_path_params=false)
+                    @testset "Status API" begin
+                        test_status_api(openapi_client)
+                    end
+                    @testset "Health API" begin
+                        test_health_api(openapi_client)
+                    end
+                finally
+                    @info("Stopping OPA server")
+                    OpenPolicyAgent.Server.stop!(opa_server)
+                end
+                sleep(5)
+                @test opa_server.stopped[]
             end
         finally
             @info("Stopping bundle server")

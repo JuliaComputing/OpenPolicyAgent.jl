@@ -31,6 +31,7 @@ struct MonitoredOPAServer
     port::Int
     stdout::Any
     stderr::Any
+    cmdline::CommandLine
     monitor_task::Ref{Union{Nothing, Task}}
     server_proc::Ref{Union{Nothing, Process}}
     stopped::Ref{Bool}
@@ -41,10 +42,17 @@ struct MonitoredOPAServer
         port::Int = DEFAULT_PORT,
         stdout = nothing,
         stderr = nothing,
+        cmdline = nothing,
     )
+        if isnothing(cmdline)
+            cmdline = CommandLine()
+        end
+        cmdline.runopts[:wait] = false
+
         return new(configfile,
             host, port,
             stdout, stderr,
+            cmdline,
             Ref{Union{Nothing, Task}}(nothing),
             Ref{Union{Nothing, Process}}(nothing),
             Ref{Bool}(true),
@@ -54,8 +62,7 @@ struct MonitoredOPAServer
 end
 
 function start_opa_server!(server::MonitoredOPAServer)
-    ctx = CommandLine()
-    ctx.runopts[:wait] = false
+    ctx = server.cmdline
     if !isnothing(server.stdout)
         ctx.pipelineopts[:stdout] = server.stdout
     end

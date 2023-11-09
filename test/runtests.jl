@@ -5,6 +5,9 @@ using HTTP
 using Test
 import OpenPolicyAgent: CLI, Client
 
+include("sql_translate.jl")
+import .OPASQL: translate
+
 const opa_config_template = joinpath(@__DIR__, "conf", "config.yaml")
 const bundle_root = joinpath(@__DIR__, "bundle_root")
 const data_bundle_root = joinpath(bundle_root, "data_bundle")
@@ -29,23 +32,150 @@ const EXAMPLE_POLICY = """package opa.examples
     }
 """
 
-const PARTIAL_COMPILE = (
-    policy = """package example
+const PARTIAL_COMPILE_CASES = [
+    (
+        policy = """package example
+        allow {
+            input.subject.clearance_level >= data.reports[_].clearance_level
+        }""",
+        query = "data.example.allow == true",
+        input = Dict{String,Any}(
+            "subject" => Dict{String,Any}(
+                "clearance_level" => 4
+            )
+        ),
+        options = Dict{String,Any}(
+            "disableInlining" => []
+        ),
+        unknowns = ["data.reports"],
+        sql = "4 >= public.juliahub_reports.clearance_level",
+    ),
+    (
+        policy = """package example
 
-    allow {
-    input.subject.clearance_level >= data.reports[_].clearance_level
-    }""",
-    query = "data.example.allow == true",
-    input = Dict{String,Any}(
-        "subject" => Dict{String,Any}(
-            "clearance_level" => 4
-        )
+        allow {
+            input.subject.group == "admin"
+        }
+        allow {
+            data.reports[_].public == true
+        }
+        allow {
+            input.subject.clearance_level >= data.reports[_].clearance_level
+            input.subject.id == data.reports[_].owner
+        }
+        """,
+        query = "data.example.allow == true",
+        input = Dict{String,Any}(
+            "subject" => Dict{String,Any}(
+                "clearance_level" => 4,
+                "id" => "bob",
+                "group" => "eng"
+            )
+        ),
+        options = Dict{String,Any}(
+            "disableInlining" => []
+        ),
+        unknowns = ["data.reports"],
+        sql = "public.juliahub_reports.public = true or\n4 >= public.juliahub_reports.clearance_level and 'bob' = public.juliahub_reports.owner",
     ),
-    options = Dict{String,Any}(
-        "disableInlining" => []
+    (
+        # always allowed if the policy is fully satisfied with the given input for any one condition
+        policy = """package example
+
+        allow {
+            input.subject.group == "admin"
+        }
+        allow {
+            data.reports[_].public == true
+        }
+        allow {
+            input.subject.clearance_level >= data.reports[_].clearance_level
+            input.subject.id == data.reports[_].owner
+        }
+        """,
+        query = "data.example.allow == true",
+        input = Dict{String,Any}(
+            "subject" => Dict{String,Any}(
+                "clearance_level" => 4,
+                "id" => "sally",
+                "group" => "admin"
+            )
+        ),
+        options = Dict{String,Any}(
+            "disableInlining" => []
+        ),
+        unknowns = ["data.reports"],
+        sql = "",
     ),
-    unknowns = ["data.reports"],
-)
+    (
+        # always allowed if the policy with only one condition is fully satisfied with the given input
+        policy = """package example
+        default allow = false
+        allow {
+            input.subject.group == "admin"
+        }
+        """,
+        query = "data.example.allow == true",
+        input = Dict{String,Any}(
+            "subject" => Dict{String,Any}(
+                "id" => "sally",
+                "group" => "admin"
+            )
+        ),
+        options = Dict{String,Any}(
+            "disableInlining" => []
+        ),
+        unknowns = ["data.reports"],
+        sql = "",
+    ),
+    (
+        # not allowed if the required policy is not defined
+        policy = """package example
+        default allow = false
+        allow {
+            input.subject.group == "admin"
+        }
+        """,
+        query = "data.example.undefinedallow == true",
+        input = Dict{String,Any}(
+            "subject" => Dict{String,Any}(
+                "id" => "sally",
+                "group" => "admin"
+            )
+        ),
+        options = Dict{String,Any}(
+            "disableInlining" => []
+        ),
+        unknowns = ["data.reports"],
+        sql = "false",
+    ),
+    (
+        policy = """package example
+        import future.keywords.in
+        allow {
+            input.subject.group in ["admin", "superadmin"]
+        }
+        allow {
+            data.reports[_].category in ["public", "pinned"]
+        }
+        allow {
+            input.subject.clearance_level >= data.reports[_].clearance_level
+        }
+        """,
+        query = "data.example.allow == true",
+        input = Dict{String,Any}(
+            "subject" => Dict{String,Any}(
+                "clearance_level" => 4,
+                "group" => "eng",
+            )
+        ),
+        options = Dict{String,Any}(
+            "disableInlining" => []
+        ),
+        unknowns = ["data.reports"],
+        sql = "public.juliahub_reports.category in ('public', 'pinned') or\n4 >= public.juliahub_reports.clearance_level",
+    ),
+]
 
 const EXAMPLE_QUERY = """input.servers[i].ports[_] = "p2"; input.servers[i].name = name"""
 const EXAMPLE_QUERY_INPUT = Dict{String,Any}(
@@ -290,36 +420,40 @@ function test_compile_api(openapi_client)
     policy_client = OpenPolicyAgent.Client.PolicyApi(openapi_client)
     compile_client = OpenPolicyAgent.Client.CompileApi(openapi_client)
 
-    # create the test policy to evaluate the query on
-    result, _http_resp = OpenPolicyAgent.Client.put_policy_module(policy_client, "example", PARTIAL_COMPILE.policy)
-    @test isa(result, OpenPolicyAgent.Client.PutPolicySuccessResponse)
+    for partial_compile_case in PARTIAL_COMPILE_CASES
+        # create the test policy to evaluate the query on
+        result, _http_resp = OpenPolicyAgent.Client.put_policy_module(policy_client, "example", partial_compile_case.policy)
+        @test isa(result, OpenPolicyAgent.Client.PutPolicySuccessResponse)
 
-    try
-        partial_query_schema = OpenPolicyAgent.Client.PartialQuerySchema(;
-            query = PARTIAL_COMPILE.query,
-            input = PARTIAL_COMPILE.input,
-            options = PARTIAL_COMPILE.options,
-            unknowns = PARTIAL_COMPILE.unknowns,
-        )
-        response, _http_resp = OpenPolicyAgent.Client.post_compile(compile_client;
-            partial_query_schema = partial_query_schema,
-            pretty=true,
-            explain=true,
-            metrics=true,
-            instrument=true
-        )
-        @test isa(response, OpenPolicyAgent.Client.CompileSuccessResponse)
-        @test !isnothing(response.metrics) && (response.metrics["timer_rego_partial_eval_ns"] >= 0)
+        try
+            partial_query_schema = OpenPolicyAgent.Client.PartialQuerySchema(;
+                query = partial_compile_case.query,
+                input = partial_compile_case.input,
+                options = partial_compile_case.options,
+                unknowns = partial_compile_case.unknowns,
+            )
+            response, _http_resp = OpenPolicyAgent.Client.post_compile(compile_client;
+                partial_query_schema = partial_query_schema,
+                pretty=true,
+                explain=true,
+                metrics=true,
+                instrument=true
+            )
+            @test isa(response, OpenPolicyAgent.Client.CompileSuccessResponse)
+            @test !isnothing(response.metrics) && (response.metrics["timer_rego_partial_eval_ns"] >= 0)
 
-        result = response.result
-        @test !isnothing(result["queries"]) && length(result["queries"]) == 1
-        # Note: The response queries can be translated to other forms. E.g.: 
-        # - https://github.com/open-policy-agent/contrib/tree/main/data_filter_example
-        # - https://github.com/open-policy-agent/contrib/tree/main/data_filter_elasticsearch
-    finally
-        # delete the test policy
-        result, _http_resp = OpenPolicyAgent.Client.delete_policy_module(policy_client, "example"; pretty=true)
-        @test isa(result, Nothing)
+            result = response.result
+            if partial_compile_case.sql !== "false"
+                @test !isnothing(result["queries"]) && length(result["queries"]) >= 1
+            end
+
+            sql = translate(result)
+            @test sql == partial_compile_case.sql
+        finally
+            # delete the test policy
+            result, _http_resp = OpenPolicyAgent.Client.delete_policy_module(policy_client, "example"; pretty=true)
+            @test isa(result, Nothing)
+        end
     end
 end
 

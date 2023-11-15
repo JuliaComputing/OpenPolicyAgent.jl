@@ -3,216 +3,15 @@ using OpenAPI
 using JSON
 using HTTP
 using Test
-import OpenPolicyAgent: CLI, Client
+import OpenPolicyAgent: CLI, Client, ASTWalker
+import OpenPolicyAgent.ASTWalker: AST, SQL
+import OpenPolicyAgent.ASTWalker.AST: ASTVisitor
+import OpenPolicyAgent.ASTWalker.SQL: SQLVisitor, SQLCondition, UnconditionalInclude, UnconditionalExclude
 
+include("test_data.jl")
+include("test_utils.jl")
 include("sql_translate.jl")
 import .OPASQL: translate
-
-const opa_config_template = joinpath(@__DIR__, "conf", "config.yaml")
-const bundle_root = joinpath(@__DIR__, "bundle_root")
-const data_bundle_root = joinpath(bundle_root, "data_bundle")
-const policies_bundle_root = joinpath(bundle_root, "policies_bundle")
-const bundle_args = Dict(
-    :bundle => true,
-    :signing_alg => "HS512",
-    :signing_key => "secret",
-)
-
-const EXAMPLE_POLICY = """package opa.examples
-    import data.servers
-    import data.networks
-    import data.ports
-
-    public_servers[server] {
-    some k, m
-        server := servers[_]
-        server.ports[_] == ports[k].id
-        ports[k].networks[_] == networks[m].id
-        networks[m].public == true
-    }
-"""
-
-const PARTIAL_COMPILE_CASES = [
-    (
-        policy = """package example
-        allow {
-            input.subject.clearance_level >= data.reports[_].clearance_level
-        }""",
-        query = "data.example.allow == true",
-        input = Dict{String,Any}(
-            "subject" => Dict{String,Any}(
-                "clearance_level" => 4
-            )
-        ),
-        options = Dict{String,Any}(
-            "disableInlining" => []
-        ),
-        unknowns = ["data.reports"],
-        sql = "4 >= public.juliahub_reports.clearance_level",
-    ),
-    (
-        policy = """package example
-
-        allow {
-            input.subject.group == "admin"
-        }
-        allow {
-            data.reports[_].public == true
-        }
-        allow {
-            input.subject.clearance_level >= data.reports[_].clearance_level
-            input.subject.id == data.reports[_].owner
-        }
-        """,
-        query = "data.example.allow == true",
-        input = Dict{String,Any}(
-            "subject" => Dict{String,Any}(
-                "clearance_level" => 4,
-                "id" => "bob",
-                "group" => "eng"
-            )
-        ),
-        options = Dict{String,Any}(
-            "disableInlining" => []
-        ),
-        unknowns = ["data.reports"],
-        sql = "public.juliahub_reports.public = true or\n4 >= public.juliahub_reports.clearance_level and 'bob' = public.juliahub_reports.owner",
-    ),
-    (
-        # always allowed if the policy is fully satisfied with the given input for any one condition
-        policy = """package example
-
-        allow {
-            input.subject.group == "admin"
-        }
-        allow {
-            data.reports[_].public == true
-        }
-        allow {
-            input.subject.clearance_level >= data.reports[_].clearance_level
-            input.subject.id == data.reports[_].owner
-        }
-        """,
-        query = "data.example.allow == true",
-        input = Dict{String,Any}(
-            "subject" => Dict{String,Any}(
-                "clearance_level" => 4,
-                "id" => "sally",
-                "group" => "admin"
-            )
-        ),
-        options = Dict{String,Any}(
-            "disableInlining" => []
-        ),
-        unknowns = ["data.reports"],
-        sql = "",
-    ),
-    (
-        # always allowed if the policy with only one condition is fully satisfied with the given input
-        policy = """package example
-        default allow = false
-        allow {
-            input.subject.group == "admin"
-        }
-        """,
-        query = "data.example.allow == true",
-        input = Dict{String,Any}(
-            "subject" => Dict{String,Any}(
-                "id" => "sally",
-                "group" => "admin"
-            )
-        ),
-        options = Dict{String,Any}(
-            "disableInlining" => []
-        ),
-        unknowns = ["data.reports"],
-        sql = "",
-    ),
-    (
-        # not allowed if the required policy is not defined
-        policy = """package example
-        default allow = false
-        allow {
-            input.subject.group == "admin"
-        }
-        """,
-        query = "data.example.undefinedallow == true",
-        input = Dict{String,Any}(
-            "subject" => Dict{String,Any}(
-                "id" => "sally",
-                "group" => "admin"
-            )
-        ),
-        options = Dict{String,Any}(
-            "disableInlining" => []
-        ),
-        unknowns = ["data.reports"],
-        sql = "false",
-    ),
-    (
-        policy = """package example
-        import future.keywords.in
-        allow {
-            input.subject.group in ["admin", "superadmin"]
-        }
-        allow {
-            data.reports[_].category in ["public", "pinned"]
-        }
-        allow {
-            input.subject.clearance_level >= data.reports[_].clearance_level
-        }
-        """,
-        query = "data.example.allow == true",
-        input = Dict{String,Any}(
-            "subject" => Dict{String,Any}(
-                "clearance_level" => 4,
-                "group" => "eng",
-            )
-        ),
-        options = Dict{String,Any}(
-            "disableInlining" => []
-        ),
-        unknowns = ["data.reports"],
-        sql = "public.juliahub_reports.category in ('public', 'pinned') or\n4 >= public.juliahub_reports.clearance_level",
-    ),
-]
-
-const EXAMPLE_QUERY = """input.servers[i].ports[_] = "p2"; input.servers[i].name = name"""
-const EXAMPLE_QUERY_INPUT = Dict{String,Any}(
-    "servers" => [
-        Dict{String,Any}(
-            "id" => "s1",
-            "name" => "app",
-            "ports" => ["p1", "p2", "p3"],
-            "protocols" => ["https", "ssh"]
-        ),
-        Dict{String,Any}(
-            "id" => "s4",
-            "name" => "dev",
-            "ports" => ["p1", "p2"],
-            "protocols" => ["http"]
-        )
-    ]
-)
-
-# Prepare the bundles
-function prepare_bundle(bundle_location::String)
-    signed_bundle_file = joinpath(bundle_location, "data.tar.gz")
-    run(`rm -f $signed_bundle_file`)
-    CLI.build(OpenPolicyAgent.CLI.CommandLine(; cmdopts=Dict(:dir => data_bundle_root)),
-        ".";
-        output=signed_bundle_file,
-        bundle_args...
-    )
-
-    signed_bundle_file = joinpath(bundle_location, "policies.tar.gz")
-    run(`rm -f $signed_bundle_file`)
-    CLI.build(OpenPolicyAgent.CLI.CommandLine(; cmdopts=Dict(:dir => policies_bundle_root)),
-        ".";
-        output=signed_bundle_file,
-        bundle_args...
-    )
-end
 
 # Check version and help output
 function test_version_help()
@@ -235,61 +34,6 @@ function test_version_help()
     else
         @test occursin(r"Usage:\s+.*opa \[command\]", output)
     end
-end
-
-function file_response(path)
-    open(path, "r") do io
-        return HTTP.Response(200, readavailable(io))
-    end
-end
-
-# Start a bundle server
-function start_bundle_server(root_path)
-    # start a HTTP.jl server serving at root_path
-    # and serve only two files policies.tar.gz and data.tar.gz
-    server = HTTP.serve!("127.0.0.1", 8080) do req::HTTP.Request
-        @info("request", target=req.target, method=req.method)
-        if req.method == "GET" && req.target == "/data.tar.gz"
-            return file_response(joinpath(root_path, "data.tar.gz"))
-        elseif req.method == "GET" && req.target == "/policies.tar.gz"
-            return file_response(joinpath(root_path, "policies.tar.gz"))
-        else
-            return HTTP.Response(404)
-        end
-    end
-
-    return server
-end
-
-function start_opa_server(root_path; change_dir::Bool=true)
-    if change_dir
-        opa_server = OpenPolicyAgent.Server.MonitoredOPAServer(
-            joinpath(root_path, "config.yaml");
-            stdout = joinpath(root_path, "server.stdout"),
-            stderr = joinpath(root_path, "server.stderr"),
-            cmdline = OpenPolicyAgent.CLI.CommandLine(; cmdopts=Dict(:dir => root_path)),
-        )
-    else
-        opa_server = OpenPolicyAgent.Server.MonitoredOPAServer(
-            joinpath(root_path, "config.yaml");
-            stdout = joinpath(root_path, "server.stdout"),
-            stderr = joinpath(root_path, "server.stderr"),
-        )
-    end
-    OpenPolicyAgent.Server.start!(opa_server)
-    return opa_server
-end
-
-function policy_path()
-    policy_package = "policies/server/rest"
-    rule_name = "allowed"
-    return joinpath(policy_package, rule_name)
-end
-
-function query_user(opa_client, username)
-    request_body = Dict{String,Any}("input" => Dict{String,Any}("name" => username))
-    response, http_resp = OpenPolicyAgent.Client.get_document_with_path(opa_client, policy_path(), request_body; pretty=true, provenance=true, explain=true, metrics=true, instrument=true);
-    return response.result
 end
 
 function test_data_api(openapi_client)
@@ -449,6 +193,18 @@ function test_compile_api(openapi_client)
 
             sql = translate(result)
             @test sql == partial_compile_case.sql
+
+            ast = OpenPolicyAgent.ASTWalker.walk(ASTVisitor(), result)
+            sqlvisitor = SQLVisitor(SCHEMA_MAP, TABLE_MAP)
+            sqlcondition = OpenPolicyAgent.ASTWalker.walk(sqlvisitor, ast)
+            if partial_compile_case.sql == "false"
+                @test isa(sqlcondition, UnconditionalExclude)
+            elseif isempty(partial_compile_case.sql)
+                @test isa(sqlcondition, UnconditionalInclude)
+            else
+                @test isa(sqlcondition, SQLCondition)
+                @test sqlcondition.sql == partial_compile_case.sql
+            end
         finally
             # delete the test policy
             result, _http_resp = OpenPolicyAgent.Client.delete_policy_module(policy_client, "example"; pretty=true)

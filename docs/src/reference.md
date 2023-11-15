@@ -92,3 +92,20 @@ OpenPolicyAgent.CLI.sign
 OpenPolicyAgent.CLI.test
 OpenPolicyAgent.CLI.bench
 ```
+
+## AST Walker
+
+```@docs
+OpenPolicyAgent.ASTWalker.Visitor
+OpenPolicyAgent.ASTWalker.walk
+OpenPolicyAgent.ASTWalker.before
+OpenPolicyAgent.ASTWalker.visit
+OpenPolicyAgent.ASTWalker.after
+```
+
+### Included Visitors
+
+```@docs
+OpenPolicyAgent.ASTWalker.AST.ASTVisitor
+OpenPolicyAgent.ASTWalker.SQL.SQLVisitor
+```

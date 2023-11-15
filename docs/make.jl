@@ -14,6 +14,7 @@ makedocs(
         "Client" => "client.md",
         "Server" => "server.md",
         "Command Line" => "commandline.md",
+        "AST Walker" => "ast_walker.md",
         "Reference" => "reference.md",
     ],
 )

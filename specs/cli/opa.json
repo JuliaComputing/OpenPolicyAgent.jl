@@ -1278,6 +1278,11 @@
           }
         },
         {
+          "name": "--v1-compatible",
+          "description": "Opt-in to OPA features and behaviors that will be enabled by default in a future OPA v1.0 release",
+          "displayName": "v1-compatible"
+        },
+        {
           "name": "--verification-key",
           "description": "Set the secret (HMAC) or path of the PEM file containing the public key (RSA and ECDSA)",
           "displayName": "verification-key",

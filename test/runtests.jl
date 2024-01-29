@@ -20,6 +20,9 @@ function test_version_help()
     pipelineopts = Dict(:stdout => iob_stdout, :stderr => iob_stderr)
     cmd = OpenPolicyAgent.CLI.CommandLine(; pipelineopts=pipelineopts)
     CLI.version(cmd)
+    if Sys.iswindows()
+        sleep(10) # Windows is slow to flush the buffers
+    end
     output = string(String(take!(iob_stdout)), String(take!(iob_stderr)))
     @test occursin(r"Version: \d+\.\d+\.\d+", output)
 
@@ -28,6 +31,9 @@ function test_version_help()
     pipelineopts = Dict(:stdout => iob_stdout, :stderr => iob_stderr)
     cmd = OpenPolicyAgent.CLI.CommandLine(; pipelineopts=pipelineopts)
     CLI.help(cmd)
+    if Sys.iswindows()
+        sleep(10) # Windows is slow to flush the buffers
+    end
     output = string(String(take!(iob_stdout)), String(take!(iob_stderr)))
     if Sys.iswindows()
         @test occursin(r"Usage:\s+.*opa.exe \[command\]", output)

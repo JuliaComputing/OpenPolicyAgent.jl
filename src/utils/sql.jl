@@ -46,6 +46,14 @@ const SQL_OP_MAP = Dict{String,String}(
     "lte" => "<=",
     "equal" => "=",
     "internal.member_2" => "in",
+    "bits.and" => "&",
+    "bits.or" => "|",
+    "bits.xor" => "#",
+    "bits.negate" => "~",
+    "bits.lsh" => "<<",
+    "bits.rsh" => ">>",
+    "plus" => "+",
+    "minus" => "-",
 )
 
 const VALID_SQL_OPS = Set(keys(SQL_OP_MAP))
@@ -156,6 +164,21 @@ function visit(visitor::SQLVisitor, arr::AST.OPAArray)
     return nothing
 end
 
+function visit(visitor::SQLVisitor, call::AST.OPACall)
+    op_name = walk(visitor, call.operator)
+    if !(op_name in VALID_SQL_OPS)
+        error("Invalid SQL operator: $op_name")
+    end
+    op = SQL_OP_MAP[op_name]
+
+    op_operands = call.operands
+    @assert length(op_operands) == 2
+    op_lhs = walk(visitor, op_operands[1])
+    op_rhs = walk(visitor, op_operands[2])
+
+    push!(visitor.result_stack, join(["(", op_lhs, op, op_rhs, ")"], " "))
+end
+
 function visit(visitor::SQLVisitor, expr::AST.OPAExpr)
     @assert AST.is_call(expr)
 
@@ -171,7 +194,7 @@ function visit(visitor::SQLVisitor, expr::AST.OPAExpr)
     op_rhs = walk(visitor, op_operands[2])
     op = SQL_OP_MAP[op_name]
 
-    push!(visitor.result_stack, join([op_lhs, op, op_rhs], " "))
+    push!(visitor.result_stack, join(["(", op_lhs, op, op_rhs, ")"], " "))
 end
 
 end # module SQL

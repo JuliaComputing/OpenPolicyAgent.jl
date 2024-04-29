@@ -38,7 +38,7 @@ const PARTIAL_COMPILE_CASES = [
             "disableInlining" => []
         ),
         unknowns = ["data.reports"],
-        sql = "4 >= public.juliahub_reports.clearance_level",
+        sql = "( 4 >= public.juliahub_reports.clearance_level )",
     ),
     (
         policy = """package example
@@ -66,7 +66,7 @@ const PARTIAL_COMPILE_CASES = [
             "disableInlining" => []
         ),
         unknowns = ["data.reports"],
-        sql = "public.juliahub_reports.public = true or\n4 >= public.juliahub_reports.clearance_level and 'bob' = public.juliahub_reports.owner",
+        sql = "( public.juliahub_reports.public = true ) or\n( 4 >= public.juliahub_reports.clearance_level ) and ( 'bob' = public.juliahub_reports.owner )",
     ),
     (
         # always allowed if the policy is fully satisfied with the given input for any one condition
@@ -163,7 +163,75 @@ const PARTIAL_COMPILE_CASES = [
             "disableInlining" => []
         ),
         unknowns = ["data.reports"],
-        sql = "public.juliahub_reports.category in ('public', 'pinned') or\n4 >= public.juliahub_reports.clearance_level",
+        sql = "( public.juliahub_reports.category in ('public', 'pinned') ) or\n( 4 >= public.juliahub_reports.clearance_level )",
+    ),
+    (
+        policy = """package example
+        allow {
+            bits.and(data.reports[_].clearance_level, input.subject.clearance_level) >= input.subject.clearance_level
+        }""",
+        query = "data.example.allow == true",
+        input = Dict{String,Any}(
+            "subject" => Dict{String,Any}(
+                "clearance_level" => 4
+            )
+        ),
+        options = Dict{String,Any}(
+            "disableInlining" => []
+        ),
+        unknowns = ["data.reports"],
+        sql = "( ( public.juliahub_reports.clearance_level & 4 ) >= 4 )",
+    ),
+    (
+        policy = """package example
+        allow {
+            bits.or(data.reports[_].clearance_level, input.subject.clearance_level) >= input.subject.clearance_level
+        }""",
+        query = "data.example.allow == true",
+        input = Dict{String,Any}(
+            "subject" => Dict{String,Any}(
+                "clearance_level" => 4
+            )
+        ),
+        options = Dict{String,Any}(
+            "disableInlining" => []
+        ),
+        unknowns = ["data.reports"],
+        sql = "( ( public.juliahub_reports.clearance_level | 4 ) >= 4 )",
+    ),
+    (
+        policy = """package example
+        allow {
+            (data.reports[_].clearance_level + input.subject.clearance_level) >= input.subject.clearance_level
+        }""",
+        query = "data.example.allow == true",
+        input = Dict{String,Any}(
+            "subject" => Dict{String,Any}(
+                "clearance_level" => 4
+            )
+        ),
+        options = Dict{String,Any}(
+            "disableInlining" => []
+        ),
+        unknowns = ["data.reports"],
+        sql = "( ( public.juliahub_reports.clearance_level + 4 ) >= 4 )",
+    ),
+    (
+        policy = """package example
+        allow {
+            (data.reports[_].clearance_level - input.subject.clearance_level) >= 0
+        }""",
+        query = "data.example.allow == true",
+        input = Dict{String,Any}(
+            "subject" => Dict{String,Any}(
+                "clearance_level" => 4
+            )
+        ),
+        options = Dict{String,Any}(
+            "disableInlining" => []
+        ),
+        unknowns = ["data.reports"],
+        sql = "( ( public.juliahub_reports.clearance_level - 4 ) >= 0 )",
     ),
 ]
 

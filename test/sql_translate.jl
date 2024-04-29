@@ -157,6 +157,14 @@ const SQL_OP_MAP = Dict{String,String}(
     "lte" => "<=",
     "equal" => "=",
     "internal.member_2" => "in",
+    "bits.and" => "&",
+    "bits.or" => "|",
+    "bits.xor" => "#",
+    "bits.negate" => "~",
+    "bits.lsh" => "<<",
+    "bits.rsh" => ">>",
+    "plus" => "+",
+    "minus" => "-",
 )
 
 const VALID_SQL_OPS = Set(keys(SQL_OP_MAP))
@@ -229,7 +237,20 @@ function to_sql(expr::OPAExpr)
     op_lhs = to_sql(op_operands[1])
     op_rhs = to_sql(op_operands[2])
 
-    return join([op_lhs, op, op_rhs], " ")
+    return join(["(", op_lhs, op, op_rhs, ")"], " ")
+end
+
+function to_sql(call::OPACall)
+    op_name = to_sql(call.operator)
+    if !(op_name in VALID_SQL_OPS)
+        error("Invalid SQL operator: $op_name")
+    end
+
+    op = SQL_OP_MAP[op_name]
+    op_lhs = to_sql(call.operands[1])
+    op_rhs = to_sql(call.operands[2])
+
+    return join(["(", op_lhs, op, op_rhs, ")"], " ")
 end
 
 function to_sql(query::OPAQuery)

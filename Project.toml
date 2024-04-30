@@ -1,7 +1,7 @@
 name = "OpenPolicyAgent"
 uuid = "8f257efb-743c-4ebc-8197-d291a1f743b4"
 authors = ["JuliaHub Inc.", "Tanmay Mohapatra <tanmaykm@gmail.com>"]
-version = "0.3.1"
+version = "0.3.2"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"

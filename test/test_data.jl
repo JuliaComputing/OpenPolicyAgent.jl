@@ -233,6 +233,25 @@ const PARTIAL_COMPILE_CASES = [
         unknowns = ["data.reports"],
         sql = "( ( public.juliahub_reports.clearance_level - 4 ) >= 0 )",
     ),
+    (
+        policy = """package example
+        import future.keywords.in
+        allow {
+            data.reports[_].category in {"public"}
+        }
+        """,
+        query = "data.example.allow == true",
+        input = Dict{String,Any}(
+            "subject" => Dict{String,Any}(
+                "clearance_level" => 4
+            )
+        ),
+        options = Dict{String,Any}(
+            "disableInlining" => []
+        ),
+        unknowns = ["data.reports"],
+        sql = "( public.juliahub_reports.category in ('public') )",
+    ),
 ]
 
 const EXAMPLE_QUERY = """input.servers[i].ports[_] = "p2"; input.servers[i].name = name"""

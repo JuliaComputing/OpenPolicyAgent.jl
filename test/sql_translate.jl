@@ -207,7 +207,7 @@ function to_sql(ref::OPARef)
     end
 end
 
-function to_sql(arr::OPAArray)
+function to_sql(arr::Union{OPAArray,OPASet})
     return string("(", join(to_sql.(arr.value), ", "), ")")
 end
 

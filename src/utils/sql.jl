@@ -159,7 +159,7 @@ function visit(visitor::SQLVisitor, ref::AST.OPARef)
     return nothing
 end
 
-function visit(visitor::SQLVisitor, arr::AST.OPAArray)
+function visit(visitor::SQLVisitor, arr::Union{AST.OPAArray,AST.OPASet})
     push!(visitor.result_stack, string("(", join([walk(visitor, v) for v in arr.value], ", "), ")"))
     return nothing
 end

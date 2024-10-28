@@ -211,8 +211,8 @@ function deps(ctx::CommandLine, _args...; bundle::Union{Nothing,AbstractString} 
     end
 end
 
-""" eval
-Run the eval subcommand of opa command.
+""" evaluate
+Run the evaluate subcommand of opa command.
 Evaluate a Rego query
 
 Options:
@@ -249,9 +249,9 @@ Options:
 - unknowns::AbstractString - Set paths to treat as unknown during partial evaluation
 - help::Bool - Help for eval
  """
-function eval(ctx::CommandLine, _args...; bundle::Union{Nothing,AbstractString} = nothing, capabilities::Union{Nothing,AbstractString} = nothing, count::Union{Nothing,AbstractString} = "1", coverage::Union{Nothing,Bool} = false, data::Union{Nothing,AbstractString} = nothing, disable_early_exit::Union{Nothing,Bool} = false, disable_indexing::Union{Nothing,Bool} = false, disable_inlining::Union{Nothing,AbstractString} = nothing, explain::Union{Nothing,AbstractString} = "off", fail::Union{Nothing,Bool} = false, fail_defined::Union{Nothing,Bool} = false, format::Union{Nothing,AbstractString} = "json", ignore::Union{Nothing,AbstractString} = nothing, _import::Union{Nothing,AbstractString} = nothing, input::Union{Nothing,AbstractString} = nothing, instrument::Union{Nothing,Bool} = false, metrics::Union{Nothing,Bool} = false, package::Union{Nothing,AbstractString} = nothing, partial::Union{Nothing,Bool} = false, pretty_limit::Union{Nothing,AbstractString} = "80", profile::Union{Nothing,Bool} = false, profile_limit::Union{Nothing,AbstractString} = "10", profile_sort::Union{Nothing,AbstractString} = nothing, schema::Union{Nothing,AbstractString} = nothing, shallow_inlining::Union{Nothing,Bool} = false, stdin::Union{Nothing,Bool} = false, stdin_input::Union{Nothing,Bool} = false, strict_builtin_errors::Union{Nothing,Bool} = false, target::Union{Nothing,AbstractString} = "rego", timeout::Union{Nothing,AbstractString} = "0s", unknowns::Union{Nothing,AbstractString} = "[input]", help::Union{Nothing,Bool} = false, )
+function evaluate(ctx::CommandLine, _args...; bundle::Union{Nothing,AbstractString} = nothing, capabilities::Union{Nothing,AbstractString} = nothing, count::Union{Nothing,AbstractString} = "1", coverage::Union{Nothing,Bool} = false, data::Union{Nothing,AbstractString} = nothing, disable_early_exit::Union{Nothing,Bool} = false, disable_indexing::Union{Nothing,Bool} = false, disable_inlining::Union{Nothing,AbstractString} = nothing, explain::Union{Nothing,AbstractString} = "off", fail::Union{Nothing,Bool} = false, fail_defined::Union{Nothing,Bool} = false, format::Union{Nothing,AbstractString} = "json", ignore::Union{Nothing,AbstractString} = nothing, _import::Union{Nothing,AbstractString} = nothing, input::Union{Nothing,AbstractString} = nothing, instrument::Union{Nothing,Bool} = false, metrics::Union{Nothing,Bool} = false, package::Union{Nothing,AbstractString} = nothing, partial::Union{Nothing,Bool} = false, pretty_limit::Union{Nothing,AbstractString} = "80", profile::Union{Nothing,Bool} = false, profile_limit::Union{Nothing,AbstractString} = "10", profile_sort::Union{Nothing,AbstractString} = nothing, schema::Union{Nothing,AbstractString} = nothing, shallow_inlining::Union{Nothing,Bool} = false, stdin::Union{Nothing,Bool} = false, stdin_input::Union{Nothing,Bool} = false, strict_builtin_errors::Union{Nothing,Bool} = false, target::Union{Nothing,AbstractString} = "rego", timeout::Union{Nothing,AbstractString} = "0s", unknowns::Union{Nothing,AbstractString} = "[input]", help::Union{Nothing,Bool} = false, )
     ctx.exec() do cmdstr
-        cmd = [cmdstr, "eval"]
+        cmd = [cmdstr, "evaluate"]
         Base.isnothing(bundle) || Base.push!(cmd, "--bundle=$(bundle)")
         Base.isnothing(capabilities) || Base.push!(cmd, "--capabilities=$(capabilities)")
         Base.isnothing(count) || Base.push!(cmd, "--count=$(count)")

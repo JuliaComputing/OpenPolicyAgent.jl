@@ -563,7 +563,7 @@
       ]
     },
     {
-      "name": "eval",
+      "name": "evaluate",
       "description": "Evaluate a Rego query",
       "options": [
         {

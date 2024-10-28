@@ -2,14 +2,14 @@
 
 The OPA (Open Policy Agent) command-line tool is a versatile utility that empowers users to interact with and manage OPA policies and data. It allows users to perform various tasks, such as evaluating policies, testing Rego expressions, and querying data, all from the command line. This tool is invaluable for policy development, debugging, and troubleshooting, providing an accessible way to work with OPA without the need for complex integration. It's an essential companion for developers and administrators working with OPA, simplifying the process of authoring, testing, and refining policies to ensure robust and consistent policy enforcement across software systems.
 
-The OPA command line is made available in the `OpenPolicyAgent.CLI` module. To use, import the module. It needs the `opa` executable to be made available. If already instaled, it should be made available in the `PATH` environment. Otherwise, the `OpenPolicyAgent_jll` package can be used too. E.g.:
+The OPA command line is made available in the `OpenPolicyAgent.CLI` module. To use, import the module. It needs the `opa` executable to be made available. The `OpenPolicyAgent_jll` package has the `opa` executable built-in and can be used conveniently. E.g.:
 
 ```julia
 julia> using OpenPolicyAgent, OpenPolicyAgent_jll
 
 julia> import OpenPolicyAgent: CLI
 
-julia> ctx = CLI.CommandLine(exec=OpenPolicyAgent_jll.opa);
+julia> ctx = CLI.CommandLine(OpenPolicyAgent_jll.opa);
 
 julia> CLI.opa(ctx; help=true);
 An open source project to policy-enable your service.

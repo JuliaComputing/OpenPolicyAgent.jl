@@ -2,7 +2,7 @@
 function prepare_bundle(bundle_location::String)
     signed_bundle_file = joinpath(bundle_location, "data.tar.gz")
     run(`rm -f $signed_bundle_file`)
-    CLI.build(OpenPolicyAgent.CLI.CommandLine(; exec=OpenPolicyAgent_jll.opa, cmdopts=Dict(:dir => data_bundle_root)),
+    CLI.build(OpenPolicyAgent.CLI.CommandLine(OpenPolicyAgent_jll.opa; cmdopts=Dict(:dir => data_bundle_root)),
         ".";
         output=signed_bundle_file,
         bundle_args...
@@ -10,7 +10,7 @@ function prepare_bundle(bundle_location::String)
 
     signed_bundle_file = joinpath(bundle_location, "policies.tar.gz")
     run(`rm -f $signed_bundle_file`)
-    CLI.build(OpenPolicyAgent.CLI.CommandLine(; exec=OpenPolicyAgent_jll.opa, cmdopts=Dict(:dir => policies_bundle_root)),
+    CLI.build(OpenPolicyAgent.CLI.CommandLine(OpenPolicyAgent_jll.opa; cmdopts=Dict(:dir => policies_bundle_root)),
         ".";
         output=signed_bundle_file,
         bundle_args...
@@ -45,17 +45,17 @@ end
 function start_opa_server(root_path; change_dir::Bool=true)
     if change_dir
         opa_server = OpenPolicyAgent.Server.MonitoredOPAServer(
+            OpenPolicyAgent.CLI.CommandLine(OpenPolicyAgent_jll.opa; cmdopts=Dict(:dir => root_path)),
             joinpath(root_path, "config.yaml");
             stdout = joinpath(root_path, "server.stdout"),
             stderr = joinpath(root_path, "server.stderr"),
-            cmdline = OpenPolicyAgent.CLI.CommandLine(; exec=OpenPolicyAgent_jll.opa, cmdopts=Dict(:dir => root_path)),
         )
     else
         opa_server = OpenPolicyAgent.Server.MonitoredOPAServer(
+            OpenPolicyAgent.CLI.CommandLine(OpenPolicyAgent_jll.opa),
             joinpath(root_path, "config.yaml");
             stdout = joinpath(root_path, "server.stdout"),
             stderr = joinpath(root_path, "server.stderr"),
-            cmdline = OpenPolicyAgent.CLI.CommandLine(; exec=OpenPolicyAgent_jll.opa),
         )
     end
     OpenPolicyAgent.Server.start!(opa_server)

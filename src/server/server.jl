@@ -7,7 +7,9 @@ import Base: Process
 const DEFAULT_PORT = 8181
 
 """
-    MonitoredOPAServer(configfile::String;
+    MonitoredOPAServer(
+        cmdline::CommandLine,
+        configfile::String;
         host::String = "localhost",
         port::Int = DEFAULT_PORT,
         stdout = nothing,
@@ -17,6 +19,7 @@ const DEFAULT_PORT = 8181
 A server that is monitored and restarted if it dies.
 
 Arguments:
+- `cmdline`: The `CLI.CommandLine` instrance that wraps an opa executable.
 - `configfile`: The path to the OPA configuration file.
 
 Keyword arguments:
@@ -37,16 +40,14 @@ struct MonitoredOPAServer
     stopped::Ref{Bool}
     lck::ReentrantLock
 
-    function MonitoredOPAServer(configfile::String;
+    function MonitoredOPAServer(
+        cmdline::CommandLine,
+        configfile::String;
         host::String = "localhost",
         port::Int = DEFAULT_PORT,
         stdout = nothing,
         stderr = nothing,
-        cmdline = nothing,
     )
-        if isnothing(cmdline)
-            cmdline = CommandLine()
-        end
         cmdline.runopts[:wait] = false
 
         return new(configfile,

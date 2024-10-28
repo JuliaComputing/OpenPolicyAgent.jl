@@ -82,7 +82,7 @@ OpenPolicyAgent.CLI.build
 OpenPolicyAgent.CLI.check
 OpenPolicyAgent.CLI.completion
 OpenPolicyAgent.CLI.deps
-OpenPolicyAgent.CLI.eval
+OpenPolicyAgent.CLI.evaluate
 OpenPolicyAgent.CLI.exec
 OpenPolicyAgent.CLI.fmt
 OpenPolicyAgent.CLI.inspect

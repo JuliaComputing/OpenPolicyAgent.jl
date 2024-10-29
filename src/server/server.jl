@@ -62,6 +62,8 @@ struct MonitoredOPAServer
     end
 end
 
+MonitoredOPAServer(exec::Function, configfile::String; kwargs...) = MonitoredOPAServer(CommandLine(exec), configfile; kwargs...)
+
 function start_opa_server!(server::MonitoredOPAServer)
     ctx = server.cmdline
     if !isnothing(server.stdout)

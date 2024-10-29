@@ -52,7 +52,7 @@ function start_opa_server(root_path; change_dir::Bool=true)
         )
     else
         opa_server = OpenPolicyAgent.Server.MonitoredOPAServer(
-            CLI.CommandLine(OpenPolicyAgent_jll.opa),
+            OpenPolicyAgent_jll.opa,
             joinpath(root_path, "config.yaml");
             stdout = joinpath(root_path, "server.stdout"),
             stderr = joinpath(root_path, "server.stderr"),

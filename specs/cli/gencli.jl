@@ -13,7 +13,7 @@ CommandLine execution context.
 `pipelineopts`: keyword arguments that should be used to further customize the `pipeline` creation
 \"\"\"
 Base.@kwdef struct CommandLine
-    exec::Base.Function = ()->`opa`
+    exec::Base.Function = ()->``
     cmdopts::OptsType = OptsType()
     pipelineopts::OptsType = OptsType()
     runopts::OptsType = OptsType()

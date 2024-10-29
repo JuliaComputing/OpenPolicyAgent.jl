@@ -19,15 +19,15 @@ CommandLine(exec; cmdopts, pipelineopts, runopts)
 - `pipelineopts`: keyword arguments that should be used to further customize the `pipeline` creation
 - `runopts`: additional options to be passed to the `Base.run` method
 """
-Base.@kwdef struct CommandLine
-    exec::Base.Function = ()->``
-    cmdopts::OptsType = OptsType()
-    pipelineopts::OptsType = OptsType()
-    runopts::OptsType = OptsType()
-end
+struct CommandLine
+    exec::Base.Function
+    cmdopts::OptsType
+    pipelineopts::OptsType
+    runopts::OptsType
 
-function CommandLine(exec::Base.Function; kwargs...)
-    return CommandLine(; exec=exec, kwargs...)
+    function CommandLine(exec::Base.Function; cmdopts::OptsType = OptsType(), pipelineopts::OptsType = OptsType(), runopts::OptsType = OptsType())
+        return new(exec, cmdopts, pipelineopts, runopts)
+    end
 end
 
 """ opa

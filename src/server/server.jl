@@ -19,7 +19,7 @@ const DEFAULT_PORT = 8181
 A server that is monitored and restarted if it dies.
 
 Arguments:
-- `cmdline`: The `CLI.CommandLine` instrance that wraps an opa executable.
+- `cmdline`: The `CLI.CommandLine` instance that wraps an opa executable.
 - `configfile`: The path to the OPA configuration file.
 
 Keyword arguments:

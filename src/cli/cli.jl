@@ -9,20 +9,25 @@ module CLI
 
 const OptsType = Base.Dict{Base.Symbol,Base.Any}
 
-using OpenPolicyAgent_jll
-
 """
 CommandLine execution context.
 
-`exec`: a no argument function that provides the base command to execute in a julia `do` block.
-`cmdopts`: keyword arguments that should be used to further customize the `Cmd` creation
-`pipelineopts`: keyword arguments that should be used to further customize the `pipeline` creation
+CommandLine(exec; cmdopts, pipelineopts, runopts)
+
+- `exec`: a no argument function that provides the base command to execute in a julia `do` block.
+- `cmdopts`: keyword arguments that should be used to further customize the `Cmd` creation
+- `pipelineopts`: keyword arguments that should be used to further customize the `pipeline` creation
+- `runopts`: additional options to be passed to the `Base.run` method
 """
-Base.@kwdef struct CommandLine
-    exec::Base.Function = OpenPolicyAgent_jll.opa
-    cmdopts::OptsType = OptsType()
-    pipelineopts::OptsType = OptsType()
-    runopts::OptsType = OptsType()
+struct CommandLine
+    exec::Base.Function
+    cmdopts::OptsType
+    pipelineopts::OptsType
+    runopts::OptsType
+
+    function CommandLine(exec::Base.Function; cmdopts::OptsType = OptsType(), pipelineopts::OptsType = OptsType(), runopts::OptsType = OptsType())
+        return new(exec, cmdopts, pipelineopts, runopts)
+    end
 end
 
 """ opa

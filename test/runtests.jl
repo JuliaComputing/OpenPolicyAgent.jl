@@ -1,4 +1,5 @@
 using OpenPolicyAgent
+using OpenPolicyAgent_jll
 using OpenAPI
 using JSON
 using HTTP
@@ -17,8 +18,8 @@ import .OPASQL: translate
 function test_version_help()
     iob_stdout = IOBuffer()
     iob_stderr = IOBuffer()
-    pipelineopts = Dict(:stdout => iob_stdout, :stderr => iob_stderr)
-    cmd = OpenPolicyAgent.CLI.CommandLine(; pipelineopts=pipelineopts)
+    pipelineopts = CLI.OptsType(:stdout => iob_stdout, :stderr => iob_stderr)
+    cmd = OpenPolicyAgent.CLI.CommandLine(OpenPolicyAgent_jll.opa; pipelineopts=pipelineopts)
     CLI.version(cmd)
     if Sys.iswindows()
         sleep(10) # Windows is slow to flush the buffers
@@ -28,8 +29,8 @@ function test_version_help()
 
     iob_stdout = IOBuffer()
     iob_stderr = IOBuffer()
-    pipelineopts = Dict(:stdout => iob_stdout, :stderr => iob_stderr)
-    cmd = OpenPolicyAgent.CLI.CommandLine(; pipelineopts=pipelineopts)
+    pipelineopts = CLI.OptsType(:stdout => iob_stdout, :stderr => iob_stderr)
+    cmd = OpenPolicyAgent.CLI.CommandLine(OpenPolicyAgent_jll.opa; pipelineopts=pipelineopts)
     CLI.help(cmd)
     if Sys.iswindows()
         sleep(10) # Windows is slow to flush the buffers

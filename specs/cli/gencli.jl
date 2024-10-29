@@ -5,8 +5,6 @@ const SPEC = joinpath(sdir, "opa.json")
 const CLIMODULE = joinpath(sdir, "..", "..", "src", "cli", "cli.jl")
 
 const custom_include = """
-using OpenPolicyAgent_jll
-
 \"\"\"
 CommandLine execution context.
 
@@ -15,7 +13,7 @@ CommandLine execution context.
 `pipelineopts`: keyword arguments that should be used to further customize the `pipeline` creation
 \"\"\"
 Base.@kwdef struct CommandLine
-    exec::Base.Function = OpenPolicyAgent_jll.opa
+    exec::Base.Function = ()->``
     cmdopts::OptsType = OptsType()
     pipelineopts::OptsType = OptsType()
     runopts::OptsType = OptsType()

@@ -5,9 +5,12 @@ The OPA (Open Policy Agent) server is a critical component of the OPA ecosystem,
 The `OpenPolicyAgent.Server` module includes methods to help start the OPA server,
 monitor it for failures, and restart when required.
 
+It needs to be supplied with the `opa` executable path. The one bundled with `OpenPolicyAgent_jll` can be used for convenience.
+
 ```julia
 function start_opa_server(root_path)
     opa_server = OpenPolicyAgent.Server.MonitoredOPAServer(
+        OpenPolicyAgent.CLI.CommandLine(OpenPolicyAgent_jll.opa),
         joinpath(root_path, "config.yaml"),
         stdout = joinpath(root_path, "server.stdout"),
         stderr = joinpath(root_path, "server.stderr"),

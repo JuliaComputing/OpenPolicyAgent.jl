@@ -13,7 +13,7 @@ const EXAMPLE_POLICY = """package opa.examples
     import data.networks
     import data.ports
 
-    public_servers[server] {
+    public_servers contains server if {
     some k, m
         server := servers[_]
         server.ports[_] == ports[k].id
@@ -25,7 +25,7 @@ const EXAMPLE_POLICY = """package opa.examples
 const PARTIAL_COMPILE_CASES = [
     (
         policy = """package example
-        allow {
+        allow if {
             input.subject.clearance_level >= data.reports[_].clearance_level
         }""",
         query = "data.example.allow == true",
@@ -43,13 +43,13 @@ const PARTIAL_COMPILE_CASES = [
     (
         policy = """package example
 
-        allow {
+        allow if {
             input.subject.group == "admin"
         }
-        allow {
+        allow if {
             data.reports[_].public == true
         }
-        allow {
+        allow if {
             input.subject.clearance_level >= data.reports[_].clearance_level
             input.subject.id == data.reports[_].owner
         }
@@ -72,13 +72,13 @@ const PARTIAL_COMPILE_CASES = [
         # always allowed if the policy is fully satisfied with the given input for any one condition
         policy = """package example
 
-        allow {
+        allow if {
             input.subject.group == "admin"
         }
-        allow {
+        allow if {
             data.reports[_].public == true
         }
-        allow {
+        allow if {
             input.subject.clearance_level >= data.reports[_].clearance_level
             input.subject.id == data.reports[_].owner
         }
@@ -101,7 +101,7 @@ const PARTIAL_COMPILE_CASES = [
         # always allowed if the policy with only one condition is fully satisfied with the given input
         policy = """package example
         default allow = false
-        allow {
+        allow if {
             input.subject.group == "admin"
         }
         """,
@@ -122,7 +122,7 @@ const PARTIAL_COMPILE_CASES = [
         # not allowed if the required policy is not defined
         policy = """package example
         default allow = false
-        allow {
+        allow if {
             input.subject.group == "admin"
         }
         """,
@@ -141,14 +141,15 @@ const PARTIAL_COMPILE_CASES = [
     ),
     (
         policy = """package example
-        import future.keywords.in
-        allow {
+        import rego.v1
+
+        allow if {
             input.subject.group in ["admin", "superadmin"]
         }
-        allow {
+        allow if {
             data.reports[_].category in ["public", "pinned"]
         }
-        allow {
+        allow if {
             input.subject.clearance_level >= data.reports[_].clearance_level
         }
         """,
@@ -167,7 +168,7 @@ const PARTIAL_COMPILE_CASES = [
     ),
     (
         policy = """package example
-        allow {
+        allow if {
             bits.and(data.reports[_].clearance_level, input.subject.clearance_level) >= input.subject.clearance_level
         }""",
         query = "data.example.allow == true",
@@ -184,7 +185,7 @@ const PARTIAL_COMPILE_CASES = [
     ),
     (
         policy = """package example
-        allow {
+        allow if {
             bits.or(data.reports[_].clearance_level, input.subject.clearance_level) >= input.subject.clearance_level
         }""",
         query = "data.example.allow == true",
@@ -201,7 +202,7 @@ const PARTIAL_COMPILE_CASES = [
     ),
     (
         policy = """package example
-        allow {
+        allow if {
             (data.reports[_].clearance_level + input.subject.clearance_level) >= input.subject.clearance_level
         }""",
         query = "data.example.allow == true",
@@ -218,7 +219,7 @@ const PARTIAL_COMPILE_CASES = [
     ),
     (
         policy = """package example
-        allow {
+        allow if {
             (data.reports[_].clearance_level - input.subject.clearance_level) >= 0
         }""",
         query = "data.example.allow == true",
@@ -235,8 +236,8 @@ const PARTIAL_COMPILE_CASES = [
     ),
     (
         policy = """package example
-        import future.keywords.in
-        allow {
+        import rego.v1
+        allow if {
             data.reports[_].category in {"public"}
         }
         """,

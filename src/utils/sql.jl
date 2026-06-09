@@ -93,6 +93,21 @@ function strip_quote(var)
     end
 end
 
+"""
+    quote_string(value::AbstractString)
+
+Render `value` as a SQL single-quoted string literal, escaping any embedded
+single quotes by doubling them (per the SQL standard).
+
+This prevents SQL injection when attacker-controlled string values (for
+example, values derived from the OPA `input` document such as a subject id)
+are interpolated into the generated `where` clause. Without escaping, a value
+like `bob' or '1'='1` would terminate the literal and inject arbitrary SQL.
+"""
+function quote_string(value::AbstractString)
+    return string("'", replace(value, "'" => "''"), "'")
+end
+
 before(::SQLVisitor, _node) = nothing
 after(visitor::SQLVisitor, _node) = pop!(visitor.result_stack)
 
@@ -131,7 +146,7 @@ function visit(visitor::SQLVisitor, scaler::AST.OPAScalarValue)
     result = (value === nothing) ? "null" :
              (value === true) ? "true" :
              (value === false) ? "false" :
-             isa(value, String) ? "'$value'" :
+             isa(value, String) ? quote_string(value) :
              string(value)
     push!(visitor.result_stack, result)
     return nothing

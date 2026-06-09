@@ -178,6 +178,10 @@ function strip_quote(var)
     end
 end
 
+# Escape embedded single quotes (per the SQL standard) so string literals
+# cannot be used to inject SQL. Mirrors `OpenPolicyAgent.ASTWalker.SQL.quote_string`.
+quote_string(value::AbstractString) = string("'", replace(value, "'" => "''"), "'")
+
 function to_sql(scaler::OPAScalarValue)
     value = scaler.value
     if value === nothing
@@ -187,7 +191,7 @@ function to_sql(scaler::OPAScalarValue)
     elseif value === false
         return "false"
     elseif isa(value, String)
-        return "'$value'"
+        return quote_string(value)
     else
         return string(value)
     end

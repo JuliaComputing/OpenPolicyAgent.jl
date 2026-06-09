@@ -142,7 +142,7 @@ function after(visitor::ASTVisitor, node)
     return pop!(visitor.result_stack) # either a QuerySet or nothing
 end
 
-function _visit(visitor::ASTVisitor, ::Type{QuerySet}, node::Dict{String,Any})
+function _visit(visitor::ASTVisitor, ::Type{QuerySet}, node::AbstractDict)
     if haskey(node, "queries") && length(node["queries"]) > 0
         data = node["queries"]
         N = length(data)

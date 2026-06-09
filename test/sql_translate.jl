@@ -267,7 +267,7 @@ function to_sql(queryset::QuerySet)
     end
 end
 
-function translate(result::Dict{String, Any})
+function translate(result::AbstractDict)
     if haskey(result, "queries") && length(result["queries"]) > 0
         return to_sql(from_data(QuerySet, result["queries"]))
     else

@@ -91,11 +91,11 @@ function test_config_api(openapi_client)
     @test length(services) == 1
     @test services[1]["name"] == "BundleServiceAPI"
 
-    @test haskey(result, "bundles") && isa(result["bundles"], Dict)
+    @test haskey(result, "bundles") && isa(result["bundles"], AbstractDict)
     bundles = result["bundles"]
     @test Set(keys(bundles)) == Set(["data", "policies"])
 
-    @test haskey(result, "keys") && isa(result["keys"], Dict)
+    @test haskey(result, "keys") && isa(result["keys"], AbstractDict)
     bundle_keys = result["keys"]
     @test haskey(bundle_keys, "bundle_key")
     @test haskey(bundle_keys["bundle_key"], "algorithm")

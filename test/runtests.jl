@@ -364,7 +364,7 @@ function test_sql_string_escaping()
           "'''; DROP TABLE juliahub_reports; --'"
 
     # Non-string scalars are unaffected.
-    @test scalar_to_sql(4) == "4"
+    @test scalar_to_sql(Int64(4)) == "4"
     @test scalar_to_sql(true) == "true"
     @test scalar_to_sql(false) == "false"
     @test scalar_to_sql(nothing) == "null"

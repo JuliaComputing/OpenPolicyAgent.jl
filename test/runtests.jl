@@ -12,6 +12,7 @@ import OpenPolicyAgent.ASTWalker.SQL: SQLVisitor, SQLCondition, UnconditionalInc
 include("test_data.jl")
 include("test_utils.jl")
 include("sql_translate.jl")
+import .OPASQL
 import .OPASQL: translate
 
 # Check version and help output
@@ -340,6 +341,51 @@ function runtests()
     end
 end
 
+function test_sql_string_escaping()
+    schema_map = Dict("data" => "public")
+    table_map = Dict("reports" => "juliahub_reports")
+
+    # Helper to translate a single scalar value to its SQL literal form.
+    function scalar_to_sql(value)
+        visitor = SQLVisitor(schema_map, table_map)
+        SQL.visit(visitor, AST.OPAScalarValue(value))
+        return pop!(visitor.result_stack)
+    end
+
+    # Benign strings are still single-quoted as before.
+    @test scalar_to_sql("bob") == "'bob'"
+    @test scalar_to_sql("public") == "'public'"
+
+    # Embedded single quotes must be doubled so they cannot break out of the
+    # literal and inject SQL.
+    @test scalar_to_sql("O'Brien") == "'O''Brien'"
+    @test scalar_to_sql(raw"bob' or '1'='1") == "'bob'' or ''1''=''1'"
+    @test scalar_to_sql("'; DROP TABLE juliahub_reports; --") ==
+          "'''; DROP TABLE juliahub_reports; --'"
+
+    # Non-string scalars are unaffected.
+    @test scalar_to_sql(Int64(4)) == "4"
+    @test scalar_to_sql(true) == "true"
+    @test scalar_to_sql(false) == "false"
+    @test scalar_to_sql(nothing) == "null"
+
+    # The escaped literal must stay a single, balanced SQL string literal:
+    # outer quotes plus an even number of interior quote characters.
+    for malicious in (raw"bob' or '1'='1", "O'Brien", "'; DROP TABLE x; --", "a''b")
+        sql = scalar_to_sql(malicious)
+        @test startswith(sql, "'") && endswith(sql, "'")
+        @test iseven(count(==('\''), sql))
+    end
+
+    # The standalone reference translator (test/sql_translate.jl) must escape
+    # identically, since it is used as the expected-output oracle.
+    @test OPASQL.to_sql(OPASQL.OPAScalarValue(raw"bob' or '1'='1")) ==
+          "'bob'' or ''1''=''1'"
+end
+
 @testset "OpenPolicyAgent" begin
+    @testset "SQL string escaping" begin
+        test_sql_string_escaping()
+    end
     runtests()
 end

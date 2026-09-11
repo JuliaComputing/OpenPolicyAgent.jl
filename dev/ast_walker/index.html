@@ -5,13 +5,12 @@ import OpenPolicyAgent.ASTWalker.AST: ASTVisitor
 import OpenPolicyAgent.ASTWalker.SQL: SQLVisitor, SQLCondition, UnconditionalInclude, UnconditionalExclude
 
 # invoke the partial evaluation endpoint
+client = OpenPolicyAgent.Client.Client(&quot;http://localhost:8181&quot;)
 partial_query_schema = OpenPolicyAgent.Client.PartialQuerySchema(; ...)
-response, _http_resp = OpenPolicyAgent.Client.post_compile(
-    compile_client;
-    partial_query_schema = partial_query_schema,
-)
+response = OpenPolicyAgent.Client.postcompile(; body = partial_query_schema, client)
+result = response.result
 
-# crete a Julia representation of the AST
+# create a Julia representation of the AST
 ast = OpenPolicyAgent.ASTWalker.walk(ASTVisitor(), result)
 
 # Provide a mapping of schema names and table names that can be used to convert policy paths to SQL table names
@@ -35,4 +34,4 @@ elseif isa(sqlcondition, UnconditionalInclude)
     # all rows should be included
 else
     # `sqlcondition.sql` contains a string with the SQL query condition
-end</code></pre><p>More details of AST walker, and the included visitors can be found in the reference documentation.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../commandline/">« Command Line</a><a class="docs-footer-nextpage" href="../reference/">Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.19.0 on <span class="colophon-date" title="Friday 11 September 2026 08:10">Friday 11 September 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+end</code></pre><p>More details of AST walker, and the included visitors can be found in the reference documentation.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../commandline/">« Command Line</a><a class="docs-footer-nextpage" href="../reference/">Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.19.0 on <span class="colophon-date" title="Friday 11 September 2026 09:17">Friday 11 September 2026</span>. Using Julia version 1.13.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

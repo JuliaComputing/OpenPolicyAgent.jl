@@ -68,8 +68,8 @@ function policy_path()
     return joinpath(policy_package, rule_name)
 end
 
-function query_user(opa_client, username)
-    request_body = Dict{String,Any}("input" => Dict{String,Any}("name" => username))
-    response, http_resp = OpenPolicyAgent.Client.get_document_with_path(opa_client, policy_path(), request_body; pretty=true, provenance=true, explain=true, metrics=true, instrument=true);
+function query_user(client, username)
+    request_body = Client.InputSchema(; input = Dict{String,Any}("name" => username))
+    response = Client.getdocumentwithpath(policy_path(), request_body; pretty=true, provenance=true, explain=EXPLAIN_FULL, metrics=true, instrument=true, client)
     return response.result
 end

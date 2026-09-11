@@ -11,56 +11,60 @@ CurrentModule = OpenPolicyAgent
 
 ## Client
 
-### PolicyApi
-
 ```@docs
-OpenPolicyAgent.Client.get_policies
-OpenPolicyAgent.Client.get_policy_module
-OpenPolicyAgent.Client.put_policy_module
-OpenPolicyAgent.Client.delete_policy_module
+OpenPolicyAgent.Client
 ```
 
-### DataApi
+### Policy API
 
 ```@docs
-OpenPolicyAgent.Client.get_document
-OpenPolicyAgent.Client.get_document_with_path
-OpenPolicyAgent.Client.get_document_from_webhook
-OpenPolicyAgent.Client.create_document
-OpenPolicyAgent.Client.patch_document
-OpenPolicyAgent.Client.delete_document
+OpenPolicyAgent.Client.getpolicies
+OpenPolicyAgent.Client.getpolicymodule
+OpenPolicyAgent.Client.putpolicymodule
+OpenPolicyAgent.Client.deletepolicymodule
 ```
 
-### QueryApi
+### Data API
 
 ```@docs
-OpenPolicyAgent.Client.query_get
-OpenPolicyAgent.Client.query_post
-OpenPolicyAgent.Client.simple_query
+OpenPolicyAgent.Client.getdocument
+OpenPolicyAgent.Client.getdocumentwithpath
+OpenPolicyAgent.Client.getdocumentfromwebhook
+OpenPolicyAgent.Client.createdocument
+OpenPolicyAgent.Client.patchdocument
+OpenPolicyAgent.Client.deletedocument
 ```
 
-### CompileApi
+### Query API
 
 ```@docs
-OpenPolicyAgent.Client.post_compile
+OpenPolicyAgent.Client.queryget
+OpenPolicyAgent.Client.querypost
+OpenPolicyAgent.Client.simplequery
 ```
 
-### HealthApi
+### Compile API
 
 ```@docs
-OpenPolicyAgent.Client.get_health
+OpenPolicyAgent.Client.postcompile
 ```
 
-### ConfigApi
+### Health API
 
 ```@docs
-OpenPolicyAgent.Client.get_config
+OpenPolicyAgent.Client.gethealth
 ```
 
-### StatusApi
+### Config API
 
 ```@docs
-OpenPolicyAgent.Client.get_status
+OpenPolicyAgent.Client.getconfig
+```
+
+### Status API
+
+```@docs
+OpenPolicyAgent.Client.getstatus
 ```
 
 ## Server

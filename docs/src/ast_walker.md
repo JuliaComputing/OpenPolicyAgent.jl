@@ -18,13 +18,12 @@ import OpenPolicyAgent.ASTWalker.AST: ASTVisitor
 import OpenPolicyAgent.ASTWalker.SQL: SQLVisitor, SQLCondition, UnconditionalInclude, UnconditionalExclude
 
 # invoke the partial evaluation endpoint
+client = OpenPolicyAgent.Client.Client("http://localhost:8181")
 partial_query_schema = OpenPolicyAgent.Client.PartialQuerySchema(; ...)
-response, _http_resp = OpenPolicyAgent.Client.post_compile(
-    compile_client;
-    partial_query_schema = partial_query_schema,
-)
+response = OpenPolicyAgent.Client.postcompile(; body = partial_query_schema, client)
+result = response.result
 
-# crete a Julia representation of the AST
+# create a Julia representation of the AST
 ast = OpenPolicyAgent.ASTWalker.walk(ASTVisitor(), result)
 
 # Provide a mapping of schema names and table names that can be used to convert policy paths to SQL table names

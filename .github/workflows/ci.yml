@@ -18,8 +18,10 @@ jobs:
         os:
           - ubuntu-latest
         arch:
+          # x86 (32-bit) is dropped: Reseau.jl, pulled in via HTTP 2.x, fails to
+          # precompile on i686 Linux and Windows.
+          # See https://github.com/JuliaServices/Reseau.jl/issues/156
           - x64
-          - x86
         include:
           # test macOS and Windows with latest Julia only
           - os: macOS-latest
@@ -27,9 +29,6 @@ jobs:
             version: 1
           - os: windows-latest
             arch: x64
-            version: 1
-          - os: windows-latest
-            arch: x86
             version: 1
     steps:
       - uses: actions/checkout@v4

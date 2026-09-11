@@ -259,8 +259,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: {}
+              description: The document to create or overwrite. Can be any JSON value.
               example: {"example": {"flag": true}}
       responses:
         '200':
@@ -471,7 +470,7 @@ paths:
         - $ref: '#/components/parameters/metricsParameter'
       responses:
         '200':
-          $ref: '#/components/responses/noContentResponse'
+          $ref: '#/components/responses/deletePolicySuccessResponse'
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '404':
@@ -616,7 +615,7 @@ paths:
         - $ref: '#/components/parameters/excludePluginsParameter'
       responses:
         '200':
-          description: OPA service is healthy
+          $ref: '#/components/responses/healthyResponse'
         '500':
           $ref: '#/components/responses/unhealthyResponse'
 components:
@@ -676,12 +675,7 @@ components:
       in: query
       required: false
       schema:
-        type: string
-        enum:
-          - full
-          - notes
-          - fails
-          - debug
+        $ref: '#/components/schemas/explainMode'
     instrumentParameter:
       name: instrument
       description: |-
@@ -791,6 +785,18 @@ components:
             $ref: '#/components/schemas/compileSuccessResponse'
     noContentResponse:
       description: No content
+    healthyResponse:
+      description: OPA service is healthy
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/healthyResponse'
+    deletePolicySuccessResponse:
+      description: Policy module deleted
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/deletePolicySuccessResponse'
     badRequestResponse:
       description: Bad request
       content:
@@ -862,9 +868,7 @@ components:
           description: The ad-hoc query to execute. OPA will parse, compile, and execute the query represented by the parameter value. The value MUST be URL encoded. Only used in GET method. For POST method the query is sent as part of the request body and this parameter is not used.
           type: string
         input:
-          description: The input document (in JSON format)
-          type: object
-          additionalProperties: {}
+          description: The input document (in JSON format). Can be any JSON value.
     errorLocation:
       type: object
       properties:
@@ -952,7 +956,9 @@ components:
              }
            }
          }
-      additionalProperties: {}
+      properties:
+        input:
+          description: The input document. Can be any JSON value.
       x-examples:
         example: |-
           {
@@ -967,7 +973,6 @@ components:
       properties:
         result:
           description: The result of the query. Can be whatever type the query returns - bool, number, string, array, json.
-          type: object
         decision_id:
           type: string
         metrics:
@@ -982,6 +987,24 @@ components:
         metrics:
           type: object
           additionalProperties: {}
+    deletePolicySuccessResponse:
+      type: object
+      properties:
+        metrics:
+          type: object
+          additionalProperties: {}
+    healthyResponse:
+      description: An empty object
+      type: object
+      additionalProperties: {}
+    explainMode:
+      description: The level of query explanation to include in the response
+      type: string
+      enum:
+        - full
+        - notes
+        - fails
+        - debug
     createDocumentSuccessResponse:
       type: object
       properties:
@@ -1011,12 +1034,12 @@ components:
         from:
           type: string
         value:
-          type: object
+          description: The value for the operation. Can be any JSON value.
     compileSuccessResponse:
       type: object
       properties:
         result:
-          type: object
+          description: The partial evaluation result - an object with `queries` and optionally `support` (AST nodes). Absent when the query is unconditionally false.
         provenance:
           $ref: '#/components/schemas/provenance'
         metrics:
@@ -1115,8 +1138,7 @@ components:
                           example: 1
                           type: number
                         terms:
-                          description: The type/value pairing for this term
-                          type: object
+                          description: The type/value pairing for this term - an object for a single term, or an array of them for a call
     partialQuerySchema:
       type: object
       example: |-
@@ -1136,11 +1158,9 @@ components:
           description: The query to partially evaluate and compile.
           type: string
         input:
-          description: The input document to use during partial evaluation
-          type: object
+          description: The input document to use during partial evaluation. Can be any JSON value.
         options:
           description: Additional options to use during partial evaluation. Only disableInlining option is supported.
-          type: object
         unknowns:
           description: The terms to treat as unknown during partial evaluation.
           type: array
